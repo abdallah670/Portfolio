@@ -1,0 +1,6 @@
+C:\Meno\Projects\Portfolio\webapi\Portfolio.Application\obj\Debug\net9.0\PortfolioApi.Application.csproj.AssemblyReference.cache
+C:\Meno\Projects\Portfolio\webapi\Portfolio.Application\obj\Debug\net9.0\PortfolioApi.Application.GeneratedMSBuildEditorConfig.editorconfig
+C:\Meno\Projects\Portfolio\webapi\Portfolio.Application\obj\Debug\net9.0\PortfolioApi.Application.AssemblyInfoInputs.cache
+C:\Meno\Projects\Portfolio\webapi\Portfolio.Application\obj\Debug\net9.0\PortfolioApi.Application.AssemblyInfo.cs
+C:\Meno\Projects\Portfolio\webapi\Portfolio.Application\obj\Debug\net9.0\PortfolioApi.Application.csproj.CoreCompileInputs.cache
+C:\Meno\Projects\Portfolio\webapi\Portfolio.Application\obj\Debug\net9.0\PortfolioApi.Application.sourcelink.json

@@ -1,7 +1,8 @@
-using PortfolioApi.Data;
-using PortfolioApi.Models;
+using Microsoft.EntityFrameworkCore;
+using PortfolioApi.Domain.Entities;
+using PortfolioApi.Infrastructure.Data;
 
-namespace PortfolioApi.Services;
+namespace PortfolioApi.Infrastructure.Data;
 
 public class SeedService
 {
@@ -14,7 +15,7 @@ public class SeedService
     
     public async Task SeedInitialDataAsync()
     {
-        if (_context.Heroes.Any())
+        if (await _context.Heroes.AnyAsync())
             return;
             
         var hero = new Hero
@@ -122,9 +123,9 @@ public class SeedService
         
         var projects = new List<Project>
         {
-            new() { Title = "MenoPro - Gym Management System", Year = "2025", Category = "Web Application", Description = "Premium gym management with member/trainer portals, workout plans, diet tracking, and Chart.js analytics. Features Glassmorphism UI, Stripe payments, and Gemini AI integration.", Stack = "[\"ASP.NET Core MVC\",\"SQL Server\",\"Entity Framework\",\"Chart.js\",\"Stripe\",\"Gemini AI\"]", Image = "uploads/projects/gymmvc.png", LiveUrl = "https://www.linkedin.com/posts/abdullah-mohammed-334475294_aspnetcore-csharp-webdevelopment-activity-7424228685093994496-wSwl?utm_source=share&utm_medium=member_desktop&rcm=ACoAAEdCipgBcPb4fee5CeW-8yGc1BXjUpbeHs0", GithubUrl = "https://github.com/abdallah670/GymMVC", Status = "Production", Color = "emerald", IsFeatured = true, DisplayOrder = 1 },
-            new() { Title = "Labor Marketplace System", Year = "2026", Category = "Full-Stack Platform", Description = "Platform connecting workers with job posters. Features multi-role auth, real-time chat with SignalR, Stripe payments, Hangfire jobs, and geographic search with SQL Server spatial queries.", Stack = "[\"ASP.NET Core MVC\",\".NET 9\",\"SignalR\",\"Stripe Connect\",\"Hangfire\",\"NetTopologySuite\"]", Image = "uploads/projects/labormvc.png", LiveUrl = "https://www.linkedin.com/posts/abdullah-mohammed-334475294_dotnet-architecture-systemdesign-activity-7444313186763358208-gBDD?utm_source=share&utm_medium=member_desktop&rcm=ACoAAEdCipgBcPb4fee5CeW-8yGc1BXjUpbeHs0", GithubUrl = "https://github.com/abdallah670/LaborMVC", Status = "Production", Color = "cyan", IsFeatured = true, DisplayOrder = 2 },
-            new() { Title = "Outfit Planner", Year = "2026", Category = "Web Application", Description = "Intelligent wardrobe management system that generates outfit suggestions by analyzing clothes against real-time weather, occasions, and personal style preferences. Built with Clean Architecture and CQRS.", Stack = "[\"ASP.NET Core 9\",\"Angular 17+\",\"NgRx\",\"SQL Server\",\"Clean Architecture\",\"CQRS\"]", Image = "uploads/projects/outfitplanner.jpg", GithubUrl = "https://github.com/abdallah670/Outfit-Planner",LiveUrl="", Color = "pink", IsFeatured = false, DisplayOrder = 1 }
+            new() { Title = "MenoPro - Gym Management System", Year = "2025", Category = "Web Application", Description = "Premium gym management with member/trainer portals, workout plans, diet tracking, and Chart.js analytics. Features Glassmorphism UI, Stripe payments, and Gemini AI integration.", Stack = new List<string>{"ASP.NET Core MVC","SQL Server","Entity Framework","Chart.js","Stripe","Gemini AI"}, Image = "uploads/projects/gymmvc.png", LiveUrl = "https://www.linkedin.com/posts/abdullah-mohammed-334475294_aspnetcore-csharp-webdevelopment-activity-7424228685093994496-wSwl?utm_source=share&utm_medium=member_desktop&rcm=ACoAAEdCipgBcPb4fee5CeW-8yGc1BXjUpbeHs0", GithubUrl = "https://github.com/abdallah670/GymMVC", Status = "Production", Color = "emerald", IsFeatured = true, DisplayOrder = 1 },
+            new() { Title = "Labor Marketplace System", Year = "2026", Category = "Full-Stack Platform", Description = "Platform connecting workers with job posters. Features multi-role auth, real-time chat with SignalR, Stripe payments, Hangfire jobs, and geographic search with SQL Server spatial queries.", Stack = new List<string>{"ASP.NET Core MVC",".NET 9","SignalR","Stripe Connect","Hangfire","NetTopologySuite"}, Image = "uploads/projects/labormvc.png", LiveUrl = "https://www.linkedin.com/posts/abdullah-mohammed-334475294_dotnet-architecture-systemdesign-activity-7444313186763358208-gBDD?utm_source=share&utm_medium=member_desktop&rcm=ACoAAEdCipgBcPb4fee5CeW-8yGc1BXjUpbeHs0", GithubUrl = "https://github.com/abdallah670/LaborMVC", Status = "Production", Color = "cyan", IsFeatured = true, DisplayOrder = 2 },
+            new() { Title = "Outfit Planner", Year = "2026", Category = "Web Application", Description = "Intelligent wardrobe management system that generates outfit suggestions by analyzing clothes against real-time weather, occasions, and personal style preferences. Built with Clean Architecture and CQRS.", Stack = new List<string>{"ASP.NET Core 9","Angular 17+","NgRx","SQL Server","Clean Architecture","CQRS"}, Image = "uploads/projects/outfitplanner.jpg", GithubUrl = "https://github.com/abdallah670/Outfit-Planner",LiveUrl="", Color = "pink", IsFeatured = false, DisplayOrder = 1 }
         };
         _context.Projects.AddRange(projects);
         

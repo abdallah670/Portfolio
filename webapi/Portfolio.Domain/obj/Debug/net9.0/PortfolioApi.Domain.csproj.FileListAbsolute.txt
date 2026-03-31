@@ -1,0 +1,13 @@
+C:\Meno\Projects\Portfolio\webapi\Portfolio.Domain\bin\Debug\net9.0\PortfolioApi.Domain.deps.json
+C:\Meno\Projects\Portfolio\webapi\Portfolio.Domain\bin\Debug\net9.0\PortfolioApi.Domain.dll
+C:\Meno\Projects\Portfolio\webapi\Portfolio.Domain\bin\Debug\net9.0\PortfolioApi.Domain.pdb
+C:\Meno\Projects\Portfolio\webapi\Portfolio.Domain\obj\Debug\net9.0\PortfolioApi.Domain.csproj.AssemblyReference.cache
+C:\Meno\Projects\Portfolio\webapi\Portfolio.Domain\obj\Debug\net9.0\PortfolioApi.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\Meno\Projects\Portfolio\webapi\Portfolio.Domain\obj\Debug\net9.0\PortfolioApi.Domain.AssemblyInfoInputs.cache
+C:\Meno\Projects\Portfolio\webapi\Portfolio.Domain\obj\Debug\net9.0\PortfolioApi.Domain.AssemblyInfo.cs
+C:\Meno\Projects\Portfolio\webapi\Portfolio.Domain\obj\Debug\net9.0\PortfolioApi.Domain.csproj.CoreCompileInputs.cache
+C:\Meno\Projects\Portfolio\webapi\Portfolio.Domain\obj\Debug\net9.0\PortfolioApi.Domain.sourcelink.json
+C:\Meno\Projects\Portfolio\webapi\Portfolio.Domain\obj\Debug\net9.0\PortfolioApi.Domain.dll
+C:\Meno\Projects\Portfolio\webapi\Portfolio.Domain\obj\Debug\net9.0\refint\PortfolioApi.Domain.dll
+C:\Meno\Projects\Portfolio\webapi\Portfolio.Domain\obj\Debug\net9.0\PortfolioApi.Domain.pdb
+C:\Meno\Projects\Portfolio\webapi\Portfolio.Domain\obj\Debug\net9.0\ref\PortfolioApi.Domain.dll

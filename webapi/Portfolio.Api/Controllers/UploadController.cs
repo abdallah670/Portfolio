@@ -1,10 +1,8 @@
-using System.Net;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using PortfolioApi.Data;
-using PortfolioApi.DTOs;
+using PortfolioApi.Application.DTOs;
+using PortfolioApi.Infrastructure.Data;
 
-namespace PortfolioApi.Controllers;
+namespace PortfolioApi.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]

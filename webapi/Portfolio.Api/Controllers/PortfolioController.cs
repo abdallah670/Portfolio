@@ -1,52 +1,47 @@
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using PortfolioApi.Data;
-using PortfolioApi.DTOs;
-using PortfolioApi.Models;
-using PortfolioApi.Services;
+using PortfolioApi.Application.DTOs;
+using PortfolioApi.Domain.Entities;
+using PortfolioApi.Application.Features.Portfolio.Queries;
+using PortfolioApi.Application.Features.Portfolio.Commands;
+using PortfolioApi.Infrastructure.Data;
 
-namespace PortfolioApi.Controllers;
+namespace PortfolioApi.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 public class PortfolioController : ControllerBase
 {
-    private readonly PortfolioService _portfolioService;
+    private readonly ISender _mediator;
     private readonly AppDbContext _context;
     
-    public PortfolioController(PortfolioService portfolioService, AppDbContext context)
+    public PortfolioController(ISender mediator, AppDbContext context)
     {
-        _portfolioService = portfolioService;
+        _mediator = mediator;
         _context = context;
     }
     
     [HttpGet("config")]
     public async Task<IActionResult> GetConfig()
     {
-        var config = await _portfolioService.GetFullConfigAsync();
+        var config = await _mediator.Send(new GetFullConfigQuery());
         return Ok(config);
     }
     
     [HttpGet("skills")]
     public async Task<IActionResult> GetSkills()
     {
-        var skills = await _portfolioService.GetSkillCategoriesAsync();
+        var skills = await _mediator.Send(new GetSkillCategoriesQuery());
         return Ok(skills);
-    }
-    
-    [HttpGet("projects")]
-    public async Task<IActionResult> GetProjects()
-    {
-        var projects = await _portfolioService.GetAllProjectsAsync();
-        return Ok(projects);
     }
     
     [Authorize]
     [HttpPut("hero")]
     public async Task<IActionResult> UpdateHero([FromBody] Hero hero)
     {
-        var response = await _portfolioService.UpdateHeroAsync(hero);
+        var response = await _mediator.Send(new UpdateHeroCommand(hero));
         return Ok(response);
     }
     
@@ -54,7 +49,7 @@ public class PortfolioController : ControllerBase
     [HttpPut("about")]
     public async Task<IActionResult> UpdateAbout([FromBody] About about)
     {
-        var response = await _portfolioService.UpdateAboutAsync(about);
+        var response = await _mediator.Send(new UpdateAboutCommand(about));
         return Ok(response);
     }
     
@@ -62,7 +57,7 @@ public class PortfolioController : ControllerBase
     [HttpPost("projects")]
     public async Task<IActionResult> CreateProject([FromBody] Project project)
     {
-        var response = await _portfolioService.CreateProjectAsync(project);
+        var response = await _mediator.Send(new CreateProjectCommand(project));
         return Ok(response);
     }
     

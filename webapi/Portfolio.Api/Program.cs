@@ -1,9 +1,11 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using PortfolioApi.Data;
-using PortfolioApi.Services;
+using PortfolioApi.Domain.Entities;
+using PortfolioApi.Infrastructure.Data;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,7 +14,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Database - Use SQLite for local, SQL Server for production
+// Database
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 var isDevelopment = builder.Environment.IsDevelopment();
 
@@ -26,6 +28,22 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     {
         options.UseSqlServer(connectionString);
     }
+});
+
+// Identity
+builder.Services.AddIdentity<AdminUser, IdentityRole<int>>(options => {
+    options.Password.RequireDigit = false;
+    options.Password.RequiredLength = 6;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireUppercase = false;
+    options.Password.RequireLowercase = false;
+})
+.AddEntityFrameworkStores<AppDbContext>()
+.AddDefaultTokenProviders();
+
+// MediatR
+builder.Services.AddMediatR(cfg => {
+    cfg.RegisterServicesFromAssembly(typeof(PortfolioApi.Application.DTOs.LoginRequest).Assembly);
 });
 
 // Authentication
@@ -50,11 +68,6 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new SymmetricSecurityKey(key)
     };
 });
-
-// Services
-builder.Services.AddScoped<AuthService>();
-builder.Services.AddScoped<PortfolioService>();
-builder.Services.AddScoped<SeedService>();
 
 // CORS
 builder.Services.AddCors(options =>
@@ -82,13 +95,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors("AllowFrontend");
 
-// Serve static files for uploads
-app.UseStaticFiles(new StaticFileOptions
-{
-    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(
-        Path.Combine(builder.Environment.ContentRootPath, "wwwroot")),
-    RequestPath = ""
-});
+app.UseStaticFiles();
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -99,20 +106,21 @@ app.MapControllers();
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AdminUser>>();
     
-    // Auto-migrate database
     dbContext.Database.EnsureCreated();
     
-    var authService = scope.ServiceProvider.GetRequiredService<AuthService>();
-    var seedService = scope.ServiceProvider.GetRequiredService<SeedService>();
     var adminUsername = builder.Configuration["Admin:Username"] ?? "Menomo";
     var adminPassword = builder.Configuration["Admin:Password"] ?? "Menomo@123";
     
-    await authService.CreateDefaultAdminAsync(adminUsername, adminPassword);
+    if (await userManager.FindByNameAsync(adminUsername) == null)
+    {
+        var admin = new AdminUser { UserName = adminUsername, Email = "admin@portfolio.com" };
+        await userManager.CreateAsync(admin, adminPassword);
+    }
+
+    var seedService = new SeedService(dbContext);
     await seedService.SeedInitialDataAsync();
 }
-
-Console.WriteLine("API running at: http://localhost:5000");
-Console.WriteLine("Swagger UI at: http://localhost:5000/swagger");
 
 app.Run();

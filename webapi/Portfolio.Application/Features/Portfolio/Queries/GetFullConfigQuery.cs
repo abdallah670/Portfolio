@@ -1,0 +1,111 @@
+using PortfolioApi.Application.Interfaces;
+using PortfolioApi.Domain.Entities;
+using System.Text.Json;
+
+namespace PortfolioApi.Application.Features.Portfolio.Queries;
+
+public record GetFullConfigQuery() : IRequest<PortfolioConfigDto>;
+
+public class GetFullConfigQueryHandler : IRequestHandler<GetFullConfigQuery, PortfolioConfigDto>
+{
+    private readonly IApplicationDbContext _context;
+
+    public GetFullConfigQueryHandler(IApplicationDbContext context)
+    {
+        _context = context;
+    }
+
+    public async Task<PortfolioConfigDto> Handle(GetFullConfigQuery request, CancellationToken cancellationToken)
+    {
+        var hero = await _context.Heroes.FirstOrDefaultAsync(cancellationToken) ?? new Hero();
+        var heroStats = await _context.HeroStats.OrderBy(s => s.DisplayOrder).ToListAsync(cancellationToken);
+        var about = await _context.Abouts.FirstOrDefaultAsync(cancellationToken) ?? new About();
+        var aboutCards = await _context.AboutCards.OrderBy(c => c.DisplayOrder).ToListAsync(cancellationToken);
+        var achievements = await _context.Achievements.OrderBy(a => a.DisplayOrder).ToListAsync(cancellationToken);
+        var values = await _context.Values.OrderBy(v => v.DisplayOrder).ToListAsync(cancellationToken);
+        
+        var skillCategories = await _context.SkillCategories
+            .Include(c => c.Skills)
+            .OrderBy(c => c.DisplayOrder)
+            .ToListAsync(cancellationToken);
+            
+        var projects = await _context.Projects.OrderByDescending(p => p.IsFeatured).ThenBy(p => p.DisplayOrder).ToListAsync(cancellationToken);
+        var journey = await _context.JourneyItems.OrderBy(j => j.DisplayOrder).ToListAsync(cancellationToken);
+        var socials = await _context.SocialLinks.ToListAsync(cancellationToken);
+        var contact = await _context.Contacts.FirstOrDefaultAsync(cancellationToken) ?? new Contact();
+
+        return new PortfolioConfigDto
+        {
+            Hero = new HeroDto
+            {
+                Name = hero.Name,
+                HeadlineTop = hero.HeadlineTop,
+                HeadlineMain = hero.HeadlineMain,
+                AvailabilityLabel = hero.AvailabilityLabel,
+                Subtitle = hero.Subtitle,
+                HeroIntro = hero.HeroIntro,
+                CtaPrimaryLabel = hero.CtaPrimaryLabel,
+                CtaPrimaryHref = hero.CtaPrimaryHref,
+                CtaSecondaryLabel = hero.CtaSecondaryLabel,
+                CtaSecondaryHref = hero.CtaSecondaryHref,
+                ProfileImage = hero.ProfileImage,
+                Stats = heroStats.Select(s => new HeroStatsDto { Label = s.Label, Value = s.Value }).ToList()
+            },
+            About = new AboutDto
+            {
+                Kicker = about.Kicker,
+                Title = about.Title,
+                Subtitle = about.Subtitle,
+                FunFact = about.FunFact,
+                Cards = aboutCards.Select(c => new AboutCardDto { Title = c.Title, Subtitle = c.Subtitle }).ToList(),
+                Achievements = achievements.Select(a => a.Text).ToList(),
+                Values = values.Select(v => new ValueDto { Title = v.Title, Description = v.Description }).ToList()
+            },
+            Skills = skillCategories.Select(c => new SkillCategoryDto
+            {
+                Title = c.Title,
+                Color = c.Color,
+                Skills = c.Skills.Select(s => new SkillDto { Name = s.Name, Level = s.Level }).ToList()
+            }).ToList(),
+            FeaturedProjects = projects.Where(p => p.IsFeatured).Select(MapProject).ToList(),
+            MoreProjects = projects.Where(p => !p.IsFeatured).Select(MapProject).ToList(),
+            Journey = journey.Select(j => new JourneyItemDto
+            {
+                Id = j.Id,
+                Title = j.Title,
+                Period = j.Period,
+                Org = j.Org,
+                Description = j.Description
+            }).ToList(),
+            Socials = socials.Select(s => new SocialLinkDto { Label = s.Label, Href = s.Href, Icon = s.Icon }).ToList(),
+            Contact = new ContactDto
+            {
+                Email = contact.Email,
+                WhatsApp = contact.WhatsApp,
+                Phone = contact.Phone,
+                Location = contact.Location
+            }
+        };
+    }
+
+    private ProjectDto MapProject(Project p)
+    {
+        return new ProjectDto
+        {
+            Id = p.Id,
+            Title = p.Title,
+            Year = p.Year,
+            Category = p.Category,
+            Description = p.Description,
+            Stack = string.IsNullOrEmpty(p.Stack) 
+                ? new List<string>() 
+                : JsonSerializer.Deserialize<List<string>>(p.Stack) ?? new List<string>(),
+            Image = p.Image,
+            LiveUrl = p.LiveUrl,
+            GithubUrl = p.GithubUrl,
+            Status = p.Status,
+            Color = p.Color,
+            IsFeatured = p.IsFeatured
+        };
+    }
+}

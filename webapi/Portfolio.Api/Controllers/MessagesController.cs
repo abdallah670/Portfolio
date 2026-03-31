@@ -1,20 +1,25 @@
-using System.ComponentModel.DataAnnotations;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using PortfolioApi.Data;
-using PortfolioApi.Models;
+using PortfolioApi.Application.DTOs;
+using PortfolioApi.Domain.Entities;
+using PortfolioApi.Application.Features.Messaging.Commands;
+using PortfolioApi.Infrastructure.Data;
+using System.ComponentModel.DataAnnotations;
 
-namespace PortfolioApi.Controllers;
+namespace PortfolioApi.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 public class MessagesController : ControllerBase
 {
+    private readonly ISender _mediator;
     private readonly AppDbContext _context;
 
-    public MessagesController(AppDbContext context)
+    public MessagesController(ISender mediator, AppDbContext context)
     {
+        _mediator = mediator;
         _context = context;
     }
 
@@ -84,20 +89,21 @@ public class MessagesController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        var message = new Message
-        {
-            Name = request.Name,
-            Email = request.Email,
-            Subject = request.Subject ?? "",
-            Content = request.Content,
-            IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString(),
-            UserAgent = Request.Headers["User-Agent"].ToString()
-        };
+        var command = new CreateMessageCommand(
+            request.Name,
+            request.Email,
+            request.Subject,
+            request.Content,
+            HttpContext.Connection.RemoteIpAddress?.ToString(),
+            Request.Headers["User-Agent"].ToString()
+        );
 
-        _context.Messages.Add(message);
-        await _context.SaveChangesAsync();
+        var result = await _mediator.Send(command);
 
-        return Ok(new { message = "Message sent successfully", id = message.Id });
+        if (!result.Success)
+            return BadRequest(result);
+
+        return Ok(result);
     }
 
     // PUT: api/messages/5/read
@@ -146,22 +152,25 @@ public class MessagesController : ControllerBase
         var count = await _context.Messages.CountAsync(m => !m.IsRead);
         return Ok(count);
     }
+    //post api/messages/{id}/respond
+    [HttpPost("{id}/respond")]
+    [Authorize]
+    public async Task<IActionResult> RespondToMessage(int id, [FromBody] RespondToMessageRequest request)
+    {
+        var message = await _context.Messages.FindAsync(id);
+
+        if (message == null)
+        {
+            return NotFound();
+        }
+
+        message.IsRead = true;
+        message.ReadAt = DateTime.UtcNow;
+
+        await _context.SaveChangesAsync();
+
+        return NoContent();
+    }
 }
 
-public class CreateMessageRequest
-{
-    [Required]
-    [MaxLength(100)]
-    public string Name { get; set; } = string.Empty;
 
-    [Required]
-    [EmailAddress]
-    [MaxLength(200)]
-    public string Email { get; set; } = string.Empty;
-
-    [MaxLength(200)]
-    public string? Subject { get; set; }
-
-    [Required]
-    public string Content { get; set; } = string.Empty;
-}

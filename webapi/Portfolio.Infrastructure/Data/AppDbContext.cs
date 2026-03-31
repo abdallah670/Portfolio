@@ -1,13 +1,15 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using PortfolioApi.Models;
+using PortfolioApi.Domain.Entities;
+using PortfolioApi.Application.Interfaces;
 
-namespace PortfolioApi.Data;
+namespace PortfolioApi.Infrastructure.Data;
 
-public class AppDbContext : DbContext
+public class AppDbContext : IdentityDbContext<AdminUser, IdentityRole<int>, int>, IApplicationDbContext
 {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
     
-    public DbSet<AdminUser> AdminUsers { get; set; }
     public DbSet<Hero> Heroes { get; set; }
     public DbSet<HeroStats> HeroStats { get; set; }
     public DbSet<About> Abouts { get; set; }

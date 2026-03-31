@@ -3,6 +3,8 @@
   <ItemGroup>
     <ProjectReference Include="..\Application\PortfolioApi.Application.csproj" />
     <ProjectReference Include="..\Domain\PortfolioApi.Domain.csproj" />
+    <ProjectReference Include="..\Portfolio.Application\PortfolioApi.Application.csproj" />
+    <ProjectReference Include="..\Portfolio.Domain\PortfolioApi.Domain.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

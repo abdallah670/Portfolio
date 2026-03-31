@@ -388,3 +388,6 @@ C:\Meno\Projects\Portfolio\webapi\obj\Debug\net9.0\refint\PortfolioApi.dll
 C:\Meno\Projects\Portfolio\webapi\obj\Debug\net9.0\PortfolioApi.pdb
 C:\Meno\Projects\Portfolio\webapi\obj\Debug\net9.0\PortfolioApi.genruntimeconfig.cache
 C:\Meno\Projects\Portfolio\webapi\obj\Debug\net9.0\ref\PortfolioApi.dll
+C:\Meno\Projects\Portfolio\webapi\Portfolio.Api\obj\Debug\net9.0\PortfolioApi.dll
+C:\Meno\Projects\Portfolio\webapi\Portfolio.Api\obj\Debug\net9.0\refint\PortfolioApi.dll
+C:\Meno\Projects\Portfolio\webapi\Portfolio.Api\obj\Debug\net9.0\PortfolioApi.pdb

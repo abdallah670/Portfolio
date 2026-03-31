@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Meno\\Projects\\Portfolio\\webapi\\PortfolioApi.csproj": {}
+    "C:\\Meno\\Projects\\Portfolio\\webapi\\Portfolio.Api\\PortfolioApi.csproj": {}
   },
   "projects": {
-    "C:\\Meno\\Projects\\Portfolio\\webapi\\PortfolioApi.csproj": {
+    "C:\\Meno\\Projects\\Portfolio\\webapi\\Portfolio.Api\\PortfolioApi.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Meno\\Projects\\Portfolio\\webapi\\PortfolioApi.csproj",
+        "projectUniqueName": "C:\\Meno\\Projects\\Portfolio\\webapi\\Portfolio.Api\\PortfolioApi.csproj",
         "projectName": "PortfolioApi",
-        "projectPath": "C:\\Meno\\Projects\\Portfolio\\webapi\\PortfolioApi.csproj",
+        "projectPath": "C:\\Meno\\Projects\\Portfolio\\webapi\\Portfolio.Api\\PortfolioApi.csproj",
         "packagesPath": "C:\\Users\\abdallh\\.nuget\\packages\\",
-        "outputPath": "C:\\Meno\\Projects\\Portfolio\\webapi\\obj\\",
+        "outputPath": "C:\\Meno\\Projects\\Portfolio\\webapi\\Portfolio.Api\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -31,7 +31,14 @@
         "frameworks": {
           "net9.0": {
             "targetAlias": "net9.0",
-            "projectReferences": {}
+            "projectReferences": {
+              "C:\\Meno\\Projects\\Portfolio\\webapi\\Portfolio.Application\\PortfolioApi.Application.csproj": {
+                "projectPath": "C:\\Meno\\Projects\\Portfolio\\webapi\\Portfolio.Application\\PortfolioApi.Application.csproj"
+              },
+              "C:\\Meno\\Projects\\Portfolio\\webapi\\Portfolio.Infrastructure\\PortfolioApi.Infrastructure.csproj": {
+                "projectPath": "C:\\Meno\\Projects\\Portfolio\\webapi\\Portfolio.Infrastructure\\PortfolioApi.Infrastructure.csproj"
+              }
+            }
           }
         },
         "warningProperties": {
@@ -54,9 +61,17 @@
               "target": "Package",
               "version": "[4.1.0, )"
             },
+            "MediatR": {
+              "target": "Package",
+              "version": "[14.1.0, )"
+            },
             "Microsoft.AspNetCore.Authentication.JwtBearer": {
               "target": "Package",
               "version": "[9.0.5, )"
+            },
+            "Microsoft.AspNetCore.Identity.UI": {
+              "target": "Package",
+              "version": "[10.0.5, )"
             },
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",
@@ -114,6 +129,274 @@
             "Microsoft.AspNetCore.App": {
               "privateAssets": "none"
             },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.103/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Meno\\Projects\\Portfolio\\webapi\\Portfolio.Application\\PortfolioApi.Application.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Meno\\Projects\\Portfolio\\webapi\\Portfolio.Application\\PortfolioApi.Application.csproj",
+        "projectName": "PortfolioApi.Application",
+        "projectPath": "C:\\Meno\\Projects\\Portfolio\\webapi\\Portfolio.Application\\PortfolioApi.Application.csproj",
+        "packagesPath": "C:\\Users\\abdallh\\.nuget\\packages\\",
+        "outputPath": "C:\\Meno\\Projects\\Portfolio\\webapi\\Portfolio.Application\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\abdallh\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {
+              "C:\\Meno\\Projects\\Portfolio\\webapi\\Portfolio.Domain\\PortfolioApi.Domain.csproj": {
+                "projectPath": "C:\\Meno\\Projects\\Portfolio\\webapi\\Portfolio.Domain\\PortfolioApi.Domain.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "10.0.100"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "FluentValidation.DependencyInjectionExtensions": {
+              "target": "Package",
+              "version": "[12.1.1, )"
+            },
+            "MediatR": {
+              "target": "Package",
+              "version": "[14.1.0, )"
+            },
+            "Microsoft.Extensions.Configuration.Abstractions": {
+              "target": "Package",
+              "version": "[10.0.5, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[9.0.13, 9.0.13]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[9.0.13, 9.0.13]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[9.0.13, 9.0.13]"
+            }
+          ],
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.103/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Meno\\Projects\\Portfolio\\webapi\\Portfolio.Domain\\PortfolioApi.Domain.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Meno\\Projects\\Portfolio\\webapi\\Portfolio.Domain\\PortfolioApi.Domain.csproj",
+        "projectName": "PortfolioApi.Domain",
+        "projectPath": "C:\\Meno\\Projects\\Portfolio\\webapi\\Portfolio.Domain\\PortfolioApi.Domain.csproj",
+        "packagesPath": "C:\\Users\\abdallh\\.nuget\\packages\\",
+        "outputPath": "C:\\Meno\\Projects\\Portfolio\\webapi\\Portfolio.Domain\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\abdallh\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "10.0.100"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "Microsoft.Extensions.Identity.Stores": {
+              "target": "Package",
+              "version": "[10.0.5, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[9.0.13, 9.0.13]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[9.0.13, 9.0.13]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[9.0.13, 9.0.13]"
+            }
+          ],
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.103/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Meno\\Projects\\Portfolio\\webapi\\Portfolio.Infrastructure\\PortfolioApi.Infrastructure.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Meno\\Projects\\Portfolio\\webapi\\Portfolio.Infrastructure\\PortfolioApi.Infrastructure.csproj",
+        "projectName": "PortfolioApi.Infrastructure",
+        "projectPath": "C:\\Meno\\Projects\\Portfolio\\webapi\\Portfolio.Infrastructure\\PortfolioApi.Infrastructure.csproj",
+        "packagesPath": "C:\\Users\\abdallh\\.nuget\\packages\\",
+        "outputPath": "C:\\Meno\\Projects\\Portfolio\\webapi\\Portfolio.Infrastructure\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\abdallh\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {
+              "C:\\Meno\\Projects\\Portfolio\\webapi\\Portfolio.Application\\PortfolioApi.Application.csproj": {
+                "projectPath": "C:\\Meno\\Projects\\Portfolio\\webapi\\Portfolio.Application\\PortfolioApi.Application.csproj"
+              },
+              "C:\\Meno\\Projects\\Portfolio\\webapi\\Portfolio.Domain\\PortfolioApi.Domain.csproj": {
+                "projectPath": "C:\\Meno\\Projects\\Portfolio\\webapi\\Portfolio.Domain\\PortfolioApi.Domain.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "10.0.100"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[9.0.13, 9.0.13]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[9.0.13, 9.0.13]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[9.0.13, 9.0.13]"
+            }
+          ],
+          "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }

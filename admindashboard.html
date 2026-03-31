@@ -1,0 +1,1177 @@
+<div
+  class="export-wrapper"
+  style="
+    width: 1440px;
+    min-height: 812px;
+    position: relative;
+    font-family: var(--font-family-body);
+    background-color: var(--background);
+  "
+>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@100;200;300;400;500;600;700;800;900&family=Geist:wght@100;200;300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@100;200;300;400;500;600;700&family=IBM+Plex+Sans:wght@100;200;300;400;500;600;700&family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Nunito:wght@200;300;400;500;600;700;800;900&family=PT+Serif:wght@400;700&family=Roboto+Slab:wght@100;200;300;400;500;600;700;800;900&family=Roboto:wght@100;300;400;500;700;900&family=Shantell+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <html>
+    <head>
+      <style id="reset-and-base">
+        * {
+          box-sizing: border-box;
+          margin: 0;
+          padding: 0;
+        }
+        .export-wrapper {
+          font-family: var(
+            --font-family-body,
+            system-ui,
+            -apple-system,
+            sans-serif
+          );
+          background: var(--background);
+          color: var(--foreground);
+          font-size: 14px;
+          -webkit-font-smoothing: antialiased;
+        }
+        a {
+          text-decoration: none;
+          color: inherit;
+        }
+        ul {
+          list-style: none;
+        }
+      </style>
+
+      <style id="layout-styles">
+        .app-container {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          display: flex;
+          background: var(--background);
+          overflow: hidden;
+        }
+        .sidebar {
+          width: 260px;
+          background: var(--sidebar);
+          border-right: 1px solid var(--border);
+          display: flex;
+          flex-direction: column;
+          z-index: 10;
+        }
+        .main-wrapper {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          min-width: 0;
+        }
+        .topbar {
+          height: 64px;
+          border-bottom: 1px solid var(--border);
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 0 32px;
+          background: var(--background);
+          flex-shrink: 0;
+        }
+        .content-area {
+          flex: 1;
+          overflow-y: auto;
+          padding: 32px;
+          display: flex;
+          flex-direction: column;
+          gap: 32px;
+        }
+      </style>
+
+      <style id="sidebar-styles">
+        .brand {
+          height: 64px;
+          display: flex;
+          align-items: center;
+          padding: 0 24px;
+          border-bottom: 1px solid var(--border);
+          font-size: 16px;
+          font-weight: 600;
+          color: var(--sidebar-foreground);
+          gap: 8px;
+        }
+        .nav-menu {
+          padding: 24px 16px;
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+          flex: 1;
+        }
+        .nav-group-title {
+          font-size: 12px;
+          font-weight: 600;
+          color: var(--muted-foreground);
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          padding: 12px 12px 8px 12px;
+        }
+        .nav-item {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 10px 12px;
+          border-radius: var(--radius-md);
+          color: var(--sidebar-foreground);
+          font-weight: 500;
+          cursor: pointer;
+        }
+        .nav-item.active {
+          background: var(--sidebar-primary);
+          color: var(--sidebar-primary-foreground);
+        }
+        .nav-item-badge {
+          margin-left: auto;
+          background: var(--primary);
+          color: var(--primary-foreground);
+          font-size: 11px;
+          padding: 2px 8px;
+          border-radius: var(--radius-xl);
+          font-weight: 600;
+        }
+        .user-profile-widget {
+          padding: 16px;
+          border-top: 1px solid var(--border);
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+        .user-avatar {
+          width: 36px;
+          height: 36px;
+          border-radius: 50%;
+          object-fit: cover;
+          border: 1px solid var(--border);
+        }
+        .user-info {
+          display: flex;
+          flex-direction: column;
+          flex: 1;
+          overflow: hidden;
+        }
+        .user-name {
+          font-weight: 600;
+          font-size: 14px;
+          color: var(--sidebar-foreground);
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        .user-role {
+          font-size: 12px;
+          color: var(--muted-foreground);
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      </style>
+
+      <style id="topbar-styles">
+        .topbar-search {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          background: var(--input);
+          border: 1px solid var(--border);
+          border-radius: var(--radius-md);
+          padding: 8px 16px;
+          width: 320px;
+        }
+        .topbar-search input {
+          border: none;
+          background: transparent;
+          outline: none;
+          width: 100%;
+          color: var(--foreground);
+          font-family: inherit;
+          font-size: 14px;
+        }
+        .topbar-search input::placeholder {
+          color: var(--muted-foreground);
+        }
+        .topbar-actions {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+        }
+        .action-btn {
+          width: 36px;
+          height: 36px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: var(--radius-md);
+          border: 1px solid var(--border);
+          background: var(--background);
+          color: var(--muted-foreground);
+          cursor: pointer;
+        }
+        .primary-btn {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          background: var(--primary);
+          color: var(--primary-foreground);
+          border: none;
+          padding: 8px 16px;
+          border-radius: var(--radius-md);
+          font-size: 14px;
+          font-weight: 500;
+          cursor: pointer;
+        }
+      </style>
+
+      <style id="dashboard-cards">
+        .stats-grid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 24px;
+        }
+        .stat-card {
+          background: var(--card);
+          border: 1px solid var(--border);
+          border-radius: var(--radius-lg);
+          padding: 24px;
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+        .stat-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          color: var(--muted-foreground);
+          font-weight: 500;
+        }
+        .stat-value {
+          font-size: 28px;
+          font-weight: 700;
+          color: var(--card-foreground);
+        }
+        .stat-trend {
+          font-size: 12px;
+          font-weight: 500;
+          display: flex;
+          align-items: center;
+          gap: 4px;
+        }
+        .trend-up {
+          color: var(--success);
+        }
+        .trend-neutral {
+          color: var(--muted-foreground);
+        }
+      </style>
+
+      <style id="dashboard-tables-and-lists">
+        .content-grid {
+          display: grid;
+          grid-template-columns: 2fr 1fr;
+          gap: 24px;
+        }
+        .panel {
+          background: var(--card);
+          border: 1px solid var(--border);
+          border-radius: var(--radius-lg);
+          display: flex;
+          flex-direction: column;
+        }
+        .panel-header {
+          padding: 20px 24px;
+          border-bottom: 1px solid var(--border);
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+        .panel-title {
+          font-size: 16px;
+          font-weight: 600;
+          color: var(--card-foreground);
+        }
+        .panel-subtitle {
+          font-size: 13px;
+          color: var(--muted-foreground);
+          margin-top: 4px;
+        }
+
+        /* Table Styles */
+        .data-table {
+          width: 100%;
+          border-collapse: collapse;
+        }
+        .data-table th {
+          text-align: left;
+          padding: 16px 24px;
+          font-size: 12px;
+          font-weight: 600;
+          color: var(--muted-foreground);
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          border-bottom: 1px solid var(--border);
+          background: var(--muted);
+        }
+        .data-table td {
+          padding: 16px 24px;
+          border-bottom: 1px solid var(--border);
+          vertical-align: middle;
+          font-size: 14px;
+          color: var(--card-foreground);
+        }
+        .data-table tr:last-child td {
+          border-bottom: none;
+        }
+        .project-name-cell {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+        .project-icon {
+          width: 40px;
+          height: 40px;
+          border-radius: var(--radius-md);
+          background: var(--secondary);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: var(--secondary-foreground);
+          flex-shrink: 0;
+        }
+        .project-details {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+        }
+        .project-title {
+          font-weight: 500;
+          color: var(--foreground);
+        }
+        .project-desc {
+          font-size: 12px;
+          color: var(--muted-foreground);
+        }
+        .badge-container {
+          display: flex;
+          gap: 6px;
+          flex-wrap: wrap;
+        }
+        .tech-badge {
+          background: var(--secondary);
+          color: var(--secondary-foreground);
+          padding: 4px 8px;
+          border-radius: var(--radius-sm);
+          font-size: 12px;
+          font-weight: 500;
+          white-space: nowrap;
+        }
+        .status-pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 4px 10px;
+          border-radius: var(--radius-xl);
+          font-size: 12px;
+          font-weight: 500;
+        }
+        .status-published {
+          background: var(--success);
+          color: var(--success-foreground);
+        }
+        .status-draft {
+          background: var(--warning);
+          color: var(--warning-foreground);
+        }
+
+        /* List Styles (Activity/Messages) */
+        .message-list {
+          display: flex;
+          flex-direction: column;
+        }
+        .message-item {
+          padding: 16px 24px;
+          border-bottom: 1px solid var(--border);
+          display: flex;
+          gap: 16px;
+        }
+        .message-item:last-child {
+          border-bottom: none;
+        }
+        .message-avatar {
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          background: var(--muted);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: var(--muted-foreground);
+          font-weight: 600;
+          font-size: 12px;
+          flex-shrink: 0;
+        }
+        .message-content {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+          overflow: hidden;
+        }
+        .message-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+        .message-sender {
+          font-weight: 500;
+          color: var(--foreground);
+          font-size: 14px;
+        }
+        .message-time {
+          font-size: 12px;
+          color: var(--muted-foreground);
+        }
+        .message-preview {
+          font-size: 13px;
+          color: var(--muted-foreground);
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="app-container">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+          <div class="brand" data-media-type="banani-button">
+            <div
+              style="
+                width: 24px;
+                height: 24px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              "
+            >
+              <iconify-icon
+                icon="lucide:code-2"
+                style="font-size: 24px; color: var(--primary)"
+              ></iconify-icon>
+            </div>
+            <span>Alex<span style="color: var(--primary)">.dev</span> OS</span>
+          </div>
+
+          <div class="nav-menu">
+            <div class="nav-group-title">Overview</div>
+            <div class="nav-item active" data-media-type="banani-button">
+              <div
+                style="
+                  width: 18px;
+                  height: 18px;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                "
+              >
+                <iconify-icon
+                  icon="lucide:layout-dashboard"
+                  style="font-size: 18px"
+                ></iconify-icon>
+              </div>
+              Dashboard
+            </div>
+            <div class="nav-item" data-media-type="banani-button">
+              <div
+                style="
+                  width: 18px;
+                  height: 18px;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                "
+              >
+                <iconify-icon
+                  icon="lucide:activity"
+                  style="font-size: 18px"
+                ></iconify-icon>
+              </div>
+              Analytics
+            </div>
+
+            <div class="nav-group-title" style="margin-top: 16px">Content</div>
+            <div class="nav-item" data-media-type="banani-button">
+              <div
+                style="
+                  width: 18px;
+                  height: 18px;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                "
+              >
+                <iconify-icon
+                  icon="lucide:folder-git-2"
+                  style="font-size: 18px"
+                ></iconify-icon>
+              </div>
+              Projects
+            </div>
+            <div class="nav-item" data-media-type="banani-button">
+              <div
+                style="
+                  width: 18px;
+                  height: 18px;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                "
+              >
+                <iconify-icon
+                  icon="lucide:wrench"
+                  style="font-size: 18px"
+                ></iconify-icon>
+              </div>
+              Skills &amp; Tools
+            </div>
+            <div class="nav-item" data-media-type="banani-button">
+              <div
+                style="
+                  width: 18px;
+                  height: 18px;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                "
+              >
+                <iconify-icon
+                  icon="lucide:inbox"
+                  style="font-size: 18px"
+                ></iconify-icon>
+              </div>
+              Messages
+              <span class="nav-item-badge">5</span>
+            </div>
+
+            <div class="nav-group-title" style="margin-top: 16px">System</div>
+            <div class="nav-item" data-media-type="banani-button">
+              <div
+                style="
+                  width: 18px;
+                  height: 18px;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                "
+              >
+                <iconify-icon
+                  icon="lucide:settings"
+                  style="font-size: 18px"
+                ></iconify-icon>
+              </div>
+              Settings
+            </div>
+          </div>
+
+          <div class="user-profile-widget" data-media-type="banani-button">
+            <img
+              src="https://storage.googleapis.com/banani-avatars/avatar%2Fmale%2F25-35%2FEuropean%2F3"
+              class="user-avatar"
+              alt="Alex Mercer"
+            />
+            <div class="user-info">
+              <span class="user-name">Alex Mercer</span>
+              <span class="user-role">Senior .NET Developer</span>
+            </div>
+            <div
+              style="
+                width: 16px;
+                height: 16px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              "
+            >
+              <iconify-icon
+                icon="lucide:chevrons-up-down"
+                style="font-size: 16px; color: var(--muted-foreground)"
+              ></iconify-icon>
+            </div>
+          </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-wrapper">
+          <!-- TOPBAR -->
+          <header class="topbar">
+            <div class="topbar-search">
+              <div
+                style="
+                  width: 18px;
+                  height: 18px;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                "
+              >
+                <iconify-icon
+                  icon="lucide:search"
+                  style="font-size: 18px; color: var(--muted-foreground)"
+                ></iconify-icon>
+              </div>
+              <input
+                type="text"
+                placeholder="Search projects, skills, messages..."
+              />
+            </div>
+
+            <div class="topbar-actions">
+              <div class="action-btn" data-media-type="banani-button">
+                <iconify-icon
+                  icon="lucide:sun-moon"
+                  style="font-size: 18px"
+                ></iconify-icon>
+              </div>
+              <div
+                class="action-btn"
+                data-media-type="banani-button"
+                style="position: relative"
+              >
+                <iconify-icon
+                  icon="lucide:bell"
+                  style="font-size: 18px"
+                ></iconify-icon>
+                <div
+                  style="
+                    position: absolute;
+                    top: 8px;
+                    right: 8px;
+                    width: 6px;
+                    height: 6px;
+                    border-radius: 50%;
+                    background: var(--primary);
+                  "
+                ></div>
+              </div>
+              <div class="primary-btn" data-media-type="banani-button">
+                <iconify-icon
+                  icon="lucide:plus"
+                  style="font-size: 16px"
+                ></iconify-icon>
+                New Project
+              </div>
+            </div>
+          </header>
+
+          <!-- CONTENT AREA -->
+          <div class="content-area">
+            <!-- PAGE HEADER -->
+            <div>
+              <h1
+                style="
+                  font-size: 24px;
+                  font-weight: 700;
+                  color: var(--foreground);
+                  margin-bottom: 8px;
+                "
+              >
+                Dashboard Overview
+              </h1>
+              <p style="color: var(--muted-foreground)">
+                Welcome back, Alex. Here is what's happening with your portfolio
+                today.
+              </p>
+            </div>
+
+            <!-- STATS GRID -->
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-header">
+                  <span>Total Projects</span>
+                  <iconify-icon
+                    icon="lucide:layers"
+                    style="font-size: 18px"
+                  ></iconify-icon>
+                </div>
+                <div class="stat-value">14</div>
+                <div class="stat-trend trend-neutral">
+                  <span>3 currently in draft</span>
+                </div>
+              </div>
+
+              <div class="stat-card">
+                <div class="stat-header">
+                  <span>Profile Views</span>
+                  <iconify-icon
+                    icon="lucide:eye"
+                    style="font-size: 18px"
+                  ></iconify-icon>
+                </div>
+                <div class="stat-value">12,450</div>
+                <div class="stat-trend trend-up">
+                  <iconify-icon
+                    icon="lucide:trending-up"
+                    style="font-size: 14px"
+                  ></iconify-icon>
+                  <span>+14.5% from last month</span>
+                </div>
+              </div>
+
+              <div class="stat-card">
+                <div class="stat-header">
+                  <span>Unread Messages</span>
+                  <iconify-icon
+                    icon="lucide:mail"
+                    style="font-size: 18px"
+                  ></iconify-icon>
+                </div>
+                <div class="stat-value">5</div>
+                <div class="stat-trend trend-up">
+                  <iconify-icon
+                    icon="lucide:arrow-up-right"
+                    style="font-size: 14px"
+                  ></iconify-icon>
+                  <span>2 new since yesterday</span>
+                </div>
+              </div>
+
+              <div class="stat-card">
+                <div class="stat-header">
+                  <span>Active Tech Stack</span>
+                  <iconify-icon
+                    icon="lucide:cpu"
+                    style="font-size: 18px"
+                  ></iconify-icon>
+                </div>
+                <div class="stat-value">8</div>
+                <div class="stat-trend trend-neutral">
+                  <span>Core technologies configured</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- TWO COLUMN LAYOUT -->
+            <div class="content-grid">
+              <!-- PROJECTS TABLE -->
+              <div class="panel">
+                <div class="panel-header">
+                  <div>
+                    <h2 class="panel-title">Recent Projects</h2>
+                    <p class="panel-subtitle">
+                      Manage and update your portfolio items.
+                    </p>
+                  </div>
+                  <div class="action-btn" data-media-type="banani-button">
+                    <iconify-icon
+                      icon="lucide:more-horizontal"
+                      style="font-size: 18px"
+                    ></iconify-icon>
+                  </div>
+                </div>
+
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Project</th>
+                      <th>Tech Stack</th>
+                      <th>Status</th>
+                      <th style="text-align: right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <div class="project-name-cell">
+                          <div class="project-icon">
+                            <iconify-icon
+                              icon="lucide:shopping-cart"
+                              style="font-size: 20px"
+                            ></iconify-icon>
+                          </div>
+                          <div class="project-details">
+                            <span class="project-title"
+                              >Enterprise E-Commerce Platform</span
+                            >
+                            <span class="project-desc"
+                              >Microservices architecture for B2B.</span
+                            >
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="badge-container">
+                          <span class="tech-badge">.NET 8</span>
+                          <span class="tech-badge">Angular 17</span>
+                          <span class="tech-badge">Redis</span>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="status-pill status-published">
+                          <div
+                            style="
+                              width: 6px;
+                              height: 6px;
+                              border-radius: 50%;
+                              background: currentColor;
+                            "
+                          ></div>
+                          Published
+                        </div>
+                      </td>
+                      <td style="text-align: right">
+                        <div style="display: inline-flex; gap: 8px">
+                          <div
+                            class="action-btn"
+                            style="width: 32px; height: 32px"
+                            data-media-type="banani-button"
+                          >
+                            <iconify-icon
+                              icon="lucide:pencil"
+                              style="font-size: 14px"
+                            ></iconify-icon>
+                          </div>
+                          <div
+                            class="action-btn"
+                            style="width: 32px; height: 32px"
+                            data-media-type="banani-button"
+                          >
+                            <iconify-icon
+                              icon="lucide:external-link"
+                              style="font-size: 14px"
+                            ></iconify-icon>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td>
+                        <div class="project-name-cell">
+                          <div class="project-icon">
+                            <iconify-icon
+                              icon="lucide:layout-template"
+                              style="font-size: 20px"
+                            ></iconify-icon>
+                          </div>
+                          <div class="project-details">
+                            <span class="project-title"
+                              >SaaS Dashboard UI Kit</span
+                            >
+                            <span class="project-desc"
+                              >A component library for internal tools.</span
+                            >
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="badge-container">
+                          <span class="tech-badge">React</span>
+                          <span class="tech-badge">Tailwind</span>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="status-pill status-published">
+                          <div
+                            style="
+                              width: 6px;
+                              height: 6px;
+                              border-radius: 50%;
+                              background: currentColor;
+                            "
+                          ></div>
+                          Published
+                        </div>
+                      </td>
+                      <td style="text-align: right">
+                        <div style="display: inline-flex; gap: 8px">
+                          <div
+                            class="action-btn"
+                            style="width: 32px; height: 32px"
+                            data-media-type="banani-button"
+                          >
+                            <iconify-icon
+                              icon="lucide:pencil"
+                              style="font-size: 14px"
+                            ></iconify-icon>
+                          </div>
+                          <div
+                            class="action-btn"
+                            style="width: 32px; height: 32px"
+                            data-media-type="banani-button"
+                          >
+                            <iconify-icon
+                              icon="lucide:external-link"
+                              style="font-size: 14px"
+                            ></iconify-icon>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td>
+                        <div class="project-name-cell">
+                          <div class="project-icon">
+                            <iconify-icon
+                              icon="lucide:smartphone"
+                              style="font-size: 20px"
+                            ></iconify-icon>
+                          </div>
+                          <div class="project-details">
+                            <span class="project-title"
+                              >HealthTrack Mobile API</span
+                            >
+                            <span class="project-desc"
+                              >RESTful API for a fitness tracking app.</span
+                            >
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="badge-container">
+                          <span class="tech-badge">ASP.NET Core</span>
+                          <span class="tech-badge">SQL Server</span>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="status-pill status-draft">
+                          <div
+                            style="
+                              width: 6px;
+                              height: 6px;
+                              border-radius: 50%;
+                              background: currentColor;
+                            "
+                          ></div>
+                          Draft
+                        </div>
+                      </td>
+                      <td style="text-align: right">
+                        <div style="display: inline-flex; gap: 8px">
+                          <div
+                            class="action-btn"
+                            style="width: 32px; height: 32px"
+                            data-media-type="banani-button"
+                          >
+                            <iconify-icon
+                              icon="lucide:pencil"
+                              style="font-size: 14px"
+                            ></iconify-icon>
+                          </div>
+                          <div
+                            class="action-btn"
+                            style="width: 32px; height: 32px"
+                            data-media-type="banani-button"
+                          >
+                            <iconify-icon
+                              icon="lucide:external-link"
+                              style="font-size: 14px"
+                            ></iconify-icon>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <div
+                  style="
+                    padding: 16px 24px;
+                    border-top: 1px solid var(--border);
+                    text-align: center;
+                  "
+                >
+                  <span
+                    style="
+                      font-size: 13px;
+                      font-weight: 500;
+                      color: var(--primary);
+                      cursor: pointer;
+                    "
+                    data-media-type="banani-button"
+                    >View All Projects →</span
+                  >
+                </div>
+              </div>
+
+              <!-- MESSAGES & ACTIVITY -->
+              <div class="panel">
+                <div class="panel-header">
+                  <div>
+                    <h2 class="panel-title">Recent Inquiries</h2>
+                    <p class="panel-subtitle">
+                      From your portfolio contact form.
+                    </p>
+                  </div>
+                </div>
+
+                <div class="message-list">
+                  <div
+                    class="message-item"
+                    data-media-type="banani-button"
+                    style="cursor: pointer"
+                  >
+                    <div class="message-avatar">SJ</div>
+                    <div class="message-content">
+                      <div class="message-header">
+                        <span class="message-sender">Sarah Jenkins</span>
+                        <span class="message-time">2h ago</span>
+                      </div>
+                      <span
+                        class="message-preview"
+                        style="color: var(--foreground); font-weight: 500"
+                        >Freelance opportunity for Q3</span
+                      >
+                      <span class="message-preview"
+                        >Hi Alex, we are looking for a senior .NET dev...</span
+                      >
+                    </div>
+                  </div>
+
+                  <div
+                    class="message-item"
+                    data-media-type="banani-button"
+                    style="cursor: pointer"
+                  >
+                    <div class="message-avatar">MR</div>
+                    <div class="message-content">
+                      <div class="message-header">
+                        <span class="message-sender">Mark Roberts</span>
+                        <span class="message-time">Yesterday</span>
+                      </div>
+                      <span class="message-preview"
+                        >Question about your E-Commerce repo</span
+                      >
+                      <span class="message-preview"
+                        >I saw your recent project and was wondering how you
+                        handled...</span
+                      >
+                    </div>
+                  </div>
+
+                  <div
+                    class="message-item"
+                    data-media-type="banani-button"
+                    style="cursor: pointer"
+                  >
+                    <div class="message-avatar">EL</div>
+                    <div class="message-content">
+                      <div class="message-header">
+                        <span class="message-sender">Emma Lewis</span>
+                        <span class="message-time">Oct 12</span>
+                      </div>
+                      <span class="message-preview"
+                        >Tech Lead Position at TechFlow</span
+                      >
+                      <span class="message-preview"
+                        >Are you currently open to full-time roles? We have an
+                        opening...</span
+                      >
+                    </div>
+                  </div>
+
+                  <div
+                    class="message-item"
+                    data-media-type="banani-button"
+                    style="cursor: pointer"
+                  >
+                    <div
+                      style="
+                        width: 32px;
+                        height: 32px;
+                        border-radius: 50%;
+                        background: var(--secondary);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        color: var(--secondary-foreground);
+                        flex-shrink: 0;
+                      "
+                    >
+                      <iconify-icon
+                        icon="lucide:briefcase"
+                        style="font-size: 14px"
+                      ></iconify-icon>
+                    </div>
+                    <div class="message-content">
+                      <div class="message-header">
+                        <span class="message-sender">Recruiter Bot</span>
+                        <span class="message-time">Oct 10</span>
+                      </div>
+                      <span class="message-preview"
+                        >Automated Profile Match</span
+                      >
+                      <span class="message-preview"
+                        >Your profile was viewed by 3 recruiters today.</span
+                      >
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  style="
+                    padding: 16px 24px;
+                    border-top: 1px solid var(--border);
+                    text-align: center;
+                    margin-top: auto;
+                  "
+                >
+                  <span
+                    style="
+                      font-size: 13px;
+                      font-weight: 500;
+                      color: var(--primary);
+                      cursor: pointer;
+                    "
+                    data-media-type="banani-button"
+                    >Open Inbox</span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </body>
+  </html>
+  <script src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js"></script>
+  <style>
+    :root {
+      --background: #fbfdff;
+      --foreground: #0f1724;
+      --border: #00000014;
+      --input: #ffffff;
+      --primary: #0b6ff0;
+      --primary-foreground: #ffffff;
+      --secondary: #f0f6ff;
+      --secondary-foreground: #08306b;
+      --muted: #f5f7fa;
+      --muted-foreground: #8b95a6;
+      --success: #12b76a;
+      --success-foreground: #05220f;
+      --accent: #e6f2ff;
+      --accent-foreground: #05408a;
+      --destructive: #f04438;
+      --destructive-foreground: #ffffff;
+      --warning: #f59e0b;
+      --warning-foreground: #312200;
+      --card: #ffffff;
+      --card-foreground: #0f1724;
+      --sidebar: #f8fafc;
+      --sidebar-foreground: #0b1a2a;
+      --sidebar-primary: #0b6ff0;
+      --sidebar-primary-foreground: #ffffff;
+      --radius-sm: 4px;
+      --radius-md: 6px;
+      --radius-lg: 8px;
+      --radius-xl: 12px;
+      --font-family-body: Inter;
+    }
+  </style>
+</div>

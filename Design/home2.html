@@ -1,0 +1,1255 @@
+<div
+  class="export-wrapper"
+  style="
+    width: 1440px;
+    min-height: 812px;
+    position: relative;
+    font-family: var(--font-family-body);
+    background-color: var(--background);
+  "
+>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@100;200;300;400;500;600;700;800;900&family=Geist:wght@100;200;300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@100;200;300;400;500;600;700&family=IBM+Plex+Sans:wght@100;200;300;400;500;600;700&family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Nunito:wght@200;300;400;500;600;700;800;900&family=PT+Serif:wght@400;700&family=Roboto+Slab:wght@100;200;300;400;500;600;700;800;900&family=Roboto:wght@100;300;400;500;700;900&family=Shantell+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <html>
+    <head></head>
+    <body>
+      <div
+        id="portfolio-app"
+        style="
+          background: var(--background);
+          color: var(--foreground);
+          min-height: 100vh;
+          display: flex;
+          flex-direction: column;
+          overflow-x: hidden;
+        "
+      >
+        <style id="global-reset">
+          * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+          }
+          .export-wrapper {
+            background: var(--background);
+            color: var(--foreground);
+            font-size: 16px;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+          }
+          a {
+            text-decoration: none;
+            color: inherit;
+          }
+          .container {
+            width: 100%;
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 0 64px;
+          }
+          .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 32px;
+            height: 48px;
+            border-radius: var(--radius-md);
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: none;
+            cursor: pointer;
+            white-space: nowrap;
+          }
+          .btn-primary {
+            background: var(--primary);
+            color: var(--primary-foreground);
+          }
+          .btn-secondary {
+            background: var(--secondary);
+            color: var(--secondary-foreground);
+            border: 1px solid var(--border);
+          }
+          .highlight-text {
+            color: var(--primary);
+          }
+        </style>
+
+        <style id="navbar-styles">
+          .navbar-wrapper {
+            border-bottom: 1px solid var(--border);
+            background: var(--background);
+          }
+          .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 80px;
+          }
+          .navbar-logo {
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: var(--foreground);
+          }
+          .navbar-links {
+            display: flex;
+            gap: 40px;
+            align-items: center;
+          }
+          .nav-link {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--muted-foreground);
+          }
+          .nav-link.active {
+            color: var(--primary);
+          }
+        </style>
+
+        <header id="navbar-component" class="navbar-wrapper">
+          <div class="container">
+            <nav class="navbar">
+              <div class="navbar-logo" data-media-type="banani-button">
+                Abdullah.dev
+              </div>
+              <div class="navbar-links">
+                <a
+                  href="#"
+                  class="nav-link active"
+                  data-media-type="banani-button"
+                  >Home</a
+                >
+                <a href="#" class="nav-link" data-media-type="banani-button"
+                  >Projects</a
+                >
+                <a href="#" class="nav-link" data-media-type="banani-button"
+                  >About</a
+                >
+                <a href="#" class="nav-link" data-media-type="banani-button"
+                  >Contact</a
+                >
+              </div>
+              <button
+                class="btn btn-primary"
+                style="height: 36px; padding: 0 24px; font-size: 12px"
+                data-media-type="banani-button"
+              >
+                Admin
+              </button>
+            </nav>
+          </div>
+        </header>
+
+        <style id="hero-styles">
+          .hero-section {
+            padding: 120px 0;
+            position: relative;
+          }
+          .hero-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 64px;
+            align-items: center;
+          }
+          .hero-content {
+            flex: 1;
+            min-width: 500px;
+          }
+          .hero-kicker {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 24px;
+            display: block;
+          }
+          .hero-title {
+            font-size: 96px;
+            font-weight: 800;
+            line-height: 1.05;
+            letter-spacing: -3px;
+            margin-bottom: 32px;
+            color: var(--foreground);
+          }
+          .hero-desc {
+            font-size: 20px;
+            line-height: 1.6;
+            color: var(--muted-foreground);
+            max-width: 600px;
+            margin-bottom: 48px;
+            font-weight: 400;
+          }
+          .hero-actions {
+            display: flex;
+            gap: 16px;
+          }
+          .hero-visual {
+            flex: 1;
+            min-width: 500px;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            overflow: hidden;
+            background: var(--card);
+            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.4);
+          }
+          .hero-visual img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            opacity: 0.9;
+          }
+        </style>
+
+        <section id="hero-component" class="hero-section">
+          <div class="container hero-grid">
+            <div class="hero-content">
+              <span class="hero-kicker">Full-Stack .NET Developer</span>
+              <h1 class="hero-title">
+                Building<br /><span class="highlight-text">Scalable</span
+                ><br />Solutions for<br />the Web.
+              </h1>
+              <p class="hero-desc">
+                Backend-focused .NET developer specializing in building scalable
+                systems using C#, SQL Server, and clean architecture. Passionate
+                about system design and writing maintainable code.
+              </p>
+              <div class="hero-actions">
+                <button class="btn btn-primary" data-media-type="banani-button">
+                  View My Work
+                </button>
+                <button
+                  class="btn btn-secondary"
+                  data-media-type="banani-button"
+                >
+                  Let's Talk
+                </button>
+              </div>
+            </div>
+            <div class="hero-visual">
+              <img
+                data-aspect-ratio="4:3"
+                data-query="dark mode code editor snippet backend C# Visual Studio abstract UI"
+                alt="Code snippet preview"
+                src="https://storage.googleapis.com/banani-generated-images/generated-images/efb2615d-f446-47a1-90d2-53d75a224b91.jpg"
+              />
+            </div>
+          </div>
+        </section>
+
+        <style id="skills-styles">
+          .about-section {
+            padding: 8px 0 112px 0;
+          }
+          .about-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+            gap: 32px;
+            align-items: stretch;
+          }
+          .about-main,
+          .about-side,
+          .skill-category-card {
+            background: linear-gradient(
+              180deg,
+              rgba(255, 255, 255, 0.02) 0%,
+              rgba(255, 255, 255, 0.01) 100%
+            );
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+          }
+          .about-main {
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+          }
+          .about-kicker,
+          .skills-kicker {
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 1.8px;
+            display: block;
+            margin-bottom: 16px;
+          }
+          .about-title,
+          .skills-title {
+            font-size: 44px;
+            line-height: 1.1;
+            font-weight: 800;
+            letter-spacing: -1.6px;
+            color: var(--foreground);
+          }
+          .about-subtitle,
+          .skills-subtitle {
+            font-size: 18px;
+            line-height: 1.7;
+            color: var(--muted-foreground);
+            max-width: 640px;
+          }
+          .about-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+          }
+          .about-card {
+            padding: 20px;
+            border-radius: var(--radius-md);
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border);
+          }
+          .about-card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--foreground);
+            margin-bottom: 8px;
+          }
+          .about-card-subtitle {
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--muted-foreground);
+          }
+          .about-foot {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 20px;
+            align-items: center;
+            padding-top: 8px;
+          }
+          .fun-fact {
+            font-size: 15px;
+            line-height: 1.7;
+            color: var(--foreground);
+          }
+          .fun-fact-label {
+            color: var(--primary);
+            font-weight: 700;
+          }
+          .about-side {
+            padding: 32px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+          }
+          .side-block-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--foreground);
+            margin-bottom: 14px;
+          }
+          .achievement-list,
+          .values-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+          }
+          .achievement-item,
+          .value-item {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+          }
+          .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 999px;
+            background: var(--primary);
+            margin-top: 8px;
+            flex: 0 0 auto;
+            box-shadow: 0 0 20px rgba(57, 198, 255, 0.25);
+          }
+          .achievement-text,
+          .value-text {
+            font-size: 14px;
+            line-height: 1.7;
+            color: var(--muted-foreground);
+          }
+          .value-text strong {
+            color: var(--foreground);
+            display: block;
+            margin-bottom: 4px;
+            font-size: 15px;
+          }
+          .skills-section {
+            padding: 0 0 160px 0;
+          }
+          .skills-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 24px;
+            margin-bottom: 56px;
+          }
+          .skills-summary {
+            max-width: 520px;
+            font-size: 16px;
+            line-height: 1.7;
+            color: var(--muted-foreground);
+          }
+          .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 24px;
+          }
+          .skill-category-card {
+            padding: 28px;
+          }
+          .skill-category-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 20px;
+          }
+          .skill-category-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--foreground);
+          }
+          .skill-accent {
+            width: 12px;
+            height: 12px;
+            border-radius: 999px;
+            flex: 0 0 auto;
+          }
+          .skill-accent.emerald {
+            background: var(--success);
+          }
+          .skill-accent.cyan {
+            background: var(--primary);
+          }
+          .skill-accent.purple {
+            background: var(--accent);
+          }
+          .skill-accent.blue {
+            background: var(--secondary-foreground);
+          }
+          .skill-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+          }
+          .skill-row {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 12px;
+            align-items: center;
+          }
+          .skill-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--foreground);
+            white-space: nowrap;
+          }
+          .skill-bar {
+            height: 8px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.06);
+            overflow: hidden;
+          }
+          .skill-fill {
+            height: 100%;
+            border-radius: 999px;
+            background: linear-gradient(
+              90deg,
+              var(--primary) 0%,
+              var(--secondary-foreground) 100%
+            );
+          }
+          .skill-level {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--muted-foreground);
+            min-width: 36px;
+            text-align: right;
+          }
+          @media-like-not-used {
+          }
+          .about-grid,
+          .skills-grid {
+            width: 100%;
+          }
+          @supports (display: grid) {
+          }
+          @container-like-not-used {
+          }
+          @layer-like-not-used {
+          }
+          @scope-like-not-used {
+          }
+          .about-grid,
+          .skills-grid,
+          .about-cards-grid {
+            align-items: stretch;
+          }
+          @media screen and (max-width: 0px) {
+          }
+          @media-not-allowed-placeholder {
+          }
+          @media-disabled {
+          }
+
+          .about-grid {
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+          }
+          .about-cards-grid {
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+          }
+          .skills-grid {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+          }
+          .about-foot {
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+          }
+        </style>
+
+        <section id="about-and-skills-wrapper">
+          <section id="about-component" class="about-section">
+            <div class="container">
+              <div class="about-grid">
+                <div class="about-main">
+                  <div>
+                    <span class="about-kicker">Get to Know Me</span>
+                    <h2 class="about-title">About Me</h2>
+                  </div>
+                  <p class="about-subtitle">
+                    A backend developer focused on building reliable and
+                    scalable systems. I enjoy turning complex system
+                    requirements into clean, structured code that is practical,
+                    maintainable, and ready for production.
+                  </p>
+                  <div class="about-cards-grid">
+                    <div class="about-card">
+                      <div class="about-card-title">.NET Developer</div>
+                      <div class="about-card-subtitle">
+                        C#, ADO.NET, Windows Services
+                      </div>
+                    </div>
+                    <div class="about-card">
+                      <div class="about-card-title">Database Specialist</div>
+                      <div class="about-card-subtitle">
+                        SQL Server, Query Optimization
+                      </div>
+                    </div>
+                    <div class="about-card">
+                      <div class="about-card-title">System Design</div>
+                      <div class="about-card-subtitle">
+                        Layered Architecture, Clean Code
+                      </div>
+                    </div>
+                    <div class="about-card">
+                      <div class="about-card-title">Problem Solver</div>
+                      <div class="about-card-subtitle">
+                        Real-world system implementation
+                      </div>
+                    </div>
+                  </div>
+                  <div class="about-foot">
+                    <p class="fun-fact">
+                      <span class="fun-fact-label">Fun fact:</span> I enjoy
+                      turning complex system requirements into clean, structured
+                      code.
+                    </p>
+                    <a
+                      href="#projects-component"
+                      class="btn btn-secondary"
+                      data-media-type="banani-button"
+                      >Explore Projects</a
+                    >
+                  </div>
+                </div>
+                <aside class="about-side">
+                  <div>
+                    <div class="side-block-title">Key achievements</div>
+                    <div class="achievement-list">
+                      <div class="achievement-item">
+                        <span class="dot"></span>
+                        <p class="achievement-text">
+                          Built online coaching system with transaction handling
+                        </p>
+                      </div>
+                      <div class="achievement-item">
+                        <span class="dot"></span>
+                        <p class="achievement-text">
+                          Implemented layered architecture across DAL, Business,
+                          and DTO layers
+                        </p>
+                      </div>
+                      <div class="achievement-item">
+                        <span class="dot"></span>
+                        <p class="achievement-text">
+                          Designed SQL databases and Entity Framework models for
+                          real application flows
+                        </p>
+                      </div>
+                      <div class="achievement-item">
+                        <span class="dot"></span>
+                        <p class="achievement-text">
+                          Hands-on with real system logic, business rules, and
+                          practical constraints
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="side-block-title">Core values</div>
+                    <div class="values-list">
+                      <div class="value-item">
+                        <span class="dot"></span>
+                        <div class="value-text">
+                          <strong>Clean Architecture</strong>Focus on separation
+                          of concerns and maintainable system design.
+                        </div>
+                      </div>
+                      <div class="value-item">
+                        <span class="dot"></span>
+                        <div class="value-text">
+                          <strong>Data Integrity</strong>Strong emphasis on
+                          correct data handling and database design.
+                        </div>
+                      </div>
+                      <div class="value-item">
+                        <span class="dot"></span>
+                        <div class="value-text">
+                          <strong>Scalability</strong>Building systems that can
+                          grow without breaking.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </aside>
+              </div>
+            </div>
+          </section>
+
+          <section id="skills-component" class="skills-section">
+            <div class="container">
+              <div class="skills-header">
+                <div>
+                  <span class="skills-kicker">Technical Strengths</span>
+                  <h2 class="skills-title">Skills built for real systems.</h2>
+                </div>
+                <p class="skills-summary">
+                  From backend architecture and data modeling to frontend
+                  integration, these are the tools and practices I use to ship
+                  dependable products.
+                </p>
+              </div>
+              <div class="skills-grid">
+                <div class="skill-category-card">
+                  <div class="skill-category-head">
+                    <div class="skill-category-name">Backend Development</div>
+                    <span class="skill-accent emerald"></span>
+                  </div>
+                  <div class="skill-list">
+                    <div class="skill-row">
+                      <div class="skill-label">C#</div>
+                      <div class="skill-bar">
+                        <div class="skill-fill" style="width: 85%"></div>
+                      </div>
+                      <div class="skill-level">85%</div>
+                    </div>
+                    <div class="skill-row">
+                      <div class="skill-label">.NET</div>
+                      <div class="skill-bar">
+                        <div class="skill-fill" style="width: 80%"></div>
+                      </div>
+                      <div class="skill-level">80%</div>
+                    </div>
+                    <div class="skill-row">
+                      <div class="skill-label">ADO.NET</div>
+                      <div class="skill-bar">
+                        <div class="skill-fill" style="width: 80%"></div>
+                      </div>
+                      <div class="skill-level">80%</div>
+                    </div>
+                    <div class="skill-row">
+                      <div class="skill-label">REST APIs</div>
+                      <div class="skill-bar">
+                        <div class="skill-fill" style="width: 75%"></div>
+                      </div>
+                      <div class="skill-level">75%</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="skill-category-card">
+                  <div class="skill-category-head">
+                    <div class="skill-category-name">Database</div>
+                    <span class="skill-accent cyan"></span>
+                  </div>
+                  <div class="skill-list">
+                    <div class="skill-row">
+                      <div class="skill-label">SQL Server</div>
+                      <div class="skill-bar">
+                        <div class="skill-fill" style="width: 85%"></div>
+                      </div>
+                      <div class="skill-level">85%</div>
+                    </div>
+                    <div class="skill-row">
+                      <div class="skill-label">Query Optimization</div>
+                      <div class="skill-bar">
+                        <div class="skill-fill" style="width: 75%"></div>
+                      </div>
+                      <div class="skill-level">75%</div>
+                    </div>
+                    <div class="skill-row">
+                      <div class="skill-label">Database Design</div>
+                      <div class="skill-bar">
+                        <div class="skill-fill" style="width: 80%"></div>
+                      </div>
+                      <div class="skill-level">80%</div>
+                    </div>
+                    <div class="skill-row">
+                      <div class="skill-label">Stored Procedures</div>
+                      <div class="skill-bar">
+                        <div class="skill-fill" style="width: 75%"></div>
+                      </div>
+                      <div class="skill-level">75%</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="skill-category-card">
+                  <div class="skill-category-head">
+                    <div class="skill-category-name">Software Engineering</div>
+                    <span class="skill-accent purple"></span>
+                  </div>
+                  <div class="skill-list">
+                    <div class="skill-row">
+                      <div class="skill-label">Design Patterns</div>
+                      <div class="skill-bar">
+                        <div class="skill-fill" style="width: 70%"></div>
+                      </div>
+                      <div class="skill-level">70%</div>
+                    </div>
+                    <div class="skill-row">
+                      <div class="skill-label">Layered Architecture</div>
+                      <div class="skill-bar">
+                        <div class="skill-fill" style="width: 80%"></div>
+                      </div>
+                      <div class="skill-level">80%</div>
+                    </div>
+                    <div class="skill-row">
+                      <div class="skill-label">OOP</div>
+                      <div class="skill-bar">
+                        <div class="skill-fill" style="width: 85%"></div>
+                      </div>
+                      <div class="skill-level">85%</div>
+                    </div>
+                    <div class="skill-row">
+                      <div class="skill-label">Debugging</div>
+                      <div class="skill-bar">
+                        <div class="skill-fill" style="width: 85%"></div>
+                      </div>
+                      <div class="skill-level">85%</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="skill-category-card">
+                  <div class="skill-category-head">
+                    <div class="skill-category-name">Frontend Development</div>
+                    <span class="skill-accent blue"></span>
+                  </div>
+                  <div class="skill-list">
+                    <div class="skill-row">
+                      <div class="skill-label">Angular</div>
+                      <div class="skill-bar">
+                        <div class="skill-fill" style="width: 70%"></div>
+                      </div>
+                      <div class="skill-level">70%</div>
+                    </div>
+                    <div class="skill-row">
+                      <div class="skill-label">TypeScript</div>
+                      <div class="skill-bar">
+                        <div class="skill-fill" style="width: 75%"></div>
+                      </div>
+                      <div class="skill-level">75%</div>
+                    </div>
+                    <div class="skill-row">
+                      <div class="skill-label">HTML/CSS</div>
+                      <div class="skill-bar">
+                        <div class="skill-fill" style="width: 75%"></div>
+                      </div>
+                      <div class="skill-level">75%</div>
+                    </div>
+                    <div class="skill-row">
+                      <div class="skill-label">RxJS</div>
+                      <div class="skill-bar">
+                        <div class="skill-fill" style="width: 60%"></div>
+                      </div>
+                      <div class="skill-level">60%</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </section>
+
+        <style id="projects-styles">
+          .projects-section {
+            padding: 160px 0;
+            background: var(--card);
+            border-top: 1px solid var(--border);
+          }
+          .projects-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 80px;
+          }
+          .projects-kicker {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            display: block;
+          }
+          .projects-title {
+            font-size: 48px;
+            font-weight: 800;
+            letter-spacing: -1.5px;
+            color: var(--foreground);
+          }
+          .projects-link {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--muted-foreground);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+          }
+          .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 32px;
+          }
+          .project-card {
+            background: var(--background);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+          }
+          .project-card.wide {
+            grid-column: 1 / -1;
+            flex-direction: row;
+          }
+          .project-img-wrapper {
+            background: var(--muted);
+            border-bottom: 1px solid var(--border);
+            position: relative;
+          }
+          .project-card:not(.wide) .project-img-wrapper {
+            aspect-ratio: 16/10;
+          }
+          .project-card.wide .project-img-wrapper {
+            flex: 1.5;
+            border-bottom: none;
+            border-right: 1px solid var(--border);
+          }
+          .project-img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+          }
+          .project-content {
+            padding: 48px;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+          }
+          .project-card.wide .project-content {
+            flex: 1;
+          }
+          .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 24px;
+          }
+          .tag-pill {
+            font-size: 10px;
+            font-weight: 800;
+            padding: 6px 12px;
+            background: var(--secondary);
+            color: var(--primary);
+            border-radius: var(--radius-xl);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: 1px solid var(--border);
+          }
+          .project-heading {
+            font-size: 32px;
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 16px;
+            color: var(--foreground);
+          }
+          .project-desc {
+            font-size: 16px;
+            line-height: 1.6;
+            color: var(--muted-foreground);
+            margin-bottom: 40px;
+          }
+          .project-action {
+            margin-top: auto;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--foreground);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+          }
+        </style>
+
+        <section id="projects-component" class="projects-section">
+          <div class="container">
+            <div class="projects-header">
+              <div>
+                <span class="projects-kicker">Selected Case Studies</span>
+                <h2 class="projects-title">Engineering Excellence.</h2>
+              </div>
+              <a href="#" class="projects-link" data-media-type="banani-button">
+                All Projects
+                <div
+                  style="
+                    width: 16px;
+                    height: 16px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                  "
+                >
+                  <iconify-icon
+                    icon="lucide:arrow-right"
+                    style="font-size: 16px; color: var(--muted-foreground)"
+                  ></iconify-icon>
+                </div>
+              </a>
+            </div>
+
+            <div class="projects-grid">
+              <!-- Featured Wide Card -->
+              <div class="project-card wide">
+                <div class="project-img-wrapper">
+                  <img
+                    data-aspect-ratio="16:9"
+                    data-query="dark mode modern premium gym management system dashboard UI web application"
+                    alt="MenoPro Dashboard"
+                    src="https://storage.googleapis.com/banani-generated-images/generated-images/9bcd0d6e-ee0c-4116-beda-d5db2e6d31de.jpg"
+                  />
+                </div>
+                <div class="project-content">
+                  <div class="tags-container">
+                    <span class="tag-pill">ASP.NET Core</span>
+                    <span class="tag-pill">Chart.js</span>
+                  </div>
+                  <h3 class="project-heading">MenoPro Gym System</h3>
+                  <p class="project-desc">
+                    Premium gym management with member/trainer portals, workout
+                    plans, diet tracking, and Chart.js analytics. Features
+                    Glassmorphism UI, Stripe payments, and AI integration.
+                  </p>
+                  <a
+                    href="#"
+                    class="project-action"
+                    data-media-type="banani-button"
+                  >
+                    View Details
+                    <div
+                      style="
+                        width: 16px;
+                        height: 16px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                      "
+                    >
+                      <iconify-icon
+                        icon="lucide:arrow-up-right"
+                        style="font-size: 16px; color: var(--foreground)"
+                      ></iconify-icon>
+                    </div>
+                  </a>
+                </div>
+              </div>
+
+              <!-- Half Card 1 -->
+              <div class="project-card">
+                <div class="project-img-wrapper">
+                  <img
+                    data-aspect-ratio="16:9"
+                    data-query="dark mode job portal marketplace platform web application UI dashboard"
+                    alt="Labor Marketplace"
+                    src="https://storage.googleapis.com/banani-generated-images/generated-images/5e723a8f-9fdc-4413-85d9-fe1b83024562.jpg"
+                  />
+                </div>
+                <div class="project-content">
+                  <div class="tags-container">
+                    <span class="tag-pill">.NET 9</span>
+                    <span class="tag-pill">SignalR</span>
+                  </div>
+                  <h3 class="project-heading">Labor Marketplace</h3>
+                  <p class="project-desc">
+                    Platform connecting workers with job posters. Features
+                    multi-role auth, real-time chat with SignalR, Stripe
+                    payments, and spatial queries.
+                  </p>
+                  <a
+                    href="#"
+                    class="project-action"
+                    data-media-type="banani-button"
+                  >
+                    View Details
+                    <div
+                      style="
+                        width: 16px;
+                        height: 16px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                      "
+                    >
+                      <iconify-icon
+                        icon="lucide:arrow-up-right"
+                        style="font-size: 16px; color: var(--foreground)"
+                      ></iconify-icon>
+                    </div>
+                  </a>
+                </div>
+              </div>
+
+              <!-- Half Card 2 -->
+              <div class="project-card">
+                <div class="project-img-wrapper">
+                  <img
+                    data-aspect-ratio="16:9"
+                    data-query="dark mode mobile app outfit planner wardrobe UI mockup side by side screens"
+                    alt="Outfit Planner"
+                    src="https://storage.googleapis.com/banani-generated-images/generated-images/f0ac8fce-53ae-4b58-912f-d7cb3a7b87aa.jpg"
+                  />
+                </div>
+                <div class="project-content">
+                  <div class="tags-container">
+                    <span class="tag-pill">Angular 17+</span>
+                    <span class="tag-pill">CQRS</span>
+                  </div>
+                  <h3 class="project-heading">Outfit Planner</h3>
+                  <p class="project-desc">
+                    Intelligent wardrobe management system that generates outfit
+                    suggestions by analyzing clothes against real-time weather,
+                    occasions, and style preferences.
+                  </p>
+                  <a
+                    href="#"
+                    class="project-action"
+                    data-media-type="banani-button"
+                  >
+                    View Details
+                    <div
+                      style="
+                        width: 16px;
+                        height: 16px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                      "
+                    >
+                      <iconify-icon
+                        icon="lucide:arrow-up-right"
+                        style="font-size: 16px; color: var(--foreground)"
+                      ></iconify-icon>
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <style id="cta-styles">
+          .cta-section {
+            padding: 160px 0;
+          }
+          .cta-wrapper {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 100px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+          }
+          .cta-wrapper::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary);
+          }
+          .cta-heading {
+            font-size: 48px;
+            font-weight: 800;
+            line-height: 1.15;
+            letter-spacing: -1.5px;
+            max-width: 700px;
+            margin: 0 auto 24px auto;
+            color: var(--foreground);
+          }
+          .cta-desc {
+            font-size: 18px;
+            color: var(--muted-foreground);
+            max-width: 600px;
+            margin: 0 auto 48px auto;
+            line-height: 1.6;
+          }
+          .cta-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+          }
+        </style>
+
+        <section id="cta-component" class="cta-section">
+          <div class="container">
+            <div class="cta-wrapper">
+              <h2 class="cta-heading">
+                Have a project in mind? Let's build something
+                <span class="highlight-text">extraordinary</span> together.
+              </h2>
+              <p class="cta-desc">
+                Currently accepting select freelance opportunities and full-time
+                senior engineering roles.
+              </p>
+              <div class="cta-buttons">
+                <button class="btn btn-primary" data-media-type="banani-button">
+                  Get In Touch
+                </button>
+                <button
+                  class="btn btn-secondary"
+                  data-media-type="banani-button"
+                >
+                  Schedule a Call
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <style id="footer-styles">
+          .footer-section {
+            padding: 64px 0;
+            border-top: 1px solid var(--border);
+            background: var(--background);
+          }
+          .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+          }
+          .footer-brand {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+          }
+          .footer-logo {
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+          }
+          .footer-copyright {
+            font-size: 12px;
+            color: var(--muted-foreground);
+            font-weight: 500;
+          }
+          .footer-socials {
+            display: flex;
+            gap: 32px;
+          }
+          .social-link {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--muted-foreground);
+          }
+        </style>
+
+        <footer id="footer-component" class="footer-section">
+          <div class="container footer-content">
+            <div class="footer-brand">
+              <div class="footer-logo">Abdullah.dev</div>
+              <div class="footer-copyright">
+                © 2024 Abdullah Mohammed. All rights reserved.
+              </div>
+            </div>
+            <div class="footer-socials">
+              <a href="#" class="social-link" data-media-type="banani-button"
+                >Github</a
+              >
+              <a href="#" class="social-link" data-media-type="banani-button"
+                >LinkedIn</a
+              >
+              <a href="#" class="social-link" data-media-type="banani-button"
+                >Instagram</a
+              >
+            </div>
+          </div>
+        </footer>
+      </div>
+    </body>
+  </html>
+  <script src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js"></script>
+  <style>
+    :root {
+      --background: #071025;
+      --foreground: #e6f0fa;
+      --border: #00000014;
+      --input: #0b1730;
+      --primary: #39c6ff;
+      --primary-foreground: #031022;
+      --secondary: #0e2940;
+      --secondary-foreground: #beeaff;
+      --muted: #071827;
+      --muted-foreground: #7e97a8;
+      --success: #2ee6a8;
+      --success-foreground: #04251a;
+      --accent: #6ee7b7;
+      --accent-foreground: #02231a;
+      --destructive: #ff6b6b;
+      --destructive-foreground: #1a0f0f;
+      --warning: #ffd166;
+      --warning-foreground: #2a1700;
+      --card: #081528;
+      --card-foreground: #e6f0fa;
+      --sidebar: #061322;
+      --sidebar-foreground: #9ecff6;
+      --sidebar-primary: #09223a;
+      --sidebar-primary-foreground: #bde8ff;
+      --radius-sm: 6px;
+      --radius-md: 8px;
+      --radius-lg: 10px;
+      --radius-xl: 14px;
+      --font-family-body: Inter;
+    }
+  </style>
+</div>

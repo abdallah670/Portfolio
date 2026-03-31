@@ -1,0 +1,167 @@
+<div class="settings-page">
+  <header class="page-header">
+    <p class="kicker">Workspace Configuration</p>
+    <h1 class="title">System Settings</h1>
+  </header>
+
+  <div class="settings-grid">
+    <!-- Left Column: Primary Settings -->
+    <div class="primary-col">
+      <!-- Profile Identity Card -->
+      <section class="settings-card highlightable border-left">
+        <div class="card-header-flex">
+          <div class="card-titles">
+            <h2>Profile Identity</h2>
+            <p>Update your public presence and professional bio.</p>
+          </div>
+          <div class="avatar-edit">
+            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuD6n-S7s1CB8orknV-gP9VhHHi5jofWZn3xYpHhDlZSk-n_vxhAa0wSqgy6NSUU2C2AOQ7RUzJdaK82STbKfs-U0v0HCJmY5LxN_QJFcQ079mRfhRV2NFilTA2r04P_sXVPflsFKUcFQfDJIKvGBNUORaAkGKBguSgjsQFC6vHo4akb63cJSfsAkQazEDaLiM9cSXvzjQIY5GkW_ZuqlgwO9X5flab0uSB_B_iV55R1R6Js_ay1e1yZw3nVKEO2VbaLQYlZvLzIvQs" alt="User Avatar" />
+            <button class="camera-btn">
+              <span class="material-symbols-outlined icon">photo_camera</span>
+            </button>
+          </div>
+        </div>
+
+        <form class="settings-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Full Name</label>
+              <input type="text" value="Alexander Kinetic" class="form-input" />
+            </div>
+            <div class="form-group">
+              <label>Professional Title</label>
+              <input type="text" value="Fullstack Architect" class="form-input" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Professional Bio</label>
+            <textarea class="form-textarea" rows="4">Crafting high-performance digital archives with a focus on kinetic typography and immersive UI/UX systems. Passionate about Angular, WebGL, and the intersection of design and code.</textarea>
+            <div class="input-meta">
+              <span class="text-error">Required field</span>
+              <span class="text-muted">142 / 500 characters</span>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Save Profile Changes</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Portfolio Display Card -->
+      <section class="settings-card">
+        <h2 class="card-title">Portfolio Display</h2>
+        <p class="card-subtitle">Manage how your technical expertise is visualized.</p>
+
+        <div class="display-settings">
+          <div class="setting-group">
+            <label>Core Skill Matrix</label>
+            <div class="skill-input-area">
+              @for (skill of skills; track skill) {
+                <span class="skill-pill">
+                  {{ skill }}
+                  <span class="material-symbols-outlined close-icon" (click)="removeSkill(skill)">close</span>
+                </span>
+              }
+              <input type="text" placeholder="Add skill..." class="skill-input" />
+            </div>
+          </div>
+
+          <div class="setting-group">
+            <label>Default Visibility Toggles</label>
+            <div class="toggle-list">
+              <div class="toggle-item">
+                <div class="toggle-text">
+                  <p class="toggle-title">Auto-publish New Projects</p>
+                  <p class="toggle-desc">Draft mode disabled by default</p>
+                </div>
+                <div class="switch active">
+                  <span class="slider"></span>
+                </div>
+              </div>
+
+              <div class="toggle-item">
+                <div class="toggle-text">
+                  <p class="toggle-title">Display GitHub Metrics</p>
+                  <p class="toggle-desc">Pull real-time commit data</p>
+                </div>
+                <div class="switch">
+                  <span class="slider"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Right Column: Security & System -->
+    <div class="secondary-col">
+      <!-- Account Access Card -->
+      <section class="settings-card border-top">
+        <div class="card-header-icon">
+          <span class="material-symbols-outlined icon text-secondary">security</span>
+          <h2>Account Access</h2>
+        </div>
+
+        <div class="security-settings">
+          <div class="form-group mb-6">
+            <label>Email Address</label>
+            <input type="email" value="alex@kineticarchive.io" class="form-input" />
+            <p class="verification-text mt-2">
+              <span class="material-symbols-outlined icon-sm">verified</span>
+              Primary email verified
+            </p>
+          </div>
+
+          <div class="password-section">
+            <h3 class="section-label">Update Password</h3>
+            <div class="password-inputs">
+              <input type="password" placeholder="Current Password" class="form-input" />
+              <input type="password" placeholder="New Secure Password" class="form-input" />
+              <button class="btn btn-outline full-width">Change Password</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- System Engine Card -->
+      <section class="settings-card">
+        <h2 class="card-title">System Engine</h2>
+        
+        <div class="engine-settings">
+          <div class="setting-group">
+            <label>Interface Theme</label>
+            <div class="theme-grid">
+              <button class="theme-btn active">
+                <span class="material-symbols-outlined icon text-secondary">dark_mode</span>
+                <span class="theme-name">Deep Archival</span>
+              </button>
+              <button class="theme-btn inactive">
+                <span class="material-symbols-outlined icon">light_mode</span>
+                <span class="theme-name">High Contrast</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="setting-group">
+            <label>Communication Links</label>
+            <div class="checkbox-list">
+              <label class="checkbox-item group">
+                <input type="checkbox" checked />
+                <span class="checkbox-label">Critical System Alerts</span>
+              </label>
+              <label class="checkbox-item group">
+                <input type="checkbox" checked />
+                <span class="checkbox-label">Project Engagement Tracking</span>
+              </label>
+              <label class="checkbox-item group">
+                <input type="checkbox" />
+                <span class="checkbox-label">Monthly Analytics Digest</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,115 @@
+// Kinetic Archive Design System
+// Dark Theme Color Palette
+
+:root {
+  // Background Colors
+  --background: #060e20;
+  --surface: #060e20;
+  --surface-dim: #060e20;
+  --surface-bright: #1f2b49;
+  
+  // Container Colors (Elevation Levels)
+  --surface-container-lowest: #000000;
+  --surface-container-low: #091328;
+  --surface-container: #0f1930;
+  --surface-container-high: #141f38;
+  --surface-container-highest: #192540;
+  --surface-variant: #192540;
+  
+  // Primary (Purple/Blue)
+  --primary: #9ba8ff;
+  --primary-dim: #4963ff;
+  --primary-container: #8999ff;
+  --primary-fixed: #8999ff;
+  --primary-fixed-dim: #778aff;
+  --on-primary: #001c8e;
+  --on-primary-container: #001470;
+  --on-primary-fixed: #000000;
+  --on-primary-fixed-variant: #001a88;
+  --inverse-primary: #2949ef;
+  
+  // Secondary (Cyan)
+  --secondary: #00e3fd;
+  --secondary-dim: #00d4ec;
+  --secondary-container: #006875;
+  --secondary-fixed: #26e6ff;
+  --secondary-fixed-dim: #00d7f0;
+  --on-secondary: #004d57;
+  --on-secondary-container: #e8fbff;
+  --on-secondary-fixed: #003a42;
+  --on-secondary-fixed-variant: #005964;
+  
+  // Tertiary (Light Purple)
+  --tertiary: #ebedff;
+  --tertiary-dim: #cbd0ef;
+  --tertiary-container: #d9defe;
+  --tertiary-fixed: #d9defe;
+  --tertiary-fixed-dim: #cbd0ef;
+  --on-tertiary: #525771;
+  --on-tertiary-container: #494f69;
+  --on-tertiary-fixed: #373c55;
+  --on-tertiary-fixed-variant: #535873;
+  
+  // Error (Pink/Red)
+  --error: #ff6e84;
+  --error-dim: #d73357;
+  --error-container: #a70138;
+  --on-error: #490013;
+  --on-error-container: #ffb2b9;
+  
+  // Text Colors
+  --on-background: #dee5ff;
+  --on-surface: #dee5ff;
+  --on-surface-variant: #a3aac4;
+  --inverse-surface: #faf8ff;
+  --inverse-on-surface: #4d556b;
+  
+  // Outline/Border
+  --outline: #6d758c;
+  --outline-variant: #40485d;
+  
+  // Surface Tint
+  --surface-tint: #9ba8ff;
+  
+  // Legacy compatibility
+  --border: #40485d;
+  --input: #0f1930;
+  --muted: #141f38;
+  --muted-foreground: #a3aac4;
+  --accent: #00e3fd;
+  --accent-foreground: #004d57;
+  --card: #0f1930;
+  --card-foreground: #dee5ff;
+  --destructive: #ff6e84;
+  --destructive-foreground: #490013;
+  --warning: #f59e0b;
+  --warning-foreground: #312200;
+  --success: #00e3fd;
+  --success-foreground: #004d57;
+  
+  // Border Radius
+  --radius-sm: 0.125rem;
+  --radius-md: 0.25rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-full: 0.75rem;
+  
+  // Fonts
+  --font-headline: 'Space Grotesk', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --font-label: 'Inter', sans-serif;
+}
+
+// Dark theme is the default, no need for [data-theme="dark"]
+// But we keep light theme option for future
+[data-theme="light"] {
+  --background: #fbfdff;
+  --on-background: #0f1724;
+  --surface-container-low: #f8fafc;
+  --surface-container: #ffffff;
+  --surface-container-high: #f1f5f9;
+  --primary: #0b6ff0;
+  --secondary: #00e3fd;
+  --on-surface: #0f1724;
+  --on-surface-variant: #64748b;
+}

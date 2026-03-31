@@ -1,0 +1,137 @@
+namespace PortfolioApi.DTOs;
+
+public class LoginRequest
+{
+    public string Username { get; set; } = string.Empty;
+    public string Password { get; set; } = string.Empty;
+}
+
+public class LoginResponse
+{
+    public bool Success { get; set; }
+    public string Message { get; set; } = string.Empty;
+    public string? Token { get; set; }
+}
+
+public class ApiResponse<T>
+{
+    public bool Success { get; set; }
+    public string Message { get; set; } = string.Empty;
+    public T? Data { get; set; }
+}
+
+public class ApiResponse
+{
+    public bool Success { get; set; }
+    public string Message { get; set; } = string.Empty;
+}
+
+public class HeroDto
+{
+    public string Name { get; set; } = string.Empty;
+    public string HeadlineTop { get; set; } = string.Empty;
+    public string HeadlineMain { get; set; } = string.Empty;
+    public string AvailabilityLabel { get; set; } = string.Empty;
+    public string Subtitle { get; set; } = string.Empty;
+    public string HeroIntro { get; set; } = string.Empty;
+    public string CtaPrimaryLabel { get; set; } = string.Empty;
+    public string CtaPrimaryHref { get; set; } = string.Empty;
+    public string CtaSecondaryLabel { get; set; } = string.Empty;
+    public string CtaSecondaryHref { get; set; } = string.Empty;
+    public string ProfileImage { get; set; } = string.Empty;
+    public List<HeroStatsDto> Stats { get; set; } = new();
+}
+
+public class HeroStatsDto
+{
+    public string Label { get; set; } = string.Empty;
+    public string Value { get; set; } = string.Empty;
+}
+
+public class AboutDto
+{
+    public string Kicker { get; set; } = string.Empty;
+    public string Title { get; set; } = string.Empty;
+    public string Subtitle { get; set; } = string.Empty;
+    public string FunFact { get; set; } = string.Empty;
+    public List<AboutCardDto> Cards { get; set; } = new();
+    public List<string> Achievements { get; set; } = new();
+    public List<ValueDto> Values { get; set; } = new();
+}
+
+public class AboutCardDto
+{
+    public string Title { get; set; } = string.Empty;
+    public string Subtitle { get; set; } = string.Empty;
+}
+
+public class ValueDto
+{
+    public string Title { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+}
+
+public class SkillCategoryDto
+{
+    public string Title { get; set; } = string.Empty;
+    public string Color { get; set; } = string.Empty;
+    public List<SkillDto> Skills { get; set; } = new();
+}
+
+public class SkillDto
+{
+    public string Name { get; set; } = string.Empty;
+    public int Level { get; set; }
+}
+
+public class ProjectDto
+{
+    public int Id { get; set; }
+    public string Title { get; set; } = string.Empty;
+    public string Year { get; set; } = string.Empty;
+    public string Category { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public List<string> Stack { get; set; } = new();
+    public string Image { get; set; } = string.Empty;
+    public string LiveUrl { get; set; } = string.Empty;
+    public string GithubUrl { get; set; } = string.Empty;
+    public string Status { get; set; } = string.Empty;
+    public string Color { get; set; } = string.Empty;
+    public bool IsFeatured { get; set; }
+}
+
+public class JourneyItemDto
+{
+    public int Id { get; set; }
+    public string Title { get; set; } = string.Empty;
+    public string Period { get; set; } = string.Empty;
+    public string Org { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+}
+
+public class SocialLinkDto
+{
+    public string Label { get; set; } = string.Empty;
+    public string Href { get; set; } = string.Empty;
+    public string Icon { get; set; } = string.Empty;
+}
+
+public class ContactDto
+{
+    public string Email { get; set; } = string.Empty;
+    public string WhatsApp { get; set; } = string.Empty;
+    public string Phone { get; set; } = string.Empty;
+    public string Location { get; set; } = string.Empty;
+}
+
+public class PortfolioConfigDto
+{
+    public HeroDto Hero { get; set; } = new();
+    public AboutDto About { get; set; } = new();
+    public List<SkillCategoryDto> Skills { get; set; } = new();
+    public List<ProjectDto> FeaturedProjects { get; set; } = new();
+    public List<ProjectDto> MoreProjects { get; set; } = new();
+    public List<JourneyItemDto> Journey { get; set; } = new();
+    public List<SocialLinkDto> Socials { get; set; } = new();
+    public ContactDto Contact { get; set; } = new();
+}

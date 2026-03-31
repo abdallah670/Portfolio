@@ -1,0 +1,114 @@
+<div class="contact-page">
+  <app-navbar></app-navbar>
+
+  <main class="contact-main">
+    <div class="bg-blur-primary"></div>
+    <div class="bg-blur-secondary"></div>
+
+    <section class="contact-container">
+      <div class="contact-grid">
+        <!-- Left Column: Content & Details -->
+        <div class="contact-info">
+          <div class="info-header">
+            <span class="info-kicker">Connect</span>
+            <h1 class="info-title">
+              Let's build the <span class="highlight-text">future</span> together.
+            </h1>
+            <p class="info-desc">
+              Currently available for architectural inquiries, digital systems consulting, and premium creative partnerships.
+            </p>
+          </div>
+
+          <div class="contact-details">
+            <div class="detail-item tooltip-host">
+              <div class="detail-icon">
+                <span class="material-symbols-outlined">alternate_email</span>
+              </div>
+              <div class="detail-text">
+                <p class="detail-label">Email</p>
+                <a href="mailto:hello@kineticarchive.com" class="detail-value link-hover">
+                  hello&#64;kineticarchive.com
+                </a>
+              </div>
+            </div>
+
+            <div class="detail-item">
+              <div class="detail-icon">
+                <span class="material-symbols-outlined">location_on</span>
+              </div>
+              <div class="detail-text">
+                <p class="detail-label">Location</p>
+                <p class="detail-value">London, United Kingdom</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Social Links -->
+          <div class="social-network-section">
+            <p class="network-label">Network</p>
+            <div class="network-links">
+              <a href="#" class="btn-icon circle-icon">
+                <span class="material-symbols-outlined">share</span>
+              </a>
+              <a href="#" class="btn-icon circle-icon">
+                <span class="material-symbols-outlined">code</span>
+              </a>
+              <a href="#" class="btn-icon circle-icon">
+                <span class="material-symbols-outlined">link</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Contact Form -->
+        <div class="contact-form-wrapper">
+          <div class="form-panel glass-panel">
+            <form class="contact-form" (submit)="onSubmit($event)">
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Name</label>
+                  <input type="text" class="form-input" placeholder="John Doe" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Email</label>
+                  <input type="email" class="form-input" placeholder="john@domain.com" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Subject</label>
+                <input type="text" class="form-input" placeholder="Project Inquiry" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Message</label>
+                <textarea class="form-textarea" placeholder="Tell me about your vision..." rows="6"></textarea>
+              </div>
+              
+              <div class="form-actions">
+                <p class="security-notice">
+                  <span class="material-symbols-outlined">verified_user</span>
+                  Encrypted and secure transmission.
+                </p>
+                <button type="submit" class="btn btn-primary submit-btn">
+                  <span>Send Message</span>
+                  <span class="material-symbols-outlined icon-arrow">send</span>
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Asymmetric Map Element -->
+          <div class="map-visual">
+             <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDgqWq-5VZiXy0n0vKqMmb0p44eWuBBnrFajFpcwyzo49JX5u2MOx2aYxLD2_FMwCickUXCTmWqCDw_6lMMeDumIvkG-LYZyOXu-o-stzhYHioSJijEZBT-xj2K6RD8quIKnQE5GgHBJoKkhox8kWElyL3DKxo0AMN3AjPTAMwnbpYRK54gAp_8HF3yyaTJkw_dtmD-r8ptkL74AKZRwcW2WrUexdN60zrXMpdxiVATl4QX8b_aC95yVoRhiTzix_HdfLzusMOn2us" alt="Monochrome London map" />
+             <div class="map-overlay"></div>
+             <div class="map-location-tag">
+               <span class="pulse-dot"></span>
+               <span class="location-text">Location: London SE1</span>
+             </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <app-footer></app-footer>
+</div>

@@ -1,0 +1,36 @@
+<section id="skills-component" class="skills-section">
+  <div class="container">
+    <div class="skills-header">
+      <div>
+        <span class="skills-kicker">Technical Strengths</span>
+        <h2 class="skills-title">Skills built for real systems.</h2>
+      </div>
+      <p class="skills-summary">
+        From backend architecture and data modeling to frontend
+        integration, these are the tools and practices I use to ship
+        dependable products.
+      </p>
+    </div>
+    <div class="skills-grid">
+      @for (category of skillCategories; track category.name) {
+        <div class="skill-category-card">
+          <div class="skill-category-head">
+            <div class="skill-category-name">{{ category.name }}</div>
+            <span class="skill-accent" [ngClass]="category.accentClass"></span>
+          </div>
+          <div class="skill-list">
+            @for (skill of category.skills; track skill.label) {
+              <div class="skill-row">
+                <div class="skill-label">{{ skill.label }}</div>
+                <div class="skill-bar">
+                  <div class="skill-fill" [style.width.%]="skill.level"></div>
+                </div>
+                <div class="skill-level">{{ skill.level }}%</div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</section>

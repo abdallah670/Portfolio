@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Kinetic Admin | Developer Portfolio Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "outline-variant": "#40485d",
+              "secondary-container": "#006875",
+              "on-secondary": "#004d57",
+              "tertiary-container": "#d9defe",
+              "tertiary-fixed": "#d9defe",
+              "secondary-fixed": "#26e6ff",
+              "surface-bright": "#1f2b49",
+              "on-primary-fixed-variant": "#001a88",
+              "surface-container-high": "#141f38",
+              "surface-tint": "#9ba8ff",
+              "error": "#ff6e84",
+              "tertiary-fixed-dim": "#cbd0ef",
+              "on-tertiary-fixed": "#373c55",
+              "error-container": "#a70138",
+              "on-error-container": "#ffb2b9",
+              "inverse-primary": "#2949ef",
+              "primary-fixed": "#8999ff",
+              "primary-container": "#8999ff",
+              "on-secondary-container": "#e8fbff",
+              "primary-fixed-dim": "#778aff",
+              "surface-container-low": "#091328",
+              "on-surface-variant": "#a3aac4",
+              "secondary-fixed-dim": "#00d7f0",
+              "primary-dim": "#4963ff",
+              "surface-container-highest": "#192540",
+              "surface": "#060e20",
+              "surface-variant": "#192540",
+              "secondary": "#00e3fd",
+              "surface-container-lowest": "#000000",
+              "background": "#060e20",
+              "on-background": "#dee5ff",
+              "tertiary": "#ebedff",
+              "surface-container": "#0f1930",
+              "inverse-surface": "#faf8ff",
+              "tertiary-dim": "#cbd0ef",
+              "surface-dim": "#060e20",
+              "on-secondary-fixed-variant": "#005964",
+              "primary": "#9ba8ff",
+              "on-tertiary": "#525771",
+              "on-surface": "#dee5ff",
+              "on-secondary-fixed": "#003a42",
+              "secondary-dim": "#00d7f0",
+              "error-dim": "#d73357",
+              "on-primary-fixed": "#000000",
+              "on-tertiary-fixed-variant": "#535873",
+              "outline": "#6d758c",
+              "on-primary-container": "#001470",
+              "on-primary": "#001c8e",
+              "inverse-on-surface": "#4d556b",
+              "on-tertiary-container": "#494f69",
+              "on-error": "#490013"
+            },
+            fontFamily: {
+              "headline": ["Space Grotesk"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, .font-headline { font-family: 'Space Grotesk', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(31, 43, 73, 0.6);
+            backdrop-filter: blur(20px);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+<!-- SideNavBar Component -->
+<aside class="fixed left-0 top-0 h-full z-40 flex flex-col h-screen w-64 border-r border-[#40485d]/20 bg-[#091328] dark:bg-[#091328] font-['Space_Grotesk'] tracking-tight text-[#dee5ff]">
+<div class="p-6">
+<div class="flex items-center gap-3 mb-8">
+<div class="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary-container" style="font-variation-settings: 'FILL' 1;">bolt</span>
+</div>
+<div>
+<h1 class="text-xl font-bold tracking-widest text-[#00e3fd] uppercase">Kinetic Admin</h1>
+<p class="text-[10px] opacity-50 uppercase tracking-[0.2em]">v2.4.0</p>
+</div>
+</div>
+<nav class="space-y-1">
+<!-- Dashboard Active -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-[#141f38] text-[#00e3fd] border-l-2 border-[#00e3fd] font-bold transition-all scale-95 duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-[#dee5ff]/60 hover:text-[#dee5ff] hover:bg-[#141f38]/50 transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="tactic">tactic</span>
+<span>Projects</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-[#dee5ff]/60 hover:text-[#dee5ff] hover:bg-[#141f38]/50 transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="monitoring">monitoring</span>
+<span>Analytics</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-[#dee5ff]/60 hover:text-[#dee5ff] hover:bg-[#141f38]/50 transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="mail">mail</span>
+<span>Messages</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-[#dee5ff]/60 hover:text-[#dee5ff] hover:bg-[#141f38]/50 transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span>Settings</span>
+</a>
+</nav>
+<div class="mt-10">
+<button class="w-full bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 text-sm uppercase tracking-wider shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-sm">add</span>
+                    New Project
+                </button>
+</div>
+</div>
+<div class="mt-auto p-6 border-t border-outline-variant/10">
+<nav class="space-y-1">
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg text-[#dee5ff]/60 hover:text-[#dee5ff] hover:bg-[#141f38]/50 transition-colors text-sm" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span>Support</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg text-[#dee5ff]/60 hover:text-[#dee5ff] hover:bg-[#141f38]/50 transition-colors text-sm" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span>Logout</span>
+</a>
+</nav>
+<div class="flex items-center gap-3 mt-6 px-4">
+<img class="w-10 h-10 rounded-full object-cover ring-2 ring-primary/20" data-alt="Developer profile avatar headshot in a high-tech studio environment with soft blue rim lighting and blurred background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAhgJa2ymdzhnUHYeYyc7-lY3I2y1CR_6luA6URFEK7WBPIaezGOlafMTRJPe_BXqQxw7tvNXlmEwZTJdIfehykEPPIWA19o4OpaPPyQmWCwNYIqcn_nvFjHpJGSewQu0hUTjnNqtMBF84nV1aK2KBC-hq3exj6LtcMLFpFAHj1cLa8CN1G1aIeGFTaHm-0UNbW0mdsrZBMdtqka_uB0ypynLLvRHigfmUxvgOmIot4b_XvqMLZQzl6bjkiKcJ7Sdg-bD2wruuxVBo"/>
+<div class="overflow-hidden">
+<p class="text-xs font-bold truncate">Alex Rivera</p>
+<p class="text-[10px] opacity-40 truncate">Senior Lead Dev</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- TopAppBar Component -->
+<header class="flex justify-between items-center w-full h-16 px-8 sticky top-0 z-30 ml-64 bg-[#060e20]/80 backdrop-blur-xl shadow-[0_4px_30px_rgba(0,0,0,0.1)]">
+<div class="flex items-center gap-8">
+<div class="relative w-64 group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
+<input class="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-secondary/30 rounded-full py-2 pl-10 pr-4 text-[10px] font-headline tracking-widest text-on-surface" placeholder="SEARCH ARCHIVE..." type="text"/>
+</div>
+<nav class="hidden md:flex items-center gap-6">
+<a class="font-headline text-sm font-medium uppercase tracking-wider text-[#00e3fd] border-b-2 border-[#00e3fd] pb-1" href="#">Overview</a>
+<a class="font-headline text-sm font-medium uppercase tracking-wider text-[#dee5ff]/70 hover:text-[#00e3fd] transition-all" href="#">History</a>
+<a class="font-headline text-sm font-medium uppercase tracking-wider text-[#dee5ff]/70 hover:text-[#00e3fd] transition-all" href="#">Reports</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="apps">apps</span>
+</button>
+<div class="h-6 w-px bg-outline-variant/20 mx-2"></div>
+<div class="flex items-center gap-3">
+<span class="text-[10px] font-headline font-bold text-primary tracking-tighter text-right leading-none">THE KINETIC<br/>ARCHIVE</span>
+<div class="w-8 h-8 rounded-lg overflow-hidden ring-1 ring-outline-variant/30">
+<img class="w-full h-full object-cover" data-alt="User profile thumbnail avatar for a developer interface showing a professional smiling male developer" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC4DLZI8ZF52SDwpYetxYzf6snD781HpMATk-uYB3gLnuTxjmyr5ZCCfil0v2_eW5SaaZbmBfbJd5UXev8kJwkhM5GM2fcs4DNCQ88xFI8gHo5iZLjppJgPJ2dY0wMB9e7_NxATIInSARuyjtl5NHcao8G7Wx1AgRxgVKNsm_jZImfGrQH-tT5BvROwMDl5nA1pULmZ-G15UjWIMW1McXOKFKtErDCN1ntpo0kbVUrN9MQINHpJScDKCljMvcflx9l8VUKFd-05TyE"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-64 p-8 min-h-[calc(100vh-64px)]">
+<!-- Header Section -->
+<section class="mb-12">
+<div class="flex justify-between items-end">
+<div>
+<span class="headline-sm text-secondary font-headline text-lg tracking-widest uppercase block mb-2">Operational Hub</span>
+<h2 class="text-5xl font-bold font-headline tracking-tighter">Systems <span class="text-primary-dim">Overview</span></h2>
+</div>
+<div class="text-right">
+<p class="text-on-surface-variant text-xs font-label uppercase tracking-widest mb-1">Last Synced</p>
+<p class="text-on-surface font-headline font-bold">12:04:32 PM PST</p>
+</div>
+</div>
+</section>
+<!-- Metrics Grid (Asymmetrical) -->
+<section class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-16">
+<!-- Metric Card 1 -->
+<div class="bg-surface-container-high rounded-xl p-6 relative overflow-hidden group">
+<div class="relative z-10">
+<p class="text-on-surface-variant text-[10px] font-headline uppercase tracking-widest mb-4">Page Views</p>
+<h3 class="text-3xl font-bold font-headline mb-1">42.8k</h3>
+<div class="flex items-center gap-2 text-secondary text-xs">
+<span class="material-symbols-outlined text-sm">trending_up</span>
+<span>+12.4%</span>
+</div>
+</div>
+<!-- Mini Sparkline Placeholder -->
+<div class="absolute bottom-0 left-0 w-full h-16 opacity-30 group-hover:opacity-60 transition-opacity">
+<svg class="w-full h-full" viewbox="0 0 100 30">
+<path d="M0 25 Q 10 20, 20 22 T 40 15 T 60 18 T 80 10 T 100 5" fill="none" stroke="#00e3fd" stroke-width="2"></path>
+</svg>
+</div>
+</div>
+<!-- Metric Card 2 -->
+<div class="bg-surface-container-high rounded-xl p-6 relative overflow-hidden group">
+<div class="relative z-10">
+<p class="text-on-surface-variant text-[10px] font-headline uppercase tracking-widest mb-4">Project Count</p>
+<h3 class="text-3xl font-bold font-headline mb-1">14</h3>
+<div class="flex items-center gap-2 text-primary text-xs">
+<span class="material-symbols-outlined text-sm">rocket_launch</span>
+<span>2 Active Sprints</span>
+</div>
+</div>
+<div class="absolute bottom-0 left-0 w-full h-16 opacity-30 group-hover:opacity-60 transition-opacity">
+<svg class="w-full h-full" viewbox="0 0 100 30">
+<path d="M0 10 Q 25 15, 50 12 T 100 20" fill="none" stroke="#9ba8ff" stroke-width="2"></path>
+</svg>
+</div>
+</div>
+<!-- Metric Card 3 -->
+<div class="bg-surface-container-high rounded-xl p-6 relative overflow-hidden group">
+<div class="relative z-10">
+<p class="text-on-surface-variant text-[10px] font-headline uppercase tracking-widest mb-4">Total Messages</p>
+<h3 class="text-3xl font-bold font-headline mb-1">186</h3>
+<div class="flex items-center gap-2 text-error text-xs">
+<span class="material-symbols-outlined text-sm">mail</span>
+<span>8 Unread</span>
+</div>
+</div>
+<div class="absolute bottom-0 left-0 w-full h-16 opacity-30 group-hover:opacity-60 transition-opacity">
+<svg class="w-full h-full" viewbox="0 0 100 30">
+<path d="M0 20 L 20 15 L 40 18 L 60 10 L 80 15 L 100 8" fill="none" stroke="#ff6e84" stroke-width="2"></path>
+</svg>
+</div>
+</div>
+<!-- Metric Card 4 -->
+<div class="bg-surface-container-high rounded-xl p-6 relative overflow-hidden group">
+<div class="relative z-10">
+<p class="text-on-surface-variant text-[10px] font-headline uppercase tracking-widest mb-4">Active Leads</p>
+<h3 class="text-3xl font-bold font-headline mb-1">31</h3>
+<div class="flex items-center gap-2 text-secondary text-xs">
+<span class="material-symbols-outlined text-sm">group</span>
+<span>+4 this week</span>
+</div>
+</div>
+<div class="absolute bottom-0 left-0 w-full h-16 opacity-30 group-hover:opacity-60 transition-opacity">
+<svg class="w-full h-full" viewbox="0 0 100 30">
+<path d="M0 25 C 20 25, 40 5, 100 5" fill="none" stroke="#00e3fd" stroke-width="2"></path>
+</svg>
+</div>
+</div>
+</section>
+<!-- Main Bento Content -->
+<section class="grid grid-cols-12 gap-8">
+<!-- Recent Activity Feed (8 cols) -->
+<div class="col-span-12 lg:col-span-8">
+<div class="flex items-center justify-between mb-6">
+<h3 class="text-xl font-bold font-headline tracking-tight">Recent Activity</h3>
+<button class="text-xs text-on-surface-variant hover:text-secondary uppercase tracking-widest transition-colors">View All Archive</button>
+</div>
+<div class="bg-surface-container-low rounded-xl overflow-hidden border border-outline-variant/10">
+<div class="divide-y divide-outline-variant/10">
+<!-- Activity Item -->
+<div class="flex items-center gap-4 p-6 hover:bg-surface-container-high transition-colors group">
+<div class="w-12 h-12 rounded-xl bg-surface-container-highest flex items-center justify-center text-secondary group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">commit</span>
+</div>
+<div class="flex-1">
+<p class="text-sm font-medium">New commit pushed to <span class="text-primary">kinetic-core</span></p>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-wider">Refactored animation engine for v2.4.0</p>
+</div>
+<div class="text-right">
+<p class="text-xs font-bold">14m ago</p>
+</div>
+</div>
+<!-- Activity Item -->
+<div class="flex items-center gap-4 p-6 hover:bg-surface-container-high transition-colors group">
+<div class="w-12 h-12 rounded-xl bg-surface-container-highest flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">person_add</span>
+</div>
+<div class="flex-1">
+<p class="text-sm font-medium">New Project Inquiry: <span class="text-secondary">Nexus Fintech UI</span></p>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-wider">Estimated budget: $12k - $15k</p>
+</div>
+<div class="text-right">
+<p class="text-xs font-bold">2h ago</p>
+</div>
+</div>
+<!-- Activity Item -->
+<div class="flex items-center gap-4 p-6 hover:bg-surface-container-high transition-colors group">
+<div class="w-12 h-12 rounded-xl bg-surface-container-highest flex items-center justify-center text-tertiary-fixed-dim group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">visibility</span>
+</div>
+<div class="flex-1">
+<p class="text-sm font-medium">Traffic surge detected from <span class="text-primary">Dribbble.com</span></p>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-wider">Spike in portfolio project "Atmosphere JS"</p>
+</div>
+<div class="text-right">
+<p class="text-xs font-bold">5h ago</p>
+</div>
+</div>
+<!-- Activity Item -->
+<div class="flex items-center gap-4 p-6 hover:bg-surface-container-high transition-colors group">
+<div class="w-12 h-12 rounded-xl bg-surface-container-highest flex items-center justify-center text-error group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">warning</span>
+</div>
+<div class="flex-1">
+<p class="text-sm font-medium">Build failure on branch <span class="text-error">hotfix/auth-leak</span></p>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-wider">CI Pipeline error: unit tests timed out</p>
+</div>
+<div class="text-right">
+<p class="text-xs font-bold">Yesterday</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Traffic Sources (4 cols) -->
+<div class="col-span-12 lg:col-span-4">
+<div class="flex items-center justify-between mb-6">
+<h3 class="text-xl font-bold font-headline tracking-tight">Traffic Sources</h3>
+</div>
+<div class="bg-surface-container-highest rounded-xl p-8 h-full">
+<div class="space-y-8">
+<div>
+<div class="flex justify-between items-end mb-2">
+<span class="text-xs font-bold uppercase tracking-widest">Organic Search</span>
+<span class="text-sm font-headline text-secondary">48%</span>
+</div>
+<div class="h-2 bg-surface-container-low rounded-full overflow-hidden">
+<div class="h-full bg-secondary w-[48%] rounded-full shadow-[0_0_12px_rgba(0,227,253,0.4)]"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between items-end mb-2">
+<span class="text-xs font-bold uppercase tracking-widest">Social Media</span>
+<span class="text-sm font-headline text-primary">24%</span>
+</div>
+<div class="h-2 bg-surface-container-low rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[24%] rounded-full shadow-[0_0_12px_rgba(155,168,255,0.4)]"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between items-end mb-2">
+<span class="text-xs font-bold uppercase tracking-widest">Referral</span>
+<span class="text-sm font-headline text-tertiary-fixed-dim">18%</span>
+</div>
+<div class="h-2 bg-surface-container-low rounded-full overflow-hidden">
+<div class="h-full bg-tertiary-fixed-dim w-[18%] rounded-full shadow-[0_0_12px_rgba(203,208,239,0.4)]"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between items-end mb-2">
+<span class="text-xs font-bold uppercase tracking-widest">Direct</span>
+<span class="text-sm font-headline text-on-surface-variant">10%</span>
+</div>
+<div class="h-2 bg-surface-container-low rounded-full overflow-hidden">
+<div class="h-full bg-on-surface-variant w-[10%] rounded-full opacity-50"></div>
+</div>
+</div>
+</div>
+<div class="mt-12 p-6 bg-surface-bright rounded-xl border border-outline-variant/10">
+<div class="flex items-center gap-4 mb-4">
+<span class="material-symbols-outlined text-secondary">auto_awesome</span>
+<span class="text-xs font-headline font-bold uppercase tracking-widest">AI Prediction</span>
+</div>
+<p class="text-xs text-on-surface-variant leading-relaxed">
+                            Based on historical patterns, your organic traffic is expected to grow by <span class="text-secondary">8.2%</span> next week due to the recent SEO optimization on "Project Zenith".
+                        </p>
+</div>
+</div>
+</div>
+</section>
+<!-- Dynamic Featured Card (Editorial Style) -->
+<section class="mt-16 relative group">
+<div class="bg-surface-container-low rounded-2xl overflow-hidden flex flex-col md:flex-row items-center border border-outline-variant/5">
+<div class="md:w-1/2 p-12 relative z-10">
+<span class="text-secondary font-headline text-sm tracking-widest uppercase block mb-4">Project Highlight</span>
+<h2 class="text-4xl font-bold font-headline leading-tight mb-6">Neural Interface<br/>Explorer v4</h2>
+<p class="text-on-surface-variant mb-8 max-w-md leading-relaxed">
+                        The latest evolution of your motion-capture web interface. Currently trending on GitHub with over 1.2k stars in the last 48 hours.
+                    </p>
+<div class="flex gap-4">
+<button class="bg-primary text-on-primary-fixed font-bold py-3 px-8 rounded-xl text-xs uppercase tracking-widest hover:scale-105 transition-transform">Analytics</button>
+<button class="border border-outline-variant/30 text-on-surface font-bold py-3 px-8 rounded-xl text-xs uppercase tracking-widest hover:bg-surface-container-high transition-colors">Repo Settings</button>
+</div>
+</div>
+<div class="md:w-1/2 h-80 md:h-full relative overflow-hidden -ml-8 md:-ml-12 lg:-ml-24">
+<img class="w-full h-full object-cover scale-110 group-hover:scale-100 transition-transform duration-1000" data-alt="High-tech glowing blue complex architectural user interface nodes and connecting lines on a dark background showing data flow" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRf50k8w88p3grLqyMT9a8fY5E1GY1g41USMyXg0IJ_uw2-J-H6HvhM9Cu7kH8FmdX5pv0OTgNKOQSa6RkBJdbww7JFebIWNP_AuB1c-4xOq-9BEGfSh-tRfZnQJCbfxZMLTkUWdgKVy-cH291LYuy-50RO6akLC6DVZzsMAoRvWFPID4cE3Wo3Ax1NCOZl7W3lNSZcCFVPoLr-ynQTZMZhpqh-1hgauDpqc1id1Fwm2Qavvq0SX-zpMEhC6cbZexfhFoWyptjudw"/>
+<div class="absolute inset-0 bg-gradient-to-r from-surface-container-low via-surface-container-low/50 to-transparent"></div>
+</div>
+</div>
+</section>
+</main>
+<!-- Contextual FAB (Restricted to Dashboard) -->
+<button class="fixed bottom-8 right-8 w-16 h-16 bg-gradient-to-br from-secondary to-secondary-container text-on-secondary-container rounded-full shadow-2xl flex items-center justify-center group hover:scale-110 active:scale-95 transition-all z-50">
+<span class="material-symbols-outlined text-3xl group-hover:rotate-90 transition-transform duration-300">add</span>
+</button>
+</body></html>

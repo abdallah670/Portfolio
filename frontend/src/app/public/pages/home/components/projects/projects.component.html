@@ -1,0 +1,41 @@
+<section id="projects-component" class="projects-section">
+  <div class="container">
+    <div class="projects-header">
+      <div>
+        <span class="projects-kicker">Selected Case Studies</span>
+        <h2 class="projects-title">Engineering Excellence.</h2>
+      </div>
+      <a routerLink="/projects" class="projects-link">
+        All Projects
+        <div class="arrow-container">
+          <span class="material-symbols-outlined icon">arrow_forward</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="projects-grid">
+      @for (project of projects; track project.title) {
+        <div class="project-card" [class.wide]="project.isWide">
+          <div class="project-img-wrapper">
+            <img [src]="project.image" [alt]="project.title" />
+          </div>
+          <div class="project-content">
+            <div class="tags-container">
+              @for (tag of project.tags; track tag) {
+                <span class="tag-pill">{{ tag }}</span>
+              }
+            </div>
+            <h3 class="project-heading">{{ project.title }}</h3>
+            <p class="project-desc">{{ project.description }}</p>
+            <a [href]="project.link" class="project-action">
+              View Details
+              <div class="arrow-container">
+                <span class="material-symbols-outlined icon">north_east</span>
+              </div>
+            </a>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</section>

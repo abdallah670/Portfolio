@@ -14,4 +14,6 @@ public class Message {
     public DateTime? ReadAt { get; set; }
     public string? IpAddress { get; set; }
     public string? UserAgent { get; set; }
+    public bool IsReplied { get; set; }
+    public DateTime? RepliedAt { get; set; }
 }

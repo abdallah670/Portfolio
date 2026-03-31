@@ -1,8 +1,8 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PortfolioApi.Application.DTOs;
+using PortfolioApi.Application.Interfaces;
 using PortfolioApi.Domain.Entities;
-using PortfolioApi.Infrastructure.Data;
 
 namespace PortfolioApi.Application.Features.Portfolio.Commands;
 
@@ -10,9 +10,9 @@ public record UpdateAboutCommand(About About) : IRequest<ApiResponse<About>>;
 
 public class UpdateAboutCommandHandler : IRequestHandler<UpdateAboutCommand, ApiResponse<About>>
 {
-    private readonly AppDbContext _context;
+    private readonly IApplicationDbContext _context;
 
-    public UpdateAboutCommandHandler(AppDbContext context)
+    public UpdateAboutCommandHandler(IApplicationDbContext context)
     {
         _context = context;
     }

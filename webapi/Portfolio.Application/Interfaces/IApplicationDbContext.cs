@@ -18,6 +18,9 @@ public interface IApplicationDbContext
     DbSet<SocialLink> SocialLinks { get; set; }
     DbSet<Contact> Contacts { get; set; }
     DbSet<Message> Messages { get; set; }
+    DbSet<VisitorSession> VisitorSessions { get; set; }
+    DbSet<PageVisit> PageVisits { get; set; }
+    DbSet<SystemSetting> SystemSettings { get; set; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

@@ -1,7 +1,7 @@
 using MediatR;
 using PortfolioApi.Application.DTOs;
+using PortfolioApi.Application.Interfaces;
 using PortfolioApi.Domain.Entities;
-using PortfolioApi.Infrastructure.Data;
 
 namespace PortfolioApi.Application.Features.Messaging.Commands;
 
@@ -16,9 +16,9 @@ public record CreateMessageCommand(
 
 public class CreateMessageCommandHandler : IRequestHandler<CreateMessageCommand, ApiResponse<int>>
 {
-    private readonly AppDbContext _context;
+    private readonly IApplicationDbContext _context;
 
-    public CreateMessageCommandHandler(AppDbContext context)
+    public CreateMessageCommandHandler(IApplicationDbContext context)
     {
         _context = context;
     }

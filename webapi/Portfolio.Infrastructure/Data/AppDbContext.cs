@@ -23,6 +23,9 @@ public class AppDbContext : IdentityDbContext<AdminUser, IdentityRole<int>, int>
     public DbSet<SocialLink> SocialLinks { get; set; }
     public DbSet<Contact> Contacts { get; set; }
     public DbSet<Message> Messages { get; set; }
+    public DbSet<VisitorSession> VisitorSessions { get; set; }
+    public DbSet<PageVisit> PageVisits { get; set; }
+    public DbSet<SystemSetting> SystemSettings { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -33,5 +36,16 @@ public class AppDbContext : IdentityDbContext<AdminUser, IdentityRole<int>, int>
             .WithMany(c => c.Skills)
             .HasForeignKey(s => s.CategoryId)
             .OnDelete(DeleteBehavior.Cascade);
+        
+        modelBuilder.Entity<PageVisit>()
+            .HasOne(v => v.Session)
+            .WithMany(s => s.PageVisits)
+            .HasForeignKey(v => v.SessionId)
+            .HasPrincipalKey(s => s.SessionId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        modelBuilder.Entity<SystemSetting>()
+            .HasIndex(s => s.Key)
+            .IsUnique();
     }
 }

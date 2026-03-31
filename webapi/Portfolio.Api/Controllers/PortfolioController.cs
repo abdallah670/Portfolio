@@ -22,6 +22,52 @@ public class PortfolioController : ControllerBase
         _mediator = mediator;
         _context = context;
     }
+
+    // Public endpoint - only return published projects
+    [HttpGet("projects")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetPublicProjects()
+    {
+        var projects = await _context.Projects
+            .Where(p => p.IsPublished)
+            .OrderByDescending(p => p.Id)
+            .Select(p => new
+            {
+                p.Id,
+                p.Title,
+                p.Description,
+                p.Stack,
+                p.Status,
+                p.Image,
+                p.Year,
+                p.Category,
+                p.LiveUrl,
+                p.GithubUrl,
+                p.Color,
+                p.IsFeatured,
+                p.ViewsCount
+            })
+            .ToListAsync();
+        return Ok(projects);
+    }
+
+    // PUT /api/portfolio/projects/{id}/publish
+    [HttpPut("projects/{id}/publish")]
+    [Authorize]
+    public async Task<IActionResult> PublishProject(int id)
+    {
+        var result = await _mediator.Send(new PublishProjectCommand(id));
+        return result ? Ok() : NotFound();
+    }
+
+    // PUT /api/portfolio/projects/{id}/unpublish
+    [HttpPut("projects/{id}/unpublish")]
+    [Authorize]
+    public async Task<IActionResult> UnpublishProject(int id)
+    {
+        var result = await _mediator.Send(new UnpublishProjectCommand(id));
+        return result ? Ok() : NotFound();
+    }
     
     [HttpGet("config")]
     public async Task<IActionResult> GetConfig()
@@ -65,104 +111,125 @@ public class PortfolioController : ControllerBase
     [HttpPut("projects")]
     public async Task<IActionResult> UpdateProject([FromBody] Project project)
     {
-        var response = await _portfolioService.UpdateProjectAsync(project);
-        return Ok(response);
+        _context.Projects.Update(project);
+        await _context.SaveChangesAsync();
+        return Ok(project);
     }
     
     [Authorize]
     [HttpDelete("projects/{id}")]
     public async Task<IActionResult> DeleteProject(int id)
     {
-        var response = await _portfolioService.DeleteProjectAsync(id);
-        return Ok(response);
+        var project = await _context.Projects.FindAsync(id);
+        if (project == null) return NotFound();
+        _context.Projects.Remove(project);
+        await _context.SaveChangesAsync();
+        return Ok();
     }
     
     [Authorize]
     [HttpPost("journey")]
     public async Task<IActionResult> CreateJourney([FromBody] JourneyItem item)
     {
-        var response = await _portfolioService.CreateJourneyAsync(item);
-        return Ok(response);
+        _context.JourneyItems.Add(item);
+        await _context.SaveChangesAsync();
+        return Ok(item);
     }
     
     [Authorize]
     [HttpPut("journey")]
     public async Task<IActionResult> UpdateJourney([FromBody] JourneyItem item)
     {
-        var response = await _portfolioService.UpdateJourneyAsync(item);
-        return Ok(response);
+        _context.JourneyItems.Update(item);
+        await _context.SaveChangesAsync();
+        return Ok(item);
     }
     
     [Authorize]
     [HttpDelete("journey/{id}")]
     public async Task<IActionResult> DeleteJourney(int id)
     {
-        var response = await _portfolioService.DeleteJourneyAsync(id);
-        return Ok(response);
+        var item = await _context.JourneyItems.FindAsync(id);
+        if (item == null) return NotFound();
+        _context.JourneyItems.Remove(item);
+        await _context.SaveChangesAsync();
+        return Ok();
     }
     
     [Authorize]
     [HttpPut("contact")]
     public async Task<IActionResult> UpdateContact([FromBody] Contact contact)
     {
-        var response = await _portfolioService.UpdateContactAsync(contact);
-        return Ok(response);
+        _context.Contacts.Update(contact);
+        await _context.SaveChangesAsync();
+        return Ok(contact);
     }
     
     [Authorize]
     [HttpPost("socials")]
     public async Task<IActionResult> CreateSocial([FromBody] SocialLink social)
     {
-        var response = await _portfolioService.CreateSocialAsync(social);
-        return Ok(response);
+        _context.SocialLinks.Add(social);
+        await _context.SaveChangesAsync();
+        return Ok(social);
     }
     
     [Authorize]
     [HttpPut("socials")]
     public async Task<IActionResult> UpdateSocial([FromBody] SocialLink social)
     {
-        var response = await _portfolioService.UpdateSocialAsync(social);
-        return Ok(response);
+        _context.SocialLinks.Update(social);
+        await _context.SaveChangesAsync();
+        return Ok(social);
     }
     
     [Authorize]
     [HttpDelete("socials/{id}")]
     public async Task<IActionResult> DeleteSocial(int id)
     {
-        var response = await _portfolioService.DeleteSocialAsync(id);
-        return Ok(response);
+        var social = await _context.SocialLinks.FindAsync(id);
+        if (social == null) return NotFound();
+        _context.SocialLinks.Remove(social);
+        await _context.SaveChangesAsync();
+        return Ok();
     }
     
     [Authorize]
     [HttpPost("skills/categories")]
     public async Task<IActionResult> CreateSkillCategory([FromBody] SkillCategory category)
     {
-        var response = await _portfolioService.CreateSkillCategoryAsync(category);
-        return Ok(response);
+        _context.SkillCategories.Add(category);
+        await _context.SaveChangesAsync();
+        return Ok(category);
     }
     
     [Authorize]
     [HttpPut("skills/categories")]
     public async Task<IActionResult> UpdateSkillCategory([FromBody] SkillCategory category)
     {
-        var response = await _portfolioService.UpdateSkillCategoryAsync(category);
-        return Ok(response);
+        _context.SkillCategories.Update(category);
+        await _context.SaveChangesAsync();
+        return Ok(category);
     }
     
     [Authorize]
     [HttpPost("skills")]
     public async Task<IActionResult> CreateSkill([FromBody] Skill skill)
     {
-        var response = await _portfolioService.CreateSkillAsync(skill);
-        return Ok(response);
+        _context.Skills.Add(skill);
+        await _context.SaveChangesAsync();
+        return Ok(skill);
     }
     
     [Authorize]
     [HttpDelete("skills/{id}")]
     public async Task<IActionResult> DeleteSkill(int id)
     {
-        var response = await _portfolioService.DeleteSkillAsync(id);
-        return Ok(response);
+        var skill = await _context.Skills.FindAsync(id);
+        if (skill == null) return NotFound();
+        _context.Skills.Remove(skill);
+        await _context.SaveChangesAsync();
+        return Ok();
     }
     
     // GET: api/portfolio/dashboard-stats

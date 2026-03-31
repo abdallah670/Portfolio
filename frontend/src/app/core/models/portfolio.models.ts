@@ -11,9 +11,61 @@ export interface Project {
   liveUrl: string;
   githubUrl: string;
   isFeatured: boolean;
+  isPublished: boolean;
+  viewsCount: number;
   color: string;
   stack: string;
   displayOrder: number;
+}
+
+// System Setting Model
+export interface SystemSetting {
+  id: number;
+  key: string;
+  value: string;
+  dataType: 'string' | 'int' | 'bool' | 'json';
+  category: string;
+  description: string;
+  updatedAt: string;
+  updatedBy?: string;
+}
+
+// Analytics Models
+export interface DashboardAnalytics {
+  totalVisitors: number;
+  totalPageViews: number;
+  bounceRate: number;
+  averageSessionDuration: string;
+  trafficTrends: TrafficTrend[];
+  topProjects: ProjectView[];
+  topLocations: GeoLocation[];
+  deviceBreakdown: DeviceBreakdown[];
+}
+
+export interface TrafficTrend {
+  date: string;
+  visitors: number;
+  pageViews: number;
+}
+
+export interface ProjectView {
+  projectId: number;
+  projectName: string;
+  views: number;
+  percentage: number;
+}
+
+export interface GeoLocation {
+  country: string;
+  city: string;
+  visitorCount: number;
+  percentage: number;
+}
+
+export interface DeviceBreakdown {
+  deviceType: string;
+  count: number;
+  percentage: number;
 }
 
 // Message Model

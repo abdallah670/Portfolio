@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PortfolioApi.Application.DTOs;
 using PortfolioApi.Application.Features.Authentication.Commands;
@@ -26,4 +27,25 @@ public class AuthController : ControllerBase
         
         return Ok(response);
     }
+    
+    // PUT /api/auth/password
+    [HttpPut("password")]
+    [Authorize]
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
+    {
+        var username = User.Identity?.Name ?? string.Empty;
+        var result = await _mediator.Send(new UpdatePasswordCommand(
+            request.CurrentPassword, request.NewPassword, username));
+        
+        if (!result.Success)
+            return BadRequest(new { errors = result.Errors });
+        
+        return Ok(new { message = "Password updated successfully" });
+    }
+}
+
+public class ChangePasswordRequest
+{
+    public string CurrentPassword { get; set; } = string.Empty;
+    public string NewPassword { get; set; } = string.Empty;
 }

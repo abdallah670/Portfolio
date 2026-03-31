@@ -1,3 +1,6 @@
+using MediatR;
+using Microsoft.EntityFrameworkCore;
+using PortfolioApi.Application.DTOs;
 using PortfolioApi.Application.Interfaces;
 using PortfolioApi.Domain.Entities;
 using System.Text.Json;
@@ -97,9 +100,7 @@ public class GetFullConfigQueryHandler : IRequestHandler<GetFullConfigQuery, Por
             Year = p.Year,
             Category = p.Category,
             Description = p.Description,
-            Stack = string.IsNullOrEmpty(p.Stack) 
-                ? new List<string>() 
-                : JsonSerializer.Deserialize<List<string>>(p.Stack) ?? new List<string>(),
+            Stack = p.Stack,
             Image = p.Image,
             LiveUrl = p.LiveUrl,
             GithubUrl = p.GithubUrl,

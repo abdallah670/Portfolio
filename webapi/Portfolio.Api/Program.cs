@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PortfolioApi.Domain.Entities;
 using PortfolioApi.Infrastructure.Data;
+using PortfolioApi.Infrastructure.Middleware;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -45,6 +46,9 @@ builder.Services.AddIdentity<AdminUser, IdentityRole<int>>(options => {
 builder.Services.AddMediatR(cfg => {
     cfg.RegisterServicesFromAssembly(typeof(PortfolioApi.Application.DTOs.LoginRequest).Assembly);
 });
+
+// HttpContextAccessor for password change
+builder.Services.AddHttpContextAccessor();
 
 // Authentication
 var jwtSecret = builder.Configuration["Jwt:Secret"] ?? "menomo-portfolio-api-strong-secret-key";
@@ -96,6 +100,9 @@ if (app.Environment.IsDevelopment())
 app.UseCors("AllowFrontend");
 
 app.UseStaticFiles();
+
+// Analytics middleware (before auth to capture all traffic)
+app.UseAnalytics();
 
 app.UseAuthentication();
 app.UseAuthorization();

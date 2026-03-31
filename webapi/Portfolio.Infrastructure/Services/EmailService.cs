@@ -1,3 +1,8 @@
+using System.Net;
+using System.Net.Mail;
+using PortfolioApi.Application.Interfaces;
+using PortfolioApi.Infrastructure.Services.Models;
+
 namespace PortfolioApi.Infrastructure.Services;
 
 public class EmailService : IEmailService

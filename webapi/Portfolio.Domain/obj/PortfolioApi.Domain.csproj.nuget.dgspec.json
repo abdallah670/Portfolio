@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Meno\\Projects\\Portfolio\\webapi\\Portfolio.Domain\\PortfolioApi.Domain.csproj": {}
+    "c:\\Meno\\Projects\\Portfolio\\webapi\\Portfolio.Domain\\PortfolioApi.Domain.csproj": {}
   },
   "projects": {
-    "C:\\Meno\\Projects\\Portfolio\\webapi\\Portfolio.Domain\\PortfolioApi.Domain.csproj": {
+    "c:\\Meno\\Projects\\Portfolio\\webapi\\Portfolio.Domain\\PortfolioApi.Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Meno\\Projects\\Portfolio\\webapi\\Portfolio.Domain\\PortfolioApi.Domain.csproj",
+        "projectUniqueName": "c:\\Meno\\Projects\\Portfolio\\webapi\\Portfolio.Domain\\PortfolioApi.Domain.csproj",
         "projectName": "PortfolioApi.Domain",
-        "projectPath": "C:\\Meno\\Projects\\Portfolio\\webapi\\Portfolio.Domain\\PortfolioApi.Domain.csproj",
+        "projectPath": "c:\\Meno\\Projects\\Portfolio\\webapi\\Portfolio.Domain\\PortfolioApi.Domain.csproj",
         "packagesPath": "C:\\Users\\abdallh\\.nuget\\packages\\",
-        "outputPath": "C:\\Meno\\Projects\\Portfolio\\webapi\\Portfolio.Domain\\obj\\",
+        "outputPath": "c:\\Meno\\Projects\\Portfolio\\webapi\\Portfolio.Domain\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

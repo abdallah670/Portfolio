@@ -1,4 +1,7 @@
-namespace PortfolioApi.Api.Models
+using System.ComponentModel.DataAnnotations;
+
+namespace PortfolioApi.Api.Models;
+
 public class CreateMessageRequest
 {
     [Required]
@@ -16,6 +19,7 @@ public class CreateMessageRequest
     [Required]
     public string Content { get; set; } = string.Empty;
 }
+
 public class RespondToMessageRequest
 {
     [Required]

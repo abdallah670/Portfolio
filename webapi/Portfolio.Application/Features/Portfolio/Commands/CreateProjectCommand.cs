@@ -1,7 +1,8 @@
 using MediatR;
 using PortfolioApi.Application.DTOs;
+using PortfolioApi.Application.Interfaces;
 using PortfolioApi.Domain.Entities;
-using PortfolioApi.Infrastructure.Data;
+using System.Text.Json;
 
 namespace PortfolioApi.Application.Features.Portfolio.Commands;
 
@@ -9,9 +10,9 @@ public record CreateProjectCommand(Project Project) : IRequest<ApiResponse<Proje
 
 public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand, ApiResponse<Project>>
 {
-    private readonly AppDbContext _context;
+    private readonly IApplicationDbContext _context;
 
-    public CreateProjectCommandHandler(AppDbContext context)
+    public CreateProjectCommandHandler(IApplicationDbContext context)
     {
         _context = context;
     }

@@ -1,7 +1,7 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PortfolioApi.Application.DTOs;
-using PortfolioApi.Infrastructure.Data;
+using PortfolioApi.Application.Interfaces;
 
 namespace PortfolioApi.Application.Features.Portfolio.Queries;
 
@@ -9,9 +9,9 @@ public record GetSkillCategoriesQuery() : IRequest<List<SkillCategoryDto>>;
 
 public class GetSkillCategoriesQueryHandler : IRequestHandler<GetSkillCategoriesQuery, List<SkillCategoryDto>>
 {
-    private readonly AppDbContext _context;
+    private readonly IApplicationDbContext _context;
 
-    public GetSkillCategoriesQueryHandler(AppDbContext context)
+    public GetSkillCategoriesQueryHandler(IApplicationDbContext context)
     {
         _context = context;
     }

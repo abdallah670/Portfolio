@@ -7,6 +7,7 @@ using PortfolioApi.Domain.Entities;
 using PortfolioApi.Application.Features.Messaging.Commands;
 using PortfolioApi.Infrastructure.Data;
 using System.ComponentModel.DataAnnotations;
+using PortfolioApi.Api.Models;
 
 namespace PortfolioApi.Api.Controllers;
 
@@ -166,6 +167,8 @@ public class MessagesController : ControllerBase
 
         message.IsRead = true;
         message.ReadAt = DateTime.UtcNow;
+        message.IsReplied = true;
+        message.RepliedAt = DateTime.UtcNow;
 
         await _context.SaveChangesAsync();
 

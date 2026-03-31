@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Meno\\Projects\\Portfolio\\webapi\\Portfolio.Application\\PortfolioApi.Application.csproj": {}
+    "c:\\Meno\\Projects\\Portfolio\\webapi\\Portfolio.Application\\PortfolioApi.Application.csproj": {}
   },
   "projects": {
-    "C:\\Meno\\Projects\\Portfolio\\webapi\\Portfolio.Application\\PortfolioApi.Application.csproj": {
+    "c:\\Meno\\Projects\\Portfolio\\webapi\\Portfolio.Application\\PortfolioApi.Application.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Meno\\Projects\\Portfolio\\webapi\\Portfolio.Application\\PortfolioApi.Application.csproj",
+        "projectUniqueName": "c:\\Meno\\Projects\\Portfolio\\webapi\\Portfolio.Application\\PortfolioApi.Application.csproj",
         "projectName": "PortfolioApi.Application",
-        "projectPath": "C:\\Meno\\Projects\\Portfolio\\webapi\\Portfolio.Application\\PortfolioApi.Application.csproj",
+        "projectPath": "c:\\Meno\\Projects\\Portfolio\\webapi\\Portfolio.Application\\PortfolioApi.Application.csproj",
         "packagesPath": "C:\\Users\\abdallh\\.nuget\\packages\\",
-        "outputPath": "C:\\Meno\\Projects\\Portfolio\\webapi\\Portfolio.Application\\obj\\",
+        "outputPath": "c:\\Meno\\Projects\\Portfolio\\webapi\\Portfolio.Application\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -32,8 +32,8 @@
           "net9.0": {
             "targetAlias": "net9.0",
             "projectReferences": {
-              "C:\\Meno\\Projects\\Portfolio\\webapi\\Portfolio.Domain\\PortfolioApi.Domain.csproj": {
-                "projectPath": "C:\\Meno\\Projects\\Portfolio\\webapi\\Portfolio.Domain\\PortfolioApi.Domain.csproj"
+              "c:\\Meno\\Projects\\Portfolio\\webapi\\Portfolio.Domain\\PortfolioApi.Domain.csproj": {
+                "projectPath": "c:\\Meno\\Projects\\Portfolio\\webapi\\Portfolio.Domain\\PortfolioApi.Domain.csproj"
               }
             }
           }
@@ -62,6 +62,10 @@
               "target": "Package",
               "version": "[14.1.0, )"
             },
+            "Microsoft.AspNetCore.Http.Abstractions": {
+              "target": "Package",
+              "version": "[2.3.0, )"
+            },
             "Microsoft.AspNetCore.Identity": {
               "target": "Package",
               "version": "[2.3.9, )"
@@ -81,6 +85,10 @@
             "Microsoft.Extensions.Identity.Stores": {
               "target": "Package",
               "version": "[10.0.5, )"
+            },
+            "System.IdentityModel.Tokens.Jwt": {
+              "target": "Package",
+              "version": "[8.3.1, )"
             }
           },
           "imports": [
@@ -117,14 +125,14 @@
         }
       }
     },
-    "C:\\Meno\\Projects\\Portfolio\\webapi\\Portfolio.Domain\\PortfolioApi.Domain.csproj": {
+    "c:\\Meno\\Projects\\Portfolio\\webapi\\Portfolio.Domain\\PortfolioApi.Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Meno\\Projects\\Portfolio\\webapi\\Portfolio.Domain\\PortfolioApi.Domain.csproj",
+        "projectUniqueName": "c:\\Meno\\Projects\\Portfolio\\webapi\\Portfolio.Domain\\PortfolioApi.Domain.csproj",
         "projectName": "PortfolioApi.Domain",
-        "projectPath": "C:\\Meno\\Projects\\Portfolio\\webapi\\Portfolio.Domain\\PortfolioApi.Domain.csproj",
+        "projectPath": "c:\\Meno\\Projects\\Portfolio\\webapi\\Portfolio.Domain\\PortfolioApi.Domain.csproj",
         "packagesPath": "C:\\Users\\abdallh\\.nuget\\packages\\",
-        "outputPath": "C:\\Meno\\Projects\\Portfolio\\webapi\\Portfolio.Domain\\obj\\",
+        "outputPath": "c:\\Meno\\Projects\\Portfolio\\webapi\\Portfolio.Domain\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

@@ -12,7 +12,9 @@ import {
   SocialLink,
   DashboardStats,
   PaginatedResponse,
-  CreateMessageRequest
+  CreateMessageRequest,
+  SystemSetting,
+  DashboardAnalytics
 } from '../models/portfolio.models';
 
 @Injectable({
@@ -162,5 +164,37 @@ export class ApiService {
     const formData = new FormData();
     formData.append('file', file);
     return this.http.post<{ url: string }>(`${this.API_URL}/upload/profile-image`, formData);
+  }
+
+  // Analytics
+  getAnalyticsDashboard(days: number = 30): Observable<DashboardAnalytics> {
+    return this.http.get<DashboardAnalytics>(`${this.API_URL}/analytics/dashboard?days=${days}`);
+  }
+
+  // Settings
+  getSettings(category?: string): Observable<SystemSetting[]> {
+    let params = new HttpParams();
+    if (category) params = params.set('category', category);
+    return this.http.get<SystemSetting[]>(`${this.API_URL}/settings`, { params });
+  }
+
+  updateSetting(key: string, value: string, dataType: string = 'string'): Observable<void> {
+    return this.http.put<void>(`${this.API_URL}/settings`, { key, value, dataType });
+  }
+
+  // Password Change
+  updatePassword(currentPassword: string, newPassword: string): Observable<{ message: string }> {
+    return this.http.put<{ message: string }>(`${this.API_URL}/auth/password`, { 
+      currentPassword, newPassword 
+    });
+  }
+
+  // Project Publish/Unpublish
+  publishProject(id: number): Observable<void> {
+    return this.http.put<void>(`${this.API_URL}/portfolio/projects/${id}/publish`, {});
+  }
+
+  unpublishProject(id: number): Observable<void> {
+    return this.http.put<void>(`${this.API_URL}/portfolio/projects/${id}/unpublish`, {});
   }
 }

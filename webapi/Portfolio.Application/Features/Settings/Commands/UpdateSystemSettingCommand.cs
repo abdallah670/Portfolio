@@ -1,5 +1,6 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using PortfolioApi.Application.Interfaces;
 using PortfolioApi.Domain.Entities;
 
@@ -11,10 +12,12 @@ public record UpdateSystemSettingCommand(string Key, string Value, string DataTy
 public class UpdateSystemSettingCommandHandler : IRequestHandler<UpdateSystemSettingCommand, bool>
 {
     private readonly IApplicationDbContext _context;
+    private readonly ILogger<UpdateSystemSettingCommandHandler> _logger;
 
-    public UpdateSystemSettingCommandHandler(IApplicationDbContext context)
+    public UpdateSystemSettingCommandHandler(IApplicationDbContext context, ILogger<UpdateSystemSettingCommandHandler> logger)
     {
         _context = context;
+        _logger = logger;
     }
 
     public async Task<bool> Handle(UpdateSystemSettingCommand request, CancellationToken cancellationToken)
@@ -45,6 +48,7 @@ public class UpdateSystemSettingCommandHandler : IRequestHandler<UpdateSystemSet
         }
 
         await _context.SaveChangesAsync(cancellationToken);
+        _logger.LogInformation("System setting {Key} updated successfully", request.Key);
         return true;
     }
 }

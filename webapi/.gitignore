@@ -1,0 +1,24 @@
+# Logs
+logs/
+*.log
+
+# Build outputs
+bin/
+obj/
+
+# IDE
+.vs/
+.vscode/
+.idea/
+
+# User-specific files
+*.user
+*.suo
+
+# Database
+*.db
+*.db-journal
+
+# OS files
+.DS_Store
+Thumbs.db

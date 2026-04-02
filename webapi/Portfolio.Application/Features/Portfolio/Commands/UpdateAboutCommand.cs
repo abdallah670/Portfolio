@@ -1,5 +1,6 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using PortfolioApi.Application.DTOs;
 using PortfolioApi.Application.Interfaces;
 using PortfolioApi.Domain.Entities;
@@ -11,10 +12,13 @@ public record UpdateAboutCommand(About About) : IRequest<ApiResponse<About>>;
 public class UpdateAboutCommandHandler : IRequestHandler<UpdateAboutCommand, ApiResponse<About>>
 {
     private readonly IApplicationDbContext _context;
+    private readonly ILogger<UpdateAboutCommandHandler> _logger;
 
-    public UpdateAboutCommandHandler(IApplicationDbContext context)
+    public UpdateAboutCommandHandler(IApplicationDbContext context, ILogger<UpdateAboutCommandHandler> logger)
     {
         _context = context;
+        _logger = logger;
+
     }
 
     public async Task<ApiResponse<About>> Handle(UpdateAboutCommand request, CancellationToken cancellationToken)
@@ -33,6 +37,7 @@ public class UpdateAboutCommandHandler : IRequestHandler<UpdateAboutCommand, Api
         about.UpdatedAt = DateTime.UtcNow;
         
         await _context.SaveChangesAsync(cancellationToken);
+        _logger.LogInformation("About section updated successfully at {UpdatedAt}", about.UpdatedAt);
         return new ApiResponse<About> { Success = true, Message = "About updated", Data = about };
     }
 }

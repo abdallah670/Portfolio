@@ -6,9 +6,32 @@ using Microsoft.IdentityModel.Tokens;
 using PortfolioApi.Domain.Entities;
 using PortfolioApi.Infrastructure.Data;
 using PortfolioApi.Infrastructure.Middleware;
+using PortfolioApi.Infrastructure.Services;
+using PortfolioApi.Infrastructure.Services.Models;
+using PortfolioApi.Application.Interfaces;
 using System.Reflection;
+using Serilog;
 
-var builder = WebApplication.CreateBuilder(args);
+// Configure Serilog before builder
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Debug()
+    .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Information)
+    .MinimumLevel.Override("Microsoft.AspNetCore", Serilog.Events.LogEventLevel.Warning)
+    .Enrich.FromLogContext()
+    .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
+    .WriteTo.File("logs/portfolio-.log", 
+        rollingInterval: RollingInterval.Day,
+        outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
+    .CreateLogger();
+
+try
+{
+    Log.Information("Starting Portfolio API...");
+    
+    var builder = WebApplication.CreateBuilder(args);
+    
+    // Use Serilog for logging
+    builder.Host.UseSerilog();
 
 // Add services to the container
 builder.Services.AddControllers();
@@ -54,6 +77,13 @@ builder.Services.AddMediatR(cfg => {
 
 // HttpContextAccessor for password change
 builder.Services.AddHttpContextAccessor();
+
+// Email Service Configuration
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+builder.Services.AddSingleton<IEmailService>(sp => {
+    var settings = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<EmailSettings>>().Value;
+    return new EmailService(settings);
+});
 
 // Authentication
 var jwtSecret = builder.Configuration["Jwt:Secret"] ?? "menomo-portfolio-api-strong-secret-key";
@@ -106,6 +136,12 @@ app.UseCors("AllowFrontend");
 
 app.UseStaticFiles();
 
+// Add request logging
+app.UseSerilogRequestLogging(options =>
+{
+    options.MessageTemplate = "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000} ms";
+});
+
 // Analytics middleware (before auth to capture all traffic)
 app.UseAnalytics();
 
@@ -135,4 +171,13 @@ using (var scope = app.Services.CreateScope())
     await seedService.SeedInitialDataAsync();
 }
 
-app.Run();
+    app.Run();
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Application start-up failed");
+}
+finally
+{
+    Log.CloseAndFlush();
+}

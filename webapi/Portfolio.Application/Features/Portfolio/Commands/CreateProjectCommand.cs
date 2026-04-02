@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.Extensions.Logging;
 using PortfolioApi.Application.DTOs;
 using PortfolioApi.Application.Interfaces;
 using PortfolioApi.Domain.Entities;
@@ -11,14 +12,17 @@ public record CreateProjectCommand(Project Project) : IRequest<ApiResponse<Proje
 public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand, ApiResponse<Project>>
 {
     private readonly IApplicationDbContext _context;
-
-    public CreateProjectCommandHandler(IApplicationDbContext context)
+    private readonly ILogger<CreateProjectCommandHandler> _logger;
+    public CreateProjectCommandHandler(IApplicationDbContext context, ILogger<CreateProjectCommandHandler> logger)
     {
         _context = context;
+        _logger = logger;
     }
 
     public async Task<ApiResponse<Project>> Handle(CreateProjectCommand request, CancellationToken cancellationToken)
     {
+        try{
+        _logger.LogInformation("Creating project: {ProjectTitle}", request.Project.Title);
         var project = new Project
         {
             Title = request.Project.Title,
@@ -38,6 +42,12 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
         _context.Projects.Add(project);
         await _context.SaveChangesAsync(cancellationToken);
         
-        return new ApiResponse<Project> { Success = true, Message = "Project created", Data = project };
+        _logger.LogInformation("Project created: {ProjectId}", project.Id);
+        return new ApiResponse<Project> { Success = true, Message = "Project created", Data = project };}
+        catch(Exception ex)
+        {
+            _logger.LogError(ex, "Error creating project: {ProjectData}", JsonSerializer.Serialize(request.Project));
+            return new ApiResponse<Project> { Success = false, Message = "Error creating project" };
+        }
     }
 }

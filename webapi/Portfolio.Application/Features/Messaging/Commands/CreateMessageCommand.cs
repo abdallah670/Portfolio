@@ -1,7 +1,9 @@
 using MediatR;
+using Microsoft.Extensions.Logging;
 using PortfolioApi.Application.DTOs;
 using PortfolioApi.Application.Interfaces;
 using PortfolioApi.Domain.Entities;
+
 
 namespace PortfolioApi.Application.Features.Messaging.Commands;
 
@@ -17,10 +19,14 @@ public record CreateMessageCommand(
 public class CreateMessageCommandHandler : IRequestHandler<CreateMessageCommand, ApiResponse<int>>
 {
     private readonly IApplicationDbContext _context;
+    private readonly ILogger<CreateMessageCommandHandler> _logger;
 
-    public CreateMessageCommandHandler(IApplicationDbContext context)
+
+    public CreateMessageCommandHandler(IApplicationDbContext context, ILogger<CreateMessageCommandHandler> logger)
     {
         _context = context;
+        _logger = logger;
+
     }
 
     public async Task<ApiResponse<int>> Handle(CreateMessageCommand request, CancellationToken cancellationToken)
@@ -39,6 +45,9 @@ public class CreateMessageCommandHandler : IRequestHandler<CreateMessageCommand,
 
         _context.Messages.Add(message);
         await _context.SaveChangesAsync(cancellationToken);
+
+        _logger.LogInformation("Message created successfully");
+
 
         return new ApiResponse<int> 
         { 

@@ -1,5 +1,6 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using PortfolioApi.Application.Interfaces;
 using PortfolioApi.Domain.Entities;
 
@@ -10,10 +11,12 @@ public record GetSystemSettingsQuery(string? Category = null) : IRequest<List<Sy
 public class GetSystemSettingsQueryHandler : IRequestHandler<GetSystemSettingsQuery, List<SystemSetting>>
 {
     private readonly IApplicationDbContext _context;
+    private readonly ILogger<GetSystemSettingsQueryHandler> _logger;
 
-    public GetSystemSettingsQueryHandler(IApplicationDbContext context)
+    public GetSystemSettingsQueryHandler(IApplicationDbContext context, ILogger<GetSystemSettingsQueryHandler> logger)
     {
         _context = context;
+        _logger = logger;
     }
 
     public async Task<List<SystemSetting>> Handle(GetSystemSettingsQuery request, CancellationToken cancellationToken)

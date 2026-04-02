@@ -1,5 +1,6 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using PortfolioApi.Application.DTOs;
 using PortfolioApi.Application.Interfaces;
 using PortfolioApi.Domain.Entities;
@@ -12,10 +13,12 @@ public record GetFullConfigQuery() : IRequest<PortfolioConfigDto>;
 public class GetFullConfigQueryHandler : IRequestHandler<GetFullConfigQuery, PortfolioConfigDto>
 {
     private readonly IApplicationDbContext _context;
+    private readonly ILogger<GetFullConfigQueryHandler> _logger;
 
-    public GetFullConfigQueryHandler(IApplicationDbContext context)
+    public GetFullConfigQueryHandler(IApplicationDbContext context, ILogger<GetFullConfigQueryHandler> logger)
     {
         _context = context;
+        _logger = logger;
     }
 
     public async Task<PortfolioConfigDto> Handle(GetFullConfigQuery request, CancellationToken cancellationToken)
@@ -36,7 +39,7 @@ public class GetFullConfigQueryHandler : IRequestHandler<GetFullConfigQuery, Por
         var journey = await _context.JourneyItems.OrderBy(j => j.DisplayOrder).ToListAsync(cancellationToken);
         var socials = await _context.SocialLinks.ToListAsync(cancellationToken);
         var contact = await _context.Contacts.FirstOrDefaultAsync(cancellationToken) ?? new Contact();
-
+         _logger.LogInformation("Retrieved portfolio configuration data");
         return new PortfolioConfigDto
         {
             Hero = new HeroDto

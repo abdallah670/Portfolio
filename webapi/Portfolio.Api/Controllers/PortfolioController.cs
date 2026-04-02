@@ -1,12 +1,10 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using PortfolioApi.Application.DTOs;
 using PortfolioApi.Domain.Entities;
 using PortfolioApi.Application.Features.Portfolio.Queries;
 using PortfolioApi.Application.Features.Portfolio.Commands;
-using PortfolioApi.Infrastructure.Data;
 
 namespace PortfolioApi.Api.Controllers;
 
@@ -15,12 +13,12 @@ namespace PortfolioApi.Api.Controllers;
 public class PortfolioController : ControllerBase
 {
     private readonly ISender _mediator;
-    private readonly AppDbContext _context;
+    private readonly ILogger<PortfolioController> _logger;
     
-    public PortfolioController(ISender mediator, AppDbContext context)
+    public PortfolioController(ISender mediator, ILogger<PortfolioController> logger)
     {
         _mediator = mediator;
-        _context = context;
+        _logger = logger;
     }
 
     // Public endpoint - only return published projects
@@ -28,26 +26,18 @@ public class PortfolioController : ControllerBase
     [AllowAnonymous]
     public async Task<IActionResult> GetPublicProjects()
     {
-        var projects = await _context.Projects
-            .Where(p => p.IsPublished)
-            .OrderByDescending(p => p.Id)
-            .Select(p => new
-            {
-                p.Id,
-                p.Title,
-                p.Description,
-                p.Stack,
-                p.Status,
-                p.Image,
-                p.Year,
-                p.Category,
-                p.LiveUrl,
-                p.GithubUrl,
-                p.Color,
-                p.IsFeatured,
-                p.ViewsCount
-            })
-            .ToListAsync();
+        _logger.LogInformation("API: Getting public projects");
+        var projects = await _mediator.Send(new GetPublicProjectsQuery());
+        return Ok(projects);
+    }
+
+    // Admin endpoint - return all projects including drafts
+    [HttpGet("admin/projects")]
+    [Authorize]
+    public async Task<IActionResult> GetAllProjectsAdmin()
+    {
+        _logger.LogInformation("API: Admin getting all projects");
+        var projects = await _mediator.Send(new GetAllProjectsAdminQuery());
         return Ok(projects);
     }
 
@@ -56,6 +46,7 @@ public class PortfolioController : ControllerBase
     [Authorize]
     public async Task<IActionResult> PublishProject(int id)
     {
+        _logger.LogInformation("API: Publishing project {ProjectId}", id);
         var result = await _mediator.Send(new PublishProjectCommand(id));
         return result ? Ok() : NotFound();
     }
@@ -65,6 +56,7 @@ public class PortfolioController : ControllerBase
     [Authorize]
     public async Task<IActionResult> UnpublishProject(int id)
     {
+        _logger.LogInformation("API: Unpublishing project {ProjectId}", id);
         var result = await _mediator.Send(new UnpublishProjectCommand(id));
         return result ? Ok() : NotFound();
     }
@@ -72,6 +64,7 @@ public class PortfolioController : ControllerBase
     [HttpGet("config")]
     public async Task<IActionResult> GetConfig()
     {
+        _logger.LogInformation("API: Getting portfolio config");
         var config = await _mediator.Send(new GetFullConfigQuery());
         return Ok(config);
     }
@@ -79,6 +72,7 @@ public class PortfolioController : ControllerBase
     [HttpGet("skills")]
     public async Task<IActionResult> GetSkills()
     {
+        _logger.LogInformation("API: Getting skills");
         var skills = await _mediator.Send(new GetSkillCategoriesQuery());
         return Ok(skills);
     }
@@ -87,6 +81,7 @@ public class PortfolioController : ControllerBase
     [HttpPut("hero")]
     public async Task<IActionResult> UpdateHero([FromBody] Hero hero)
     {
+        _logger.LogInformation("API: Updating hero section");
         var response = await _mediator.Send(new UpdateHeroCommand(hero));
         return Ok(response);
     }
@@ -95,6 +90,7 @@ public class PortfolioController : ControllerBase
     [HttpPut("about")]
     public async Task<IActionResult> UpdateAbout([FromBody] About about)
     {
+        _logger.LogInformation("API: Updating about section");
         var response = await _mediator.Send(new UpdateAboutCommand(about));
         return Ok(response);
     }
@@ -103,7 +99,9 @@ public class PortfolioController : ControllerBase
     [HttpPost("projects")]
     public async Task<IActionResult> CreateProject([FromBody] Project project)
     {
+        _logger.LogInformation("API: Creating new project: {Title}", project.Title);
         var response = await _mediator.Send(new CreateProjectCommand(project));
+        _logger.LogInformation("API: Project created successfully");
         return Ok(response);
     }
     
@@ -111,125 +109,117 @@ public class PortfolioController : ControllerBase
     [HttpPut("projects")]
     public async Task<IActionResult> UpdateProject([FromBody] Project project)
     {
-        _context.Projects.Update(project);
-        await _context.SaveChangesAsync();
-        return Ok(project);
+        _logger.LogInformation("API: Updating project {ProjectId}", project.Id);
+        var response = await _mediator.Send(new UpdateProjectCommand { Project = project });
+        return Ok(response);
     }
     
     [Authorize]
     [HttpDelete("projects/{id}")]
     public async Task<IActionResult> DeleteProject(int id)
     {
-        var project = await _context.Projects.FindAsync(id);
-        if (project == null) return NotFound();
-        _context.Projects.Remove(project);
-        await _context.SaveChangesAsync();
-        return Ok();
+        _logger.LogInformation("API: Deleting project {ProjectId}", id);
+        var result = await _mediator.Send(new DeleteProjectCommand { Id = id });
+        return result ? Ok() : NotFound();
     }
     
     [Authorize]
     [HttpPost("journey")]
     public async Task<IActionResult> CreateJourney([FromBody] JourneyItem item)
     {
-        _context.JourneyItems.Add(item);
-        await _context.SaveChangesAsync();
-        return Ok(item);
+        _logger.LogInformation("API: Creating journey item: {Title}", item.Title);
+        var response = await _mediator.Send(new CreateJourneyCommand { Item = item });
+        return Ok(response);
     }
     
     [Authorize]
     [HttpPut("journey")]
     public async Task<IActionResult> UpdateJourney([FromBody] JourneyItem item)
     {
-        _context.JourneyItems.Update(item);
-        await _context.SaveChangesAsync();
-        return Ok(item);
+        _logger.LogInformation("API: Updating journey item {JourneyId}", item.Id);
+        var response = await _mediator.Send(new UpdateJourneyCommand { Item = item });
+        return Ok(response);
     }
     
     [Authorize]
     [HttpDelete("journey/{id}")]
     public async Task<IActionResult> DeleteJourney(int id)
     {
-        var item = await _context.JourneyItems.FindAsync(id);
-        if (item == null) return NotFound();
-        _context.JourneyItems.Remove(item);
-        await _context.SaveChangesAsync();
-        return Ok();
+        _logger.LogInformation("API: Deleting journey item {JourneyId}", id);
+        var result = await _mediator.Send(new DeleteJourneyCommand { Id = id });
+        return result ? Ok() : NotFound();
     }
     
     [Authorize]
     [HttpPut("contact")]
     public async Task<IActionResult> UpdateContact([FromBody] Contact contact)
     {
-        _context.Contacts.Update(contact);
-        await _context.SaveChangesAsync();
-        return Ok(contact);
+        _logger.LogInformation("API: Updating contact information");
+        var response = await _mediator.Send(new UpdateContactCommand { Contact = contact });
+        return Ok(response);
     }
     
     [Authorize]
     [HttpPost("socials")]
     public async Task<IActionResult> CreateSocial([FromBody] SocialLink social)
     {
-        _context.SocialLinks.Add(social);
-        await _context.SaveChangesAsync();
-        return Ok(social);
+        _logger.LogInformation("API: Creating social link: {Label}", social.Label);
+        var response = await _mediator.Send(new CreateSocialCommand { Social = social });
+        return Ok(response);
     }
     
     [Authorize]
     [HttpPut("socials")]
     public async Task<IActionResult> UpdateSocial([FromBody] SocialLink social)
     {
-        _context.SocialLinks.Update(social);
-        await _context.SaveChangesAsync();
-        return Ok(social);
+        _logger.LogInformation("API: Updating social link {SocialId}", social.Id);
+        var response = await _mediator.Send(new UpdateSocialCommand { Social = social });
+        return Ok(response);
     }
     
     [Authorize]
     [HttpDelete("socials/{id}")]
     public async Task<IActionResult> DeleteSocial(int id)
     {
-        var social = await _context.SocialLinks.FindAsync(id);
-        if (social == null) return NotFound();
-        _context.SocialLinks.Remove(social);
-        await _context.SaveChangesAsync();
-        return Ok();
+        _logger.LogInformation("API: Deleting social link {SocialId}", id);
+        var result = await _mediator.Send(new DeleteSocialCommand { Id = id });
+        return result ? Ok() : NotFound();
     }
     
     [Authorize]
     [HttpPost("skills/categories")]
     public async Task<IActionResult> CreateSkillCategory([FromBody] SkillCategory category)
     {
-        _context.SkillCategories.Add(category);
-        await _context.SaveChangesAsync();
-        return Ok(category);
+        _logger.LogInformation("API: Creating skill category: {Title}", category.Title);
+        var response = await _mediator.Send(new CreateSkillCategoryCommand { Category = category });
+        return Ok(response);
     }
     
     [Authorize]
     [HttpPut("skills/categories")]
     public async Task<IActionResult> UpdateSkillCategory([FromBody] SkillCategory category)
     {
-        _context.SkillCategories.Update(category);
-        await _context.SaveChangesAsync();
-        return Ok(category);
+        _logger.LogInformation("API: Updating skill category {CategoryId}", category.Id);
+        var response = await _mediator.Send(new UpdateSkillCategoryCommand { Category = category });
+        return Ok(response);
     }
     
     [Authorize]
     [HttpPost("skills")]
     public async Task<IActionResult> CreateSkill([FromBody] Skill skill)
     {
-        _context.Skills.Add(skill);
-        await _context.SaveChangesAsync();
-        return Ok(skill);
+        _logger.LogInformation("API: Creating skill: {Name}", skill.Name);
+        var response = await _mediator.Send(new CreateSkillCommand { Skill = skill });
+        return Ok(response);
     }
     
     [Authorize]
     [HttpDelete("skills/{id}")]
     public async Task<IActionResult> DeleteSkill(int id)
     {
-        var skill = await _context.Skills.FindAsync(id);
-        if (skill == null) return NotFound();
-        _context.Skills.Remove(skill);
-        await _context.SaveChangesAsync();
-        return Ok();
+        _logger.LogInformation("API: Deleting skill {SkillId}", id);
+        var result = await _mediator.Send(new DeleteSkillCommand { Id = id });
+        return result ? Ok() : NotFound();
     }
     
     // GET: api/portfolio/dashboard-stats
@@ -237,37 +227,8 @@ public class PortfolioController : ControllerBase
     [Authorize]
     public async Task<IActionResult> GetDashboardStats()
     {
-        var totalProjects = await _context.Projects.CountAsync();
-        var draftProjects = await _context.Projects.CountAsync(p => p.Status == "Draft");
-        var unreadMessages = await _context.Messages.CountAsync(m => !m.IsRead);
-        var totalSkills = await _context.Skills.CountAsync();
-        var skillCategories = await _context.SkillCategories.CountAsync();
-        
-        // Mock profile views - in production, this would come from analytics
-        var random = new Random();
-        var profileViews = 12450 + random.Next(-100, 100);
-        
-        return Ok(new
-        {
-            totalProjects,
-            draftProjects,
-            unreadMessages,
-            totalSkills,
-            skillCategories,
-            profileViews,
-            recentProjects = await _context.Projects
-                .OrderByDescending(p => p.Id)
-                .Take(5)
-                .Select(p => new
-                {
-                    p.Id,
-                    p.Title,
-                    p.Description,
-                    p.Stack,
-                    p.Status,
-                    p.Image
-                })
-                .ToListAsync()
-        });
+        _logger.LogInformation("API: Getting dashboard stats");
+        var stats = await _mediator.Send(new GetDashboardStatsQuery());
+        return Ok(stats);
     }
 }

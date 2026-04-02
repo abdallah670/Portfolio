@@ -105,9 +105,9 @@ These are the exact mismatches found between frontend code and backend responses
 
 ---
 
-### ✅ STEP 1 — Fix `portfolio.models.ts`
+### ⬜ STEP 1 — Fix `portfolio.models.ts`
 **File:** `frontend/src/app/core/models/portfolio.models.ts`  
-**Status:** DONE ✅
+**Status:** ⬜ PENDING
 
 Add `PortfolioConfig` interface and fix all field names to match API exactly:
 - `HeroConfig` with `heroIntro` (not `intro`)
@@ -130,9 +130,9 @@ export interface PagedResult<T> {
 
 ---
 
-### ✅ STEP 2 — Create Auth Guard
+### ⬜ STEP 2 — Create Auth Guard
 **File:** `frontend/src/app/core/guards/auth.guard.ts`  
-**Status:** DONE ✅
+**Status:** ⬜ PENDING
 
 ```typescript
 import { inject } from '@angular/core';
@@ -777,48 +777,22 @@ getToken(): string | null {
 
 ---
 
-### STEP 14 — Backend: Add Missing Endpoints
+### ✅ STEP 14 — Backend: Verify Endpoints (Already Implemented)
 
-#### 14a. `PUT /api/auth/password`
+#### 14a. ✅ `PUT /api/auth/password`
+**Status:** ALREADY IMPLEMENTED  
 **File:** `webapi/Portfolio.Api/Controllers/AuthController.cs`
 
-Add to existing AuthController (inject `UserManager<AdminUser>`):
-```csharp
-[HttpPut("password")]
-[Authorize]
-public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest req)
-{
-    var user = await _userManager.FindByNameAsync(User.Identity!.Name!);
-    if (user == null) return Unauthorized();
-    var result = await _userManager.ChangePasswordAsync(user, req.CurrentPassword, req.NewPassword);
-    if (!result.Succeeded)
-        return BadRequest(new { message = result.Errors.First().Description });
-    return Ok(new { message = "Password changed successfully" });
-}
+The password change endpoint already exists with proper implementation using MediatR.
 
-public record ChangePasswordRequest(string CurrentPassword, string NewPassword);
-```
+#### 14b. ✅ `GET/PUT /api/settings`
+**Status:** ALREADY IMPLEMENTED  
+**File:** `webapi/Portfolio.Api/Controllers/SettingsController.cs`
 
-#### 14b. `GET/PUT /api/settings` (stub)
-**File:** `webapi/Portfolio.Api/Controllers/SettingsController.cs` [NEW]
+Full implementation exists with MediatR handlers for Get and Update operations.
 
-```csharp
-[ApiController, Route("api/[controller]"), Authorize]
-public class SettingsController : ControllerBase
-{
-    [HttpGet]
-    public IActionResult GetSettings([FromQuery] string? category) => Ok(new[]
-    {
-        new { key = "site.title", value = "Abdullah Mohamed Portfolio", dataType = "string", category = "general", description = "Site title" },
-        new { key = "contact.email", value = "meno.mo.dev@gmail.com", dataType = "string", category = "contact", description = "Contact email" }
-    });
-
-    [HttpPut]
-    public IActionResult UpdateSetting([FromBody] object setting) => Ok();
-}
-```
-
-#### 14c. Admin all-projects
+#### 14c. ✅ Admin all-projects
+**Status:** IMPLEMENTED  
 **File:** `webapi/Portfolio.Api/Controllers/PortfolioController.cs`
 
 ```csharp
@@ -834,12 +808,11 @@ public async Task<IActionResult> GetAllProjectsAdmin()
 }
 ```
 
-#### 14d. Fix `dashboard-stats` — add `totalMessages`
-In `GetDashboardStats()`:
-```csharp
-var totalMessages = await _context.Messages.CountAsync();  // ADD
-return Ok(new { totalProjects, draftProjects, totalMessages, unreadMessages, ... });
-```
+#### 14d. ✅ Fix `dashboard-stats` — add `totalMessages`
+**Status:** IMPLEMENTED  
+**File:** `PortfolioController.cs`
+
+`totalMessages` has been added to the dashboard stats response.
 
 ---
 
@@ -918,28 +891,28 @@ logs/
 
 | # | Task | File(s) | Status |
 |---|---|---|---|
-| 1 | Fix portfolio.models.ts | `core/models/portfolio.models.ts` | ✅ Done |
-| 2 | Create auth.guard.ts | `core/guards/auth.guard.ts` | ✅ Done |
-| 3 | Create HTTP Interceptor ⭐ | `core/interceptors/auth.interceptor.ts` | ⬜ |
-| 4 | Register interceptor in app.config.ts ⭐ | `app.config.ts` | ⬜ |
-| 5 | Protect admin routes | `admin/admin.routes.ts` | ⬜ |
-| 6 | Wire HomeComponent | `public/pages/home/home.component.ts` | ⬜ |
-| 7 | Wire Hero component | `home/components/hero/hero.component.ts+html` | ⬜ |
-| 8 | Wire About component | `home/components/about/about.component.ts+html` | ⬜ |
-| 9 | Wire Skills component | `home/components/skills/skills.component.ts+html` | ⬜ |
-| 10 | Wire Projects component | `home/components/projects/projects.component.ts+html` | ⬜ |
-| 11 | Wire Contact form | `public/pages/contact/contact.component.ts+html` | ⬜ |
-| 12 | Wire Admin Messages | `admin/pages/messages/messages.component.ts+html` | ⬜ |
-| 13 | Wire Admin Projects | `admin/pages/projects/projects.component.ts+html` | ⬜ |
-| 14 | Fix ApiService types | `core/services/api.service.ts` | ⬜ |
-| 15a | Backend: PUT /auth/password | `AuthController.cs` | ⬜ |
-| 15b | Backend: GET/PUT /settings | `SettingsController.cs` (new) | ⬜ |
-| 15c | Backend: GET /portfolio/admin/projects | `PortfolioController.cs` | ⬜ |
-| 15d | Backend: fix dashboard-stats totalMessages | `PortfolioController.cs` | ⬜ |
-| 16a | Backend: Add Serilog packages ⭐ | `Portfolio.Api.csproj` | ⬜ |
-| 16b | Backend: Configure Serilog ⭐ | `Program.cs` | ⬜ |
-| 16c | Backend: Add request logging ⭐ | `Program.cs` | ⬜ |
-| 16d | Backend: Ignore logs in git ⭐ | `.gitignore` | ⬜ |
+| 1 | Fix portfolio.models.ts | `core/models/portfolio.models.ts` | ⬜ PENDING |
+| 2 | Create auth.guard.ts | `core/guards/auth.guard.ts` | ⬜ PENDING |
+| 3 | Create HTTP Interceptor ⭐ | `core/interceptors/auth.interceptor.ts` | ⬜ PENDING |
+| 4 | Register interceptor in app.config.ts ⭐ | `app.config.ts` | ⬜ PENDING |
+| 5 | Protect admin routes | `admin/admin.routes.ts` | ⬜ PENDING |
+| 6 | Wire HomeComponent | `public/pages/home/home.component.ts` | ⬜ PENDING |
+| 7 | Wire Hero component | `home/components/hero/hero.component.ts+html` | ⬜ PENDING |
+| 8 | Wire About component | `home/components/about/about.component.ts+html` | ⬜ PENDING |
+| 9 | Wire Skills component | `home/components/skills/skills.component.ts+html` | ⬜ PENDING |
+| 10 | Wire Projects component | `home/components/projects/projects.component.ts+html` | ⬜ PENDING |
+| 11 | Wire Contact form | `public/pages/contact/contact.component.ts+html` | ⬜ PENDING |
+| 12 | Wire Admin Messages | `admin/pages/messages/messages.component.ts+html` | ⬜ PENDING |
+| 13 | Wire Admin Projects | `admin/pages/projects/projects.component.ts+html` | ⬜ PENDING |
+| 14 | Fix ApiService types | `core/services/api.service.ts` | ⬜ PENDING |
+| 15a | Backend: PUT /auth/password | `AuthController.cs` | ✅ DONE |
+| 15b | Backend: GET/PUT /settings | `SettingsController.cs` | ✅ DONE |
+| 15c | Backend: GET /portfolio/admin/projects | `PortfolioController.cs` | ✅ DONE |
+| 15d | Backend: fix dashboard-stats totalMessages | `PortfolioController.cs` | ✅ DONE |
+| 16a | Backend: Add Serilog packages ⭐ | `Portfolio.Api.csproj` | ⬜ PENDING |
+| 16b | Backend: Configure Serilog ⭐ | `Program.cs` | ⬜ PENDING |
+| 16c | Backend: Add request logging ⭐ | `Program.cs` | ⬜ PENDING |
+| 16d | Backend: Ignore logs in git ⭐ | `.gitignore` | ⬜ PENDING |
 
 ---
 

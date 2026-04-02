@@ -1,0 +1,33 @@
+# .NET
+bin/
+obj/
+*.dll
+*.exe
+*.pdb
+
+# Database
+*.db
+*.sqlite
+
+# IDE
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+
+# Build outputs
+dist/
+wwwroot/uploads/
+
+# Logs
+*.log
+logs/
+
+# Environment
+.env
+*.local
+
+# OS
+.DS_Store
+Thumbs.db

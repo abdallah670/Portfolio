@@ -21,15 +21,20 @@ var isDevelopment = builder.Environment.IsDevelopment();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
-    if (isDevelopment && (connectionString == null || connectionString.Contains("your-server")))
+    // Use SQLite for development or when connection string is SQLite format
+    if (isDevelopment || connectionString?.Contains(".db") == true || string.IsNullOrEmpty(connectionString))
     {
-        options.UseSqlite("Data Source=portfolio.db");
+        options.UseSqlite(connectionString ?? "Data Source=portfolio.db");
     }
     else
     {
         options.UseSqlServer(connectionString);
     }
 });
+
+// Register IApplicationDbContext
+builder.Services.AddScoped<PortfolioApi.Application.Interfaces.IApplicationDbContext>(provider => 
+    provider.GetRequiredService<AppDbContext>());
 
 // Identity
 builder.Services.AddIdentity<AdminUser, IdentityRole<int>>(options => {

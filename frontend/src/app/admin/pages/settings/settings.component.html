@@ -9,7 +9,6 @@
   @if (!loading) {
     <header class="page-header">
       <p class="kicker">Workspace Configuration</p>
-      <h1 class="title">Settings</h1>
     </header>
 
     <!-- Tab Navigation -->
@@ -93,40 +92,11 @@
               <label>Headline Main (use \n for line break)</label>
               <textarea [(ngModel)]="hero!.headlineMain" name="headlineMain" class="form-textarea" rows="2"></textarea>
             </div>
-            <div class="form-group">
-              <label>Hero Intro</label>
-              <textarea [(ngModel)]="hero!.heroIntro" name="heroIntro" class="form-textarea" rows="2"></textarea>
-            </div>
+          
           </form>
         </section>
 
-        <section class="settings-card">
-          <div class="card-header">
-            <h2>Call to Action Buttons</h2>
-          </div>
-          <form class="settings-form">
-            <div class="form-row">
-              <div class="form-group">
-                <label>Primary Button Label</label>
-                <input type="text" [(ngModel)]="hero!.ctaPrimaryLabel" name="ctaPrimaryLabel" class="form-input" />
-              </div>
-              <div class="form-group">
-                <label>Primary Button Link</label>
-                <input type="text" [(ngModel)]="hero!.ctaPrimaryHref" name="ctaPrimaryHref" class="form-input" />
-              </div>
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label>Secondary Button Label</label>
-                <input type="text" [(ngModel)]="hero!.ctaSecondaryLabel" name="ctaSecondaryLabel" class="form-input" />
-              </div>
-              <div class="form-group">
-                <label>Secondary Button Link</label>
-                <input type="text" [(ngModel)]="hero!.ctaSecondaryHref" name="ctaSecondaryHref" class="form-input" />
-              </div>
-            </div>
-          </form>
-        </section>
+        
 
         <section class="settings-card">
           <div class="card-header">

@@ -11,10 +11,10 @@ import { RouterModule } from '@angular/router';
       <a routerLink="/" class="navbar-logo">Abdullah<span>.</span></a>
       
       <ul class="navbar-nav">
-        <li><a routerLink="/" fragment="about" (click)="scrollTo('about')">About</a></li>
-        <li><a routerLink="/" fragment="skills" (click)="scrollTo('skills')">Skills</a></li>
-        <li><a routerLink="/" fragment="projects" (click)="scrollTo('projects')">Projects</a></li>
-        <li><a routerLink="/" fragment="journey" (click)="scrollTo('journey')">Journey</a></li>
+        <li><a routerLink="/" fragment="about" [class.active]="activeSection === 'about'" (click)="scrollTo('about')">About</a></li>
+        <li><a routerLink="/" fragment="skills" [class.active]="activeSection === 'skills'" (click)="scrollTo('skills')">Skills</a></li>
+        <li><a routerLink="/" fragment="projects" [class.active]="activeSection === 'projects'" (click)="scrollTo('projects')">Projects</a></li>
+        <li><a routerLink="/" fragment="journey" [class.active]="activeSection === 'journey'" (click)="scrollTo('journey')">Journey</a></li>
         <li><a routerLink="/contact">Contact</a></li>
       </ul>
       
@@ -42,7 +42,9 @@ export class NavbarComponent implements OnInit {
   isScrolled = false;
   mobileMenuOpen = false;
   isDarkTheme = true;
+  activeSection = '';
   private isBrowser: boolean;
+  private scrollListener: any;
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {
     this.isBrowser = isPlatformBrowser(this.platformId);
@@ -60,9 +62,20 @@ export class NavbarComponent implements OnInit {
       this.applyTheme();
 
       // Listen for scroll events
-      window.addEventListener('scroll', () => {
+      this.scrollListener = () => {
         this.isScrolled = window.scrollY > 20;
-      }, { passive: true });
+        
+        // Scroll spy
+        const sections = ['hero', 'about', 'skills', 'projects', 'journey', 'cta'];
+        const y = window.scrollY;
+        for (const section of sections) {
+          const el = document.getElementById(section);
+          if (el && y >= el.offsetTop - 120) {
+            this.activeSection = section;
+          }
+        }
+      };
+      window.addEventListener('scroll', this.scrollListener, { passive: true });
     }
   }
 

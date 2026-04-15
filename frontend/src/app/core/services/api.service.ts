@@ -6,7 +6,6 @@ import {
   Message, 
   SkillCategory, 
   Hero, 
-  About, 
   JourneyItem, 
   Contact, 
   SocialLink,
@@ -14,7 +13,6 @@ import {
   PaginatedResponse,
   CreateMessageRequest,
   SystemSetting,
-  DashboardAnalytics,
   PortfolioConfig
 } from '../models/portfolio.models';
 
@@ -66,15 +64,15 @@ export class ApiService {
   deleteProject(id: number): Observable<void> {
     return this.http.delete<void>(`${this.API_URL}/portfolio/projects/${id}`);
   }
-
+  
   // Hero (Admin)
-  updateHero(hero: Hero): Observable<Hero> {
-    return this.http.put<Hero>(`${this.API_URL}/portfolio/hero`, hero);
+   // Dashboard Stats (Admin)
+  getProfileImage(): Observable<string> {
+    return this.http.get(`${this.API_URL}/portfolio/ProfileImage`, { responseType: 'text' });
   }
 
-  // About (Admin)
-  updateAbout(about: About): Observable<About> {
-    return this.http.put<About>(`${this.API_URL}/portfolio/about`, about);
+  updateHero(hero: Hero): Observable<Hero> {
+    return this.http.put<Hero>(`${this.API_URL}/portfolio/hero`, hero);
   }
 
   // Journey (Admin)
@@ -170,11 +168,6 @@ export class ApiService {
     const formData = new FormData();
     formData.append('file', file);
     return this.http.post<{ url: string }>(`${this.API_URL}/upload/profile-image`, formData);
-  }
-
-  // Analytics
-  getAnalyticsDashboard(days: number = 30): Observable<DashboardAnalytics> {
-    return this.http.get<DashboardAnalytics>(`${this.API_URL}/analytics/dashboard?days=${days}`);
   }
 
   // Settings

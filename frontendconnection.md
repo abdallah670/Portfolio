@@ -68,7 +68,6 @@
 | PUT | `/api/portfolio/projects/{id}/publish` | Yes | Publish |
 | PUT | `/api/portfolio/projects/{id}/unpublish` | Yes | Unpublish |
 | PUT | `/api/portfolio/hero` | Yes | Update hero |
-| PUT | `/api/portfolio/about` | Yes | Update about |
 | GET | `/api/portfolio/dashboard-stats` | Yes | Dashboard metrics |
 
 ### Messages Endpoints

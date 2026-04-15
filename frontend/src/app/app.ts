@@ -7,7 +7,19 @@ import { RouterOutlet } from '@angular/router';
   standalone: true,
   imports: [RouterOutlet, CommonModule],
   template: `
+    <!-- CURSOR GLOW -->
+    <div id="cursor-glow"></div>
+    
+    <!-- TOAST -->
+    <div class="toast" [class.show]="showToast" id="toast">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+      CV download started!
+    </div>
+    
     <router-outlet />
+    
     <button class="back-to-top" [class.visible]="showBackToTop" (click)="scrollToTop()" aria-label="Back to top">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
         <polyline points="18 15 12 9 6 15"/>
@@ -24,11 +36,14 @@ export class App implements OnInit, OnDestroy {
   private mouseListener: any;
   private scrollListener: any;
   showBackToTop = false;
+  showToast = false;
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
 
   ngOnInit() {
     if (isPlatformBrowser(this.platformId)) {
+      this.initTheme();
+      
       this.mouseListener = (e: MouseEvent) => {
         this.mouseX = e.clientX;
         this.mouseY = e.clientY;
@@ -37,11 +52,39 @@ export class App implements OnInit, OnDestroy {
       
       this.scrollListener = () => {
         this.showBackToTop = window.scrollY > 500;
+        
+        // Navbar scroll effect
+        const navbar = document.getElementById('navbar');
+        if (navbar) {
+          navbar.classList.toggle('scrolled', window.scrollY > 20);
+        }
       };
       window.addEventListener('scroll', this.scrollListener, { passive: true });
       
       this.animateGlow();
     }
+  }
+
+  private initTheme() {
+    const html = document.documentElement;
+    const savedTheme = localStorage.getItem('am-theme') || 'dark';
+    html.setAttribute('data-theme', savedTheme);
+  }
+
+  applyTheme(theme: string) {
+    const html = document.documentElement;
+    html.setAttribute('data-theme', theme);
+    localStorage.setItem('am-theme', theme);
+  }
+
+  toggleTheme() {
+    const current = document.documentElement.getAttribute('data-theme');
+    this.applyTheme(current === 'dark' ? 'light' : 'dark');
+  }
+
+  showToastMessage() {
+    this.showToast = true;
+    setTimeout(() => this.showToast = false, 3000);
   }
 
   animateGlow = () => {

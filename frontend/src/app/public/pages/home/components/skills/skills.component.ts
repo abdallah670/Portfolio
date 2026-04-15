@@ -29,7 +29,7 @@ export class SkillsComponent implements OnInit {
   private defaultCategories: SkillCategory[] = [
     {
       title: 'Backend Core',
-      dotColor: '#4ade80',
+        dotColor: '#22d3ee',
       skills: [
         { name: 'C#', percent: 90 },
         { name: '.NET', percent: 85 },
@@ -49,7 +49,7 @@ export class SkillsComponent implements OnInit {
     },
     {
       title: 'Frontend & Dev',
-      dotColor: '#a78bfa',
+       dotColor: '#22d3ee',
       skills: [
         { name: 'Angular', percent: 75 },
         { name: 'TypeScript', percent: 75 },

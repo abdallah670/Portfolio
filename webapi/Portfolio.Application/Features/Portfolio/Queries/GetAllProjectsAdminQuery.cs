@@ -37,7 +37,7 @@ public class GetAllProjectsAdminQueryHandler : IRequestHandler<GetAllProjectsAdm
                 p.Image,
                 p.Year,
                 p.Category,
-                p.LiveUrl,
+                p.linkedinUrl,
                 p.GithubUrl,
                 p.Color,
                 p.IsFeatured,

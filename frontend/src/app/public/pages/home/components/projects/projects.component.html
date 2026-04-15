@@ -11,94 +11,59 @@
       </a>
     </div>
     <div class="projects-grid">
-      <article class="project-card reveal">
-        <div class="project-band" style="background:linear-gradient(90deg,#4ade80,#22d3ee,transparent)"></div>
-        <div class="project-preview">
-          <!-- <img src="uploads/projects/gymmvc.png" alt="MenoPro"> -->
-          <div class="project-preview-grid"></div>
-          <div class="project-preview-icon">🏋</div>
-          <div class="project-overlay"></div>
-          <span class="project-featured-badge">Featured</span>
-        </div>
-        <div class="project-body">
-          <div class="project-meta">
-            <span class="project-category">Web Application</span>
-            <span class="project-status"><span class="status-dot"></span>Production</span>
-            <span class="project-year">2025</span>
+      @for (project of allProjects; track project.name; let i = $index) {
+        <article class="project-card reveal" [class]="'reveal-delay-' + i">
+          <div class="project-band" [style.background]="project.gradient"></div>
+          <div class="project-preview">
+            @if (project.image) {
+              <img [src]="getImageUrl(project.image)" [alt]="project.name">
+            }
+            <div class="project-preview-grid"></div>
+            @if (!project.image) {
+              <div class="project-preview-icon">{{ project.icon }}</div>
+            }
+            <div class="project-overlay"></div>
+            @if (project.featured) {
+              <span class="project-featured-badge">Featured</span>
+            }
           </div>
-          <h3 class="project-name">MenoPro — Gym Management</h3>
-          <p class="project-desc">Premium gym platform with member &amp; trainer portals, workout plans, diet tracking, and Chart.js analytics. Includes Glassmorphism UI, Stripe payments, and Gemini AI integration.</p>
-          <div class="project-stack">
-            <span class="stack-tag">ASP.NET Core MVC</span><span class="stack-tag">SQL Server</span><span class="stack-tag">Entity Framework</span><span class="stack-tag">Stripe</span><span class="stack-tag">Gemini AI</span>
+          <div class="project-body">
+            <div class="project-meta">
+              <span class="project-category">{{ project.category }}</span>
+              <span class="project-status">
+                @if (project.status === 'live') {
+                  <span class="status-dot"></span>Production
+                } @else {
+                  <span class="status-dot" style="background:#facc15;animation:none"></span><span style="color:#facc15">In Progress</span>
+                }
+              </span>
+              <span class="project-year">{{ project.year }}</span>
+            </div>
+            <h3 class="project-name">{{ project.name }}</h3>
+            <p class="project-desc">{{ project.description }}</p>
+            <div class="project-stack">
+              @for (tech of project.stack; track tech) {
+                <span class="stack-tag">{{ tech }}</span>
+              }
+            </div>
+            <div class="project-links">
+              <a [href]="project.githubUrl" target="_blank" class="project-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>GitHub
+              </a>
+              @if (project.linkedinUrl) {
+                <a [href]="project.linkedinUrl" target="_blank" class="project-link">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>LinkedIn
+                </a>
+              }
+              @if (project.liveUrl) {
+                <a [href]="project.liveUrl" target="_blank" class="project-link ml-auto">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Live
+                </a>
+              }
+            </div>
           </div>
-          <div class="project-links">
-            <a href="https://github.com/abdallah670/GymMVC" target="_blank" class="project-link">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>GitHub
-            </a>
-            <a href="https://www.linkedin.com/posts/abdullah-mohammed-334475294_aspnetcore-csharp-webdevelopment-activity-7424228685093994496-wSwl" target="_blank" class="project-link ml-auto">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>LinkedIn
-            </a>
-          </div>
-        </div>
-      </article>
-
-      <article class="project-card reveal reveal-delay-1">
-        <div class="project-band" style="background:linear-gradient(90deg,#3b82f6,#818cf8,transparent)"></div>
-        <div class="project-preview">
-          <!-- <img src="uploads/projects/labormvc.png" alt="Labor Marketplace"> -->
-          <div class="project-preview-grid"></div>
-          <div class="project-preview-icon">🔗</div>
-          <div class="project-overlay"></div>
-          <span class="project-featured-badge">Featured</span>
-        </div>
-        <div class="project-body">
-          <div class="project-meta">
-            <span class="project-category">Full-Stack Platform</span>
-            <span class="project-status"><span class="status-dot"></span>Production</span>
-            <span class="project-year">2026</span>
-          </div>
-          <h3 class="project-name">Labor Marketplace System</h3>
-          <p class="project-desc">Platform connecting workers with job posters. Multi-role auth, real-time chat via SignalR, Stripe Connect payments, Hangfire background jobs, and geographic search with spatial SQL queries.</p>
-          <div class="project-stack">
-            <span class="stack-tag">ASP.NET Core MVC</span><span class="stack-tag">.NET 9</span><span class="stack-tag">SignalR</span><span class="stack-tag">Stripe Connect</span><span class="stack-tag">Hangfire</span>
-          </div>
-          <div class="project-links">
-            <a href="https://github.com/abdallah670/LaborMVC" target="_blank" class="project-link">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>GitHub
-            </a>
-            <a href="https://www.linkedin.com/posts/abdullah-mohammed-334475294_dotnet-architecture-systemdesign-activity-7444313186763358208-gBDD" target="_blank" class="project-link ml-auto">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>LinkedIn
-            </a>
-          </div>
-        </div>
-      </article>
-
-      <article class="project-card reveal reveal-delay-2">
-        <div class="project-band" style="background:linear-gradient(90deg,#f472b6,#a78bfa,transparent)"></div>
-        <div class="project-preview">
-          <!-- <img src="uploads/projects/outfitplanner.jpg" alt="Outfit Planner"> -->
-          <div class="project-preview-grid"></div>
-          <div class="project-preview-icon">👗</div>
-          <div class="project-overlay"></div>
-        </div>
-        <div class="project-body">
-          <div class="project-meta">
-            <span class="project-category">Web Application</span>
-            <span class="project-status"><span class="status-dot" style="background:#facc15;animation:none"></span><span style="color:#facc15">In Progress</span></span>
-            <span class="project-year">2026</span>
-          </div>
-          <h3 class="project-name">Outfit Planner</h3>
-          <p class="project-desc">Intelligent wardrobe management generating outfit suggestions based on real-time weather, occasion, and personal style. Built with Clean Architecture and CQRS pattern.</p>
-          <div class="project-stack">
-            <span class="stack-tag">ASP.NET Core 9</span><span class="stack-tag">Angular 17+</span><span class="stack-tag">NgRx</span><span class="stack-tag">Clean Architecture</span><span class="stack-tag">CQRS</span>
-          </div>
-          <div class="project-links">
-            <a href="https://github.com/abdallah670/Outfit-Planner" target="_blank" class="project-link">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>GitHub
-            </a>
-          </div>
-        </div>
-      </article>
+        </article>
+      }
     </div>
   </div>
 </section>

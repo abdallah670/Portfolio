@@ -7,6 +7,7 @@ using PortfolioApi.Domain.Entities;
 using PortfolioApi.Application.Features.Portfolio.Queries;
 using PortfolioApi.Application.Features.Portfolio.Commands;
 using PortfolioApi.Infrastructure.Data;
+using SQLitePCL;
 
 namespace PortfolioApi.Api.Controllers;
 
@@ -80,22 +81,18 @@ public class PortfolioController : ControllerBase
         var skills = await _mediator.Send(new GetSkillCategoriesQuery());
         return Ok(skills);
     }
-    
+    [HttpGet("ProfileImage")]
+    public async Task<IActionResult> GetProfileImage()
+    {
+        var response="uploads/profile-image/Meno.png";
+        return Ok(response);
+    }
     [Authorize]
     [HttpPut("hero")]
     public async Task<IActionResult> UpdateHero([FromBody] Hero hero)
     {
         _logger.LogInformation("API: Updating hero section");
         var response = await _mediator.Send(new UpdateHeroCommand(hero));
-        return Ok(response);
-    }
-    
-    [Authorize]
-    [HttpPut("about")]
-    public async Task<IActionResult> UpdateAbout([FromBody] About about)
-    {
-        _logger.LogInformation("API: Updating about section");
-        var response = await _mediator.Send(new UpdateAboutCommand(about));
         return Ok(response);
     }
     

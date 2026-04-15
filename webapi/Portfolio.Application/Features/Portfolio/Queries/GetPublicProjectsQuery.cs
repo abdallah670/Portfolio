@@ -39,7 +39,7 @@ public class GetPublicProjectsQueryHandler : IRequestHandler<GetPublicProjectsQu
                     p.Image,
                     p.Year,
                     p.Category,
-                    p.LiveUrl,
+                    p.linkedinUrl,
                     p.GithubUrl,
                     p.Color,
                     p.IsFeatured,

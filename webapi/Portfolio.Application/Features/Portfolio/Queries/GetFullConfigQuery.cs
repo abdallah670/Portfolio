@@ -25,17 +25,17 @@ public class GetFullConfigQueryHandler : IRequestHandler<GetFullConfigQuery, Por
     {
         var hero = await _context.Heroes.FirstOrDefaultAsync(cancellationToken) ?? new Hero();
         var heroStats = await _context.HeroStats.OrderBy(s => s.DisplayOrder).ToListAsync(cancellationToken);
-        var about = await _context.Abouts.FirstOrDefaultAsync(cancellationToken) ?? new About();
-        var aboutCards = await _context.AboutCards.OrderBy(c => c.DisplayOrder).ToListAsync(cancellationToken);
-        var achievements = await _context.Achievements.OrderBy(a => a.DisplayOrder).ToListAsync(cancellationToken);
-        var values = await _context.Values.OrderBy(v => v.DisplayOrder).ToListAsync(cancellationToken);
         
         var skillCategories = await _context.SkillCategories
             .Include(c => c.Skills)
             .OrderBy(c => c.DisplayOrder)
             .ToListAsync(cancellationToken);
             
-        var projects = await _context.Projects.OrderByDescending(p => p.IsFeatured).ThenBy(p => p.DisplayOrder).ToListAsync(cancellationToken);
+        var projects = await _context.Projects
+            .Where(p => p.IsPublished)
+            .OrderByDescending(p => p.IsFeatured)
+            .ThenBy(p => p.DisplayOrder)
+            .ToListAsync(cancellationToken);
         var journey = await _context.JourneyItems.OrderBy(j => j.DisplayOrder).ToListAsync(cancellationToken);
         var socials = await _context.SocialLinks.ToListAsync(cancellationToken);
         var contact = await _context.Contacts.FirstOrDefaultAsync(cancellationToken) ?? new Contact();
@@ -56,16 +56,6 @@ public class GetFullConfigQueryHandler : IRequestHandler<GetFullConfigQuery, Por
                 CtaSecondaryHref = hero.CtaSecondaryHref,
                 ProfileImage = hero.ProfileImage,
                 Stats = heroStats.Select(s => new HeroStatsDto { Label = s.Label, Value = s.Value }).ToList()
-            },
-            About = new AboutDto
-            {
-                Kicker = about.Kicker,
-                Title = about.Title,
-                Subtitle = about.Subtitle,
-                FunFact = about.FunFact,
-                Cards = aboutCards.Select(c => new AboutCardDto { Title = c.Title, Subtitle = c.Subtitle }).ToList(),
-                Achievements = achievements.Select(a => a.Text).ToList(),
-                Values = values.Select(v => new ValueDto { Title = v.Title, Description = v.Description }).ToList()
             },
             Skills = skillCategories.Select(c => new SkillCategoryDto
             {
@@ -105,8 +95,9 @@ public class GetFullConfigQueryHandler : IRequestHandler<GetFullConfigQuery, Por
             Description = p.Description,
             Stack = p.Stack,
             Image = p.Image,
-            LiveUrl = p.LiveUrl,
+            linkedinUrl = p.linkedinUrl,
             GithubUrl = p.GithubUrl,
+            LiveUrl = p.LiveUrl,
             Status = p.Status,
             Color = p.Color,
             IsFeatured = p.IsFeatured

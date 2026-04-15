@@ -4,45 +4,31 @@
       <div>
         <p class="section-label reveal">Technical Stack</p>
         <h2 class="section-title reveal reveal-delay-1">Tools &amp;<br />Technologies</h2>
-        <p class="skills-desc reveal reveal-delay-2">Every skill here was built through real project work — applied in systems that had to run in production, not just pass a tutorial.</p>
+        <p class="skills-desc reveal reveal-delay-2">{{ description }}</p>
       </div>
       <div class="skills-categories">
-        <div class="skill-category-block reveal">
-          <div class="skill-category-title"><span class="skill-category-dot"></span>Backend Development</div>
-          <div class="skills-list">
-            <div class="skill-row"><div class="skill-row-header"><span class="skill-name-text">C#</span><span class="skill-percent">85%</span></div><div class="skill-bar"><div class="skill-bar-fill" [style.width]="'85%'"></div></div></div>
-            <div class="skill-row"><div class="skill-row-header"><span class="skill-name-text">.NET Core</span><span class="skill-percent">80%</span></div><div class="skill-bar"><div class="skill-bar-fill" [style.width]="'80%'"></div></div></div>
-            <div class="skill-row"><div class="skill-row-header"><span class="skill-name-text">ADO.NET</span><span class="skill-percent">80%</span></div><div class="skill-bar"><div class="skill-bar-fill" [style.width]="'80%'"></div></div></div>
-            <div class="skill-row"><div class="skill-row-header"><span class="skill-name-text">REST APIs</span><span class="skill-percent">75%</span></div><div class="skill-bar"><div class="skill-bar-fill" [style.width]="'75%'"></div></div></div>
+        @for (cat of categories; track cat.title; let i = $index) {
+          <div class="skill-category-block reveal" [class]="'reveal-delay-' + (i + 1)">
+            <div class="skill-category-title">
+              <span class="skill-category-dot" [style.background]="cat.dotColor"></span>{{ cat.title }}
+            </div>
+            <div class="skills-list">
+              @for (skill of cat.skills; track skill.name) {
+                <div class="skill-row" [class.bar-visible]="barsVisible">
+                  <div class="skill-row-header">
+                    <span class="skill-name-text">{{ skill.name }}</span>
+                    <span class="skill-percent">{{ skill.percent }}%</span>
+                  </div>
+                  <div class="skill-bar">
+                    <div class="skill-bar-fill" 
+                         [style.width.%]="skill.percent" 
+                         [style.--bar-color]="cat.dotColor"></div>
+                  </div>
+                </div>
+              }
+            </div>
           </div>
-        </div>
-        <div class="skill-category-block reveal">
-          <div class="skill-category-title"><span class="skill-category-dot" [style.background]="'#22d3ee'"></span>Database</div>
-          <div class="skills-list">
-            <div class="skill-row"><div class="skill-row-header"><span class="skill-name-text">SQL Server</span><span class="skill-percent">85%</span></div><div class="skill-bar"><div class="skill-bar-fill" [style.width]="'85%'"></div></div></div>
-            <div class="skill-row"><div class="skill-row-header"><span class="skill-name-text">Database Design</span><span class="skill-percent">80%</span></div><div class="skill-bar"><div class="skill-bar-fill" [style.width]="'80%'"></div></div></div>
-            <div class="skill-row"><div class="skill-row-header"><span class="skill-name-text">Query Optimization</span><span class="skill-percent">75%</span></div><div class="skill-bar"><div class="skill-bar-fill" [style.width]="'75%'"></div></div></div>
-            <div class="skill-row"><div class="skill-row-header"><span class="skill-name-text">Stored Procedures</span><span class="skill-percent">75%</span></div><div class="skill-bar"><div class="skill-bar-fill" [style.width]="'75%'"></div></div></div>
-          </div>
-        </div>
-        <div class="skill-category-block reveal">
-          <div class="skill-category-title"><span class="skill-category-dot" [style.background]="'#a78bfa'"></span>Software Engineering</div>
-          <div class="skills-list">
-            <div class="skill-row"><div class="skill-row-header"><span class="skill-name-text">OOP</span><span class="skill-percent">85%</span></div><div class="skill-bar"><div class="skill-bar-fill" [style.width]="'85%'"></div></div></div>
-            <div class="skill-row"><div class="skill-row-header"><span class="skill-name-text">Layered Architecture</span><span class="skill-percent">80%</span></div><div class="skill-bar"><div class="skill-bar-fill" [style.width]="'80%'"></div></div></div>
-            <div class="skill-row"><div class="skill-row-header"><span class="skill-name-text">Design Patterns</span><span class="skill-percent">70%</span></div><div class="skill-bar"><div class="skill-bar-fill" [style.width]="'70%'"></div></div></div>
-            <div class="skill-row"><div class="skill-row-header"><span class="skill-name-text">Debugging</span><span class="skill-percent">85%</span></div><div class="skill-bar"><div class="skill-bar-fill" [style.width]="'85%'"></div></div></div>
-          </div>
-        </div>
-        <div class="skill-category-block reveal">
-          <div class="skill-category-title"><span class="skill-category-dot" [style.background]="'#60a5fa'"></span>Frontend Integration</div>
-          <div class="skills-list">
-            <div class="skill-row"><div class="skill-row-header"><span class="skill-name-text">TypeScript</span><span class="skill-percent">75%</span></div><div class="skill-bar"><div class="skill-bar-fill" [style.width]="'75%'"></div></div></div>
-            <div class="skill-row"><div class="skill-row-header"><span class="skill-name-text">Angular</span><span class="skill-percent">70%</span></div><div class="skill-bar"><div class="skill-bar-fill" [style.width]="'70%'"></div></div></div>
-            <div class="skill-row"><div class="skill-row-header"><span class="skill-name-text">HTML / CSS</span><span class="skill-percent">75%</span></div><div class="skill-bar"><div class="skill-bar-fill" [style.width]="'75%'"></div></div></div>
-            <div class="skill-row"><div class="skill-row-header"><span class="skill-name-text">RxJS</span><span class="skill-percent">60%</span></div><div class="skill-bar"><div class="skill-bar-fill" [style.width]="'60%'"></div></div></div>
-          </div>
-        </div>
+        }
       </div>
     </div>
   </div>

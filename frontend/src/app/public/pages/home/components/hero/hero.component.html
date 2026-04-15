@@ -1,5 +1,5 @@
 <section id="hero">
-  <canvas id="particles-canvas"></canvas>
+  <canvas #particlesCanvas id="particles-canvas"></canvas>
   <div class="hero-grid"></div>
   <div class="hero-orbit"></div>
   <div class="hero-orbit hero-orbit-2"></div>
@@ -7,56 +7,84 @@
 
   <div class="container hero-inner">
     <div class="hero-content">
-      <div class="hero-badge"><span class="dot"></span>Available for Opportunities</div>
-      <p class="hero-greeting">Hi, I'm</p>
-      <h1 class="hero-name" id="hero-name-el">Abdullah Mohammed</h1>
-      <p class="hero-title">Full-Stack .NET Developer</p>
-      <p class="hero-tagline">
-        <span id="typed-text"></span><span class="typed-cursor"></span>
+      <div class="hero-badge" style="animation: fadeSlideDown 0.6s cubic-bezier(0.4,0,0.2,1) 0.1s both; cursor: default;">
+        <span class="dot"></span>{{ hero?.availabilityLabel || 'Available for Opportunities' }}
+      </div>
+      <p class="hero-greeting" style="animation: fadeSlideUp 0.7s cubic-bezier(0.4,0,0.2,1) 0.2s both;">Hi, I'm</p>
+      <h1 class="hero-name" id="hero-name-el" style="animation: fadeSlideUp 0.7s cubic-bezier(0.4,0,0.2,1) 0.28s both;">
+        {{ hero?.name || 'Abdullah Mohammed' }}
+      </h1>
+      <p class="hero-title" style="animation: fadeSlideUp 0.7s cubic-bezier(0.4,0,0.2,1) 0.38s both;">
+        {{ hero?.headlineMain || 'Full-Stack .NET Developer' }}
       </p>
-      <div class="hero-cta">
+      <p class="hero-tagline" style="animation: fadeSlideUp 0.7s cubic-bezier(0.4,0,0.2,1) 0.48s both;">
+        {{ typedText }}<span class="typed-cursor"></span>
+      </p>
+      <div class="hero-cta" style="animation: fadeSlideUp 0.7s cubic-bezier(0.4,0,0.2,1) 0.58s both;">
         <a href="#projects" class="btn btn-primary mag-btn">
-          <span>View My Work</span>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+          <span>{{ hero?.ctaPrimaryLabel || 'View My Work' }}</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M7 17L17 7M17 7H7M17 7v10" />
+          </svg>
         </a>
         <a href="#cv-section" class="btn btn-cv mag-btn">
-          <span>Download CV</span>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <span>{{ hero?.ctaSecondaryLabel || 'Download CV' }}</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
+          </svg>
         </a>
         <a href="#cta" class="btn btn-ghost mag-btn">
           <span>Get In Touch</span>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+            <polyline points="22,6 12,13 2,6" />
+          </svg>
         </a>
       </div>
-      <div class="hero-stats">
-        <div>
-          <div class="hero-stat-value" data-count="5" data-suffix="+">0</div>
-          <div class="hero-stat-label">Projects</div>
-        </div>
-        <div>
-          <div class="hero-stat-value" data-count="100" data-suffix="%">0</div>
-          <div class="hero-stat-label">Backend Focus</div>
-        </div>
-        <div>
-          <div class="hero-stat-value" style="font-size:1.3rem;letter-spacing:-.01em">Advanced</div>
-          <div class="hero-stat-label">SQL Expertise</div>
-        </div>
+      <div class="hero-stats" style="animation: fadeSlideUp 0.7s cubic-bezier(0.4,0,0.2,1) 0.68s both;">
+        @for (stat of parsedStats; track stat.label) {
+          <div>
+            @if (stat.isNumeric) {
+              <div class="hero-stat-value" [attr.data-count]="stat.count" [attr.data-suffix]="stat.suffix">{{ stat.count }}{{ stat.suffix }}</div>
+            } @else {
+              <div class="hero-stat-value" style="font-size:1.3rem;letter-spacing:-.01em">{{ stat.suffix }}</div>
+            }
+            <div class="hero-stat-label">{{ stat.label }}</div>
+          </div>
+        }
       </div>
     </div>
 
-    <div class="hero-visual">
+    <div class="hero-visual" style="animation: fadeSlideLeft 0.8s cubic-bezier(0.4,0,0.2,1) 0.35s both;" (mousemove)="onMouseMove($event)" (mouseleave)="onMouseLeave()">
       <div class="profile-card" id="tiltCard">
         <div class="profile-card-photo">
-          <div class="profile-photo-placeholder">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-            <span>Meno.png</span>
-          </div>
+          @if (imageUrl) {
+            <img [src]="imageUrl" alt="Profile">
+          } @else {
+            <div class="profile-photo-placeholder">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
+              <span>Meno.png</span>
+            </div>
+          }
         </div>
         <div class="profile-card-body">
-          <div class="profile-name">Abdullah Mohammed</div>
+          <div class="profile-name">{{ hero?.name || 'Abdullah Mohammed' }}</div>
           <div class="profile-role">.NET Developer</div>
           <div class="profile-location">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+              <circle cx="12" cy="10" r="3" />
+            </svg>
             Cairo, Egypt — FCI Student
           </div>
           <div class="profile-tags">
@@ -69,5 +97,7 @@
       </div>
     </div>
   </div>
-  <div class="hero-scroll"><div class="scroll-line"></div><span>scroll</span></div>
+  <div class="hero-scroll" style="animation: fadeIn 1s ease 1.2s both;">
+    <div class="scroll-line"></div><span>scroll</span>
+  </div>
 </section>

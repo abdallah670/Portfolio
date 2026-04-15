@@ -1,5 +1,6 @@
-import { Component, Input, OnInit, OnDestroy, Inject, PLATFORM_ID, Pipe, PipeTransform, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, Inject, PLATFORM_ID, Pipe, PipeTransform, ElementRef, ViewChild, AfterViewInit, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { Subject } from 'rxjs';
 import { HeroConfig } from '../../../../../core/models/portfolio.models';
 
 @Pipe({
@@ -8,7 +9,7 @@ import { HeroConfig } from '../../../../../core/models/portfolio.models';
 })
 export class ToCharsPipe implements PipeTransform {
   transform(value: string): string[] {
-    return value ? value.split('') : [];
+    return value ? value.split('').map(c => c === ' ' ? '\u00A0' : c) : [];
   }
 }
 
@@ -24,6 +25,7 @@ export class HeroComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('particlesCanvas') particlesCanvas!: ElementRef<HTMLCanvasElement>;
 
   typedText = '';
+  typewriterActive = false;
   private lines = [
     'Backend-focused .NET developer.',
     'Building scalable systems in C# & SQL.',
@@ -36,33 +38,36 @@ export class HeroComponent implements OnInit, OnDestroy, AfterViewInit {
   private typeInterval: any;
   private isBrowser: boolean;
   private particleAnimation: any;
+  private destroy$ = new Subject<void>();
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) {
+  constructor(
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private cdr: ChangeDetectorRef
+  ) {
     this.isBrowser = isPlatformBrowser(this.platformId);
   }
 
   ngOnInit(): void {
-    if (this.isBrowser && !this.hero) {
-      setTimeout(() => this.type(), 1000);
+    if (this.isBrowser) {
+      this.typewriterActive = true;
+      setTimeout(() => {
+        this.typeLoop();
+      }, 1000);
     }
   }
 
   ngAfterViewInit(): void {
     if (this.isBrowser) {
-      setTimeout(() => this.initParticles(), 100);
+      setTimeout(() => {
+        this.initParticles();
+        this.initCounters();
+      }, 100);
     }
   }
 
-  ngOnDestroy(): void {
-    if (this.typeInterval) {
-      clearTimeout(this.typeInterval);
-    }
-    if (this.particleAnimation) {
-      cancelAnimationFrame(this.particleAnimation);
-    }
-  }
-
-  private type(): void {
+  private typeLoop(): void {
+    if (!this.isBrowser || !this.typewriterActive) return;
+    
     const line = this.lines[this.lineIndex];
     
     if (this.isDeleting) {
@@ -70,10 +75,13 @@ export class HeroComponent implements OnInit, OnDestroy, AfterViewInit {
     } else {
       this.typedText = line.substring(0, ++this.charIndex);
     }
+    
+    // Force Angular to check the view
+    this.cdr.detectChanges();
 
     if (!this.isDeleting && this.charIndex === line.length) {
       this.isDeleting = true;
-      this.typeInterval = setTimeout(() => this.type(), 2400);
+      this.typeInterval = setTimeout(() => this.typeLoop(), 2400);
       return;
     }
 
@@ -83,7 +91,50 @@ export class HeroComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     const delay = this.isDeleting ? 38 : 62;
-    this.typeInterval = setTimeout(() => this.type(), delay);
+    this.typeInterval = setTimeout(() => this.typeLoop(), delay);
+  }
+
+  private initCounters(): void {
+    const animateCounter = (el: HTMLElement, target: number, suffix: string, duration = 1200) => {
+      let startTime: number | null = null;
+      const step = (timestamp: number) => {
+        if (!startTime) startTime = timestamp;
+        const progress = Math.min((timestamp - startTime) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const value = Math.floor(eased * target);
+        el.innerHTML = value + '<span>' + suffix + '</span>';
+        if (progress < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    };
+
+    if ('IntersectionObserver' in window) {
+      const counterObs = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            const el = e.target as HTMLElement;
+            const target = +(el.getAttribute('data-count') || 0);
+            const suffix = el.getAttribute('data-suffix') || '';
+            animateCounter(el, target, suffix);
+            counterObs.unobserve(el);
+          }
+        });
+      }, { threshold: 0.5 });
+      
+      document.querySelectorAll('[data-count]').forEach(el => counterObs.observe(el));
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.typewriterActive = false;
+    if (this.typeInterval) {
+      clearTimeout(this.typeInterval);
+    }
+    if (this.particleAnimation) {
+      cancelAnimationFrame(this.particleAnimation);
+    }
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   private initParticles(): void {
@@ -168,7 +219,7 @@ export class HeroComponent implements OnInit, OnDestroy, AfterViewInit {
           }
         }
       }
-    }
+    };
 
     const animate = () => {
       ctx.clearRect(0, 0, W, H);
@@ -177,6 +228,23 @@ export class HeroComponent implements OnInit, OnDestroy, AfterViewInit {
       this.particleAnimation = requestAnimationFrame(animate);
     };
     animate();
+  }
+
+  get parsedStats() {
+    if (!this.hero?.stats?.length) {
+      return [
+        { label: 'Projects', count: 5, suffix: '+', isNumeric: true },
+        { label: 'Backend Focus', count: 100, suffix: '%', isNumeric: true },
+        { label: 'SQL Expertise', count: 0, suffix: 'Advanced', isNumeric: false },
+      ];
+    }
+    return this.hero.stats.map(s => {
+      const match = s.value.trim().match(/^(\d+)(.*)$/);
+      if (match) {
+        return { label: s.label, count: parseInt(match[1], 10), suffix: match[2].trim(), isNumeric: true };
+      }
+      return { label: s.label, count: 0, suffix: s.value, isNumeric: false };
+    });
   }
 
   scrollTo(elementId: string, event?: Event): void {

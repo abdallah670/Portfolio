@@ -24,29 +24,6 @@ public class HeroStatsDto
     public string Value { get; set; } = string.Empty;
 }
 
-public class AboutDto
-{
-    public string Kicker { get; set; } = string.Empty;
-    public string Title { get; set; } = string.Empty;
-    public string Subtitle { get; set; } = string.Empty;
-    public string FunFact { get; set; } = string.Empty;
-    public List<AboutCardDto> Cards { get; set; } = new();
-    public List<string> Achievements { get; set; } = new();
-    public List<ValueDto> Values { get; set; } = new();
-}
-
-public class AboutCardDto
-{
-    public string Title { get; set; } = string.Empty;
-    public string Subtitle { get; set; } = string.Empty;
-}
-
-public class ValueDto
-{
-    public string Title { get; set; } = string.Empty;
-    public string Description { get; set; } = string.Empty;
-}
-
 public class SkillCategoryDto
 {
     public string Title { get; set; } = string.Empty;
@@ -69,8 +46,9 @@ public class ProjectDto
     public string Description { get; set; } = string.Empty;
     public string Stack { get; set; } = string.Empty; // JSON serialized list
     public string Image { get; set; } = string.Empty;
-    public string LiveUrl { get; set; } = string.Empty;
+    public string linkedinUrl { get; set; } = string.Empty;
     public string GithubUrl { get; set; } = string.Empty;
+    public string LiveUrl { get; set; } = string.Empty;
     public string Status { get; set; } = string.Empty;
     public string Color { get; set; } = string.Empty;
     public bool IsFeatured { get; set; }
@@ -103,7 +81,6 @@ public class ContactDto
 public class PortfolioConfigDto
 {
     public HeroDto Hero { get; set; } = new();
-    public AboutDto About { get; set; } = new();
     public List<SkillCategoryDto> Skills { get; set; } = new();
     public List<ProjectDto> FeaturedProjects { get; set; } = new();
     public List<ProjectDto> MoreProjects { get; set; } = new();

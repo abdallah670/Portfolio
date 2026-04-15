@@ -4,7 +4,6 @@
 
 export interface PortfolioConfig {
   hero: HeroConfig;
-  about: AboutConfig;
   skills: SkillCategoryConfig[];
   featuredProjects: ProjectConfig[];
   moreProjects: ProjectConfig[];
@@ -33,26 +32,6 @@ export interface HeroStatConfig {
   value: string;
 }
 
-export interface AboutConfig {
-  kicker: string;
-  title: string;
-  subtitle: string;
-  funFact: string;
-  cards: AboutCardConfig[];
-  achievements: string[];
-  values: ValueConfig[];
-}
-
-export interface AboutCardConfig {
-  title: string;
-  subtitle: string;
-}
-
-export interface ValueConfig {
-  title: string;
-  description: string; // NOTE: "description" not "desc"
-}
-
 export interface SkillCategoryConfig {
   title: string; // NOTE: "title" not "name"
   color: string;
@@ -72,7 +51,8 @@ export interface ProjectConfig {
   description: string;
   stack: string;       // raw JSON string e.g. "[\"C#\",\"Angular\"]"
   image: string;
-  liveUrl: string;
+  linkedinUrl: string;
+  LiveUrl :string;
   githubUrl: string;
   status: string;
   color: string;
@@ -162,30 +142,6 @@ export interface Hero {
   stats: HeroStatConfig[];
 }
 
-export interface About {
-  id: number;
-  kicker: string;
-  title: string;
-  subtitle: string;
-  funFact: string;
-  cards: AboutCardConfig[];
-  achievements: Achievement[];
-  values: Value[];
-}
-
-export interface Achievement {
-  id: number;
-  text: string;
-  aboutId: number;
-}
-
-export interface Value {
-  id: number;
-  title: string;
-  description: string;
-  aboutId: number;
-}
-
 export interface JourneyItem {
   id: number;
   title: string;
@@ -248,40 +204,3 @@ export interface SystemSetting {
   category: string;
 }
 
-// Analytics
-export interface DashboardAnalytics {
-  totalVisitors: number;
-  totalPageViews: number;
-  bounceRate: number;
-  averageSessionDuration: string;
-  trafficTrends: TrafficTrend[];
-  topProjects: ProjectView[];
-  topLocations: GeoLocation[];
-  deviceBreakdown: DeviceBreakdown[];
-}
-
-export interface TrafficTrend {
-  date: string;
-  visitors: number;
-  pageViews: number;
-}
-
-export interface ProjectView {
-  projectId: number;
-  projectName: string;
-  views: number;
-  percentage: number;
-}
-
-export interface GeoLocation {
-  country: string;
-  city: string;
-  visitorCount: number;
-  percentage: number;
-}
-
-export interface DeviceBreakdown {
-  deviceType: string;
-  count: number;
-  percentage: number;
-}

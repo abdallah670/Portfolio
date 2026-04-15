@@ -7,10 +7,6 @@ public interface IApplicationDbContext
 {
     DbSet<Hero> Heroes { get; set; }
     DbSet<HeroStats> HeroStats { get; set; }
-    DbSet<About> Abouts { get; set; }
-    DbSet<AboutCard> AboutCards { get; set; }
-    DbSet<Achievement> Achievements { get; set; }
-    DbSet<Value> Values { get; set; }
     DbSet<SkillCategory> SkillCategories { get; set; }
     DbSet<Skill> Skills { get; set; }
     DbSet<Project> Projects { get; set; }
@@ -18,8 +14,6 @@ public interface IApplicationDbContext
     DbSet<SocialLink> SocialLinks { get; set; }
     DbSet<Contact> Contacts { get; set; }
     DbSet<Message> Messages { get; set; }
-    DbSet<VisitorSession> VisitorSessions { get; set; }
-    DbSet<PageVisit> PageVisits { get; set; }
     DbSet<SystemSetting> SystemSettings { get; set; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

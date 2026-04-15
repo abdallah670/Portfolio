@@ -4,44 +4,19 @@
       <div>
         <p class="section-label reveal">My Path</p>
         <h2 class="section-title reveal reveal-delay-1">The<br />Journey</h2>
-        <p class="skills-desc reveal reveal-delay-2" style="font-size:.95rem;color:var(--text-secondary);line-height:1.8">Building depth over breadth — every step deliberate, focused on mastering backend systems before expanding outward.</p>
+        <p class="skills-desc reveal reveal-delay-2">Building depth over breadth — every step deliberate, focused on mastering backend systems before expanding outward.</p>
       </div>
       <div class="timeline">
-        <div class="timeline-item reveal">
-          <div class="timeline-dot"></div>
-          <div class="timeline-period">2023 – Present</div>
-          <div class="timeline-title">Computer Science Student</div>
-          <div class="timeline-org">Faculty of Computers &amp; Information (FCI)</div>
-          <div class="timeline-desc">Built a strong foundation in programming, data structures, and problem solving. Focused on understanding how systems work — not just writing code.</div>
-        </div>
-        <div class="timeline-item reveal reveal-delay-1">
-          <div class="timeline-dot"></div>
-          <div class="timeline-period">2024 – Present</div>
-          <div class="timeline-title">Backend Development with .NET</div>
-          <div class="timeline-org">Self Learning &amp; Projects</div>
-          <div class="timeline-desc">Specialized in C# and .NET. Built multiple systems with clean architecture, layered design, and maintainable code that scales.</div>
-        </div>
-        <div class="timeline-item reveal reveal-delay-2">
-          <div class="timeline-dot"></div>
-          <div class="timeline-period">2024 – Present</div>
-          <div class="timeline-title">Database Design &amp; SQL</div>
-          <div class="timeline-org">Projects &amp; Practice</div>
-          <div class="timeline-desc">Designed relational databases, wrote complex queries, worked on data integrity, relationships, and optimization for real-world systems.</div>
-        </div>
-        <div class="timeline-item reveal reveal-delay-3">
-          <div class="timeline-dot"></div>
-          <div class="timeline-period">2025 – Present</div>
-          <div class="timeline-title">System Building &amp; Architecture</div>
-          <div class="timeline-org">Hands-on Projects</div>
-          <div class="timeline-desc">Developed full production systems using DAL/Business/DTO layered architecture. Shipped MenoPro and Labor Marketplace to production.</div>
-        </div>
-        <div class="timeline-item reveal reveal-delay-4">
-          <div class="timeline-dot"></div>
-          <div class="timeline-period">2025 – Present</div>
-          <div class="timeline-title">Frontend Integration (Angular)</div>
-          <div class="timeline-org">Project Integration</div>
-          <div class="timeline-desc">Built Angular dashboards connected to .NET backends. Focused on API integration, NgRx state management, and functional UIs.</div>
-        </div>
+        <div class="timeline-glow"></div>
+        @for (item of items; track item.title; let i = $index) {
+          <div class="timeline-item reveal" [class]="'reveal-delay-' + i">
+            <div class="timeline-dot"></div>
+            <div class="timeline-period">{{ item.period }}</div>
+            <div class="timeline-title">{{ item.title }}</div>
+            <div class="timeline-org">{{ item.org }}</div>
+            <div class="timeline-desc">{{ item.desc }}</div>
+          </div>
+        }
       </div>
     </div>
   </div>

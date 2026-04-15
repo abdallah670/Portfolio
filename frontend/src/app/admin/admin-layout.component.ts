@@ -1,17 +1,16 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
-import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { HeaderComponent } from './components/header/header.component';
+import { ApiService } from '../core/services/api.service';
 
 @Component({
   selector: 'app-admin-layout',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, SidebarComponent, HeaderComponent],
+  imports: [CommonModule, RouterOutlet, HeaderComponent],
   template: `
     <div class="admin-layout">
-      <app-sidebar />
-      <app-header />
+      <app-header [profileImage]="profileImage" />
       <main class="main-content">
         <div class="content-wrapper">
           <router-outlet />
@@ -19,14 +18,13 @@ import { HeaderComponent } from './components/header/header.component';
       </main>
     </div>
   `,
-  styles: [`
+styles: [`
     .admin-layout {
       min-height: 100vh;
       background: var(--background);
     }
 
     .main-content {
-      margin-left: 260px;
       padding-top: 64px;
       min-height: 100vh;
     }
@@ -38,14 +36,38 @@ import { HeaderComponent } from './components/header/header.component';
     }
 
     @media (max-width: 768px) {
-      .main-content {
-        margin-left: 0;
-      }
-
       .content-wrapper {
         padding: 16px;
       }
     }
   `]
 })
-export class AdminLayoutComponent {}
+export class AdminLayoutComponent implements OnInit {
+  profileImage = '';
+  private isBrowser: boolean;
+  constructor(
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private apiService: ApiService
+  ) {
+    this.isBrowser = isPlatformBrowser(platformId);
+  }
+
+  ngOnInit(): void {
+    if (this.isBrowser) {
+      const saved = localStorage.getItem('am-profile-image');
+      if (saved) {
+        this.profileImage = saved;
+      } else {
+        this.apiService.getProfileImage().subscribe({
+          next: (image) => {
+            if (image) {
+              this.profileImage = image;
+              localStorage.setItem('am-profile-image', this.profileImage);
+            }
+          },
+          error: () => {}
+        });
+      }
+    }
+  }
+}

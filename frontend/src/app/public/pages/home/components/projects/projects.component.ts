@@ -11,9 +11,11 @@ interface Project {
   stack: string[];
   githubUrl: string;
   linkedinUrl?: string;
+  liveUrl?:string;
   featured?: boolean;
   gradient: string;
-  icon: string;
+  icon?: string;
+  image?:string;
 }
 
 @Component({
@@ -122,10 +124,12 @@ export class ProjectsComponent implements OnInit {
       description: p.description || '',
       stack: stack,
       githubUrl: p.githubUrl || '#',
-      linkedinUrl: undefined,
+      linkedinUrl: p.linkedinUrl,
+      liveUrl :p.LiveUrl,
       featured: isFeatured || p.isFeatured,
       gradient: this.getGradient(isFeatured),
-      icon: this.getIcon(p.title)
+      icon:this.getIcon(p.title),
+      image:p.image?this.getImageUrl(p.image):this.getIcon(p.title)
     };
   }
 
@@ -136,6 +140,7 @@ export class ProjectsComponent implements OnInit {
   }
 
   private getIcon(title: string): string {
+    
     const titleLower = title.toLowerCase();
     if (titleLower.includes('gym') || titleLower.includes('fitness')) return '🏋';
     if (titleLower.includes('labor') || titleLower.includes('job')) return '🔗';

@@ -1,105 +1,120 @@
 <div class="messages-page">
+  <!-- Loading State -->
+  @if (loading) {
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>Loading messages...</p>
+    </div>
+  }
+
   <!-- Inbox Layout -->
   <div class="inbox-container">
     <!-- Message List Sidebar -->
     <aside class="inbox-sidebar">
       <div class="sidebar-header">
         <h2 class="inbox-title">Inbox</h2>
-        <span class="new-badge">12 New</span>
+        <span class="new-badge">{{ totalCount }} Messages</span>
       </div>
       
       <div class="message-list">
         @for (msg of messages; track msg.id) {
           <div 
             class="message-item" 
-            [class.unread]="msg.isUnread"
+            [class.unread]="!msg.isRead"
             [class.active]="selectedMessage?.id === msg.id"
             (click)="selectMessage(msg)">
             <div class="item-header">
-              <span class="subject-kicker">{{ msg.subject }}</span>
-              <span class="time">{{ msg.time }}</span>
+              <span class="subject-kicker">{{ msg.subject || 'No Subject' }}</span>
+              <span class="time">{{ formatDate(msg.createdAt) }}</span>
             </div>
-            <h3 class="sender-name">{{ msg.senderName }}</h3>
-            <p class="preview-text">{{ msg.previewText }}</p>
+            <h3 class="sender-name">{{ msg.name }}</h3>
+            <p class="preview-text">{{ msg.content | slice:0:80 }}...</p>
             <div class="status-tags">
-              <span *ngIf="msg.isUnread" class="tag tag-unread">Unread</span>
-              <span *ngIf="msg.isReplied" class="tag tag-replied">Replied</span>
+              @if (!msg.isRead) {
+                <span class="tag tag-unread">Unread</span>
+              }
             </div>
           </div>
         }
+        @empty {
+          @if (!loading) {
+            <div class="empty-state">
+              <p>No messages yet</p>
+            </div>
+          }
+        }
       </div>
+
+      <!-- Pagination -->
+      @if (totalPages > 1) {
+        <div class="pagination">
+          <button class="page-btn" [disabled]="page <= 1" (click)="goToPage(page - 1)">
+            <span class="material-symbols-outlined">chevron_left</span>
+          </button>
+          <span class="page-info">Page {{ page }} of {{ totalPages }}</span>
+          <button class="page-btn" [disabled]="page >= totalPages" (click)="goToPage(page + 1)">
+            <span class="material-symbols-outlined">chevron_right</span>
+          </button>
+        </div>
+      }
     </aside>
 
     <!-- Message Detail Panel -->
     <main class="message-detail-panel">
-      <!-- Detail Header -->
-      <div class="detail-header">
-        <div class="sender-info">
-          <div class="avatar">
-            <span class="initials">{{ selectedMessage?.senderName?.[0] || 'A' }}</span>
-          </div>
-          <div class="contact-card">
-            <div class="sender-name-lg">{{ selectedMessage?.senderName || 'No Selection' }}</div>
-            <div class="sender-meta">
-              <span>contact&#64;domain.com</span>
-              <span class="bullet">&bull;</span>
-              <span>{{ selectedMessage?.time }}</span>
+      @if (selectedMessage) {
+        <!-- Detail Header -->
+        <div class="detail-header">
+          <div class="sender-info">
+            <div class="avatar">
+              <span class="initials">{{ selectedMessage.name?.[0] || 'A' }}</span>
+            </div>
+            <div class="contact-card">
+              <div class="sender-name-lg">{{ selectedMessage.name }}</div>
+              <div class="sender-meta">
+                <span>{{ selectedMessage.email }}</span>
+                <span class="bullet">&bull;</span>
+                <span>{{ formatDate(selectedMessage.createdAt) }}</span>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="header-actions">
-          <button class="action-btn">
-            <span class="material-symbols-outlined">reply</span>
-          </button>
-          <button class="action-btn">
-            <span class="material-symbols-outlined">archive</span>
-          </button>
-          <button class="action-btn text-error">
-            <span class="material-symbols-outlined">delete</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- Detail Body -->
-      <div class="detail-body glass-panel">
-        <h1 class="message-subject">{{ selectedMessage?.subject }}</h1>
-        
-        <div class="message-content">
-          <p>Hi Abdullah,</p>
-          <p>
-            I've been reviewing your portfolio and I'm very impressed with the technical depth and system design of your recent projects. We are currently looking to rebuild our core platform and need someone with your expertise in .NET and Angular architecture.
-          </p>
-          <p>
-            The project involves migrating a legacy monolithic application to a modular, scalable infrastructure using C# and SQL Server. Your experience with clean architecture seems like a perfect fit.
-          </p>
-          <p>
-            Could we schedule a brief call this week to discuss potential collaboration?
-          </p>
-          <p>
-            Best regards,<br>
-            {{ selectedMessage?.senderName }}
-          </p>
-        </div>
-      </div>
-
-      <!-- Reply Box -->
-      <div class="reply-box">
-        <div class="reply-header">
-          <span class="material-symbols-outlined icon">reply</span>
-          <span>Reply to {{ selectedMessage?.senderName }}</span>
-        </div>
-        <textarea class="reply-textarea" rows="4" placeholder="Draft your response..."></textarea>
-        <div class="reply-footer">
-          <div class="tools">
-            <button class="tool-btn"><span class="material-symbols-outlined">attach_file</span></button>
-            <button class="tool-btn"><span class="material-symbols-outlined">format_bold</span></button>
+          <div class="header-actions">
+           
+            <button class="action-btn text-error" (click)="deleteMessage(selectedMessage.id)">
+              <span class="material-symbols-outlined">delete</span>
+            </button>
           </div>
-          <button class="send-btn">
-            <span>Send</span>
-            <span class="material-symbols-outlined text-sm">send</span>
-          </button>
         </div>
-      </div>
+
+        <!-- Detail Body -->
+        <div class="detail-body glass-panel">
+          <h1 class="message-subject">{{ selectedMessage.subject || 'No Subject' }}</h1>
+          
+          <div class="message-content">
+            <p>{{ selectedMessage.content }}</p>
+          </div>
+        </div>
+
+        <!-- Reply Box -->
+        <div class="reply-box">
+          <div class="reply-header">
+            <span class="material-symbols-outlined icon">reply</span>
+            <span>Reply to {{ selectedMessage.name }}</span>
+          </div>
+          <textarea class="reply-textarea" rows="4" placeholder="Draft your response..."></textarea>
+          <div class="reply-footer">
+          
+            <button class="send-btn">
+              <span>Send</span>
+              <span class="material-symbols-outlined text-sm">send</span>
+            </button>
+          </div>
+        </div>
+      } @else {
+        <div class="no-selection">
+          <span class="material-symbols-outlined">mail</span>
+          <p>Select a message to view</p>
+        </div>
+      }
     </main>
   </div>
 </div>

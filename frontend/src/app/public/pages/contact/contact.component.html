@@ -9,100 +9,184 @@
       <div class="contact-grid">
         <!-- Left Column: Content & Details -->
         <div class="contact-info">
-          <div class="info-header">
+          <div class="info-header reveal">
             <span class="info-kicker">Connect</span>
             <h1 class="info-title">
               Let's build the <span class="highlight-text">future</span> together.
             </h1>
             <p class="info-desc">
-              Currently available for architectural inquiries, digital systems consulting, and premium creative partnerships.
+              Currently available for backend development roles, full-stack projects, and any challenge involving building systems the right way.
             </p>
           </div>
 
           <div class="contact-details">
-            <div class="detail-item tooltip-host">
+            <div class="detail-item reveal reveal-delay-1">
               <div class="detail-icon">
                 <span class="material-symbols-outlined">alternate_email</span>
               </div>
               <div class="detail-text">
                 <p class="detail-label">Email</p>
-                <a href="mailto:hello@kineticarchive.com" class="detail-value link-hover">
-                  hello&#64;kineticarchive.com
+                <a [href]="'mailto:' + (contact?.email || 'meno.mo.dev@gmail.com')" class="detail-value link-hover">
+                  {{ contact?.email || 'meno.mo.dev@gmail.com' }}
                 </a>
               </div>
             </div>
 
-            <div class="detail-item">
+            <div class="detail-item reveal reveal-delay-1" *ngIf="contact?.phone">
+              <div class="detail-icon">
+                <span class="material-symbols-outlined">phone</span>
+              </div>
+              <div class="detail-text">
+                <p class="detail-label">Phone</p>
+                <a [href]="'tel:' + contact?.phone" class="detail-value link-hover">
+                  {{ contact?.phone }}
+                </a>
+              </div>
+            </div>
+
+            <div class="detail-item reveal reveal-delay-2">
               <div class="detail-icon">
                 <span class="material-symbols-outlined">location_on</span>
               </div>
               <div class="detail-text">
                 <p class="detail-label">Location</p>
-                <p class="detail-value">London, United Kingdom</p>
+                <p class="detail-value">{{ contact?.location || 'Cairo, Egypt' }}</p>
+              </div>
+            </div>
+
+            <div class="detail-item reveal reveal-delay-2" *ngIf="contact?.whatsApp">
+              <div class="detail-icon">
+                <span class="material-symbols-outlined">chat</span>
+              </div>
+              <div class="detail-text">
+                <p class="detail-label">WhatsApp</p>
+                <a [href]="whatsappLink" target="_blank" class="detail-value link-hover">
+                  {{ contact?.whatsApp }}
+                </a>
               </div>
             </div>
           </div>
 
           <!-- Social Links -->
-          <div class="social-network-section">
+          <div class="social-network-section reveal reveal-delay-3">
             <p class="network-label">Network</p>
             <div class="network-links">
-              <a href="#" class="btn-icon circle-icon">
-                <span class="material-symbols-outlined">share</span>
+              <a *ngFor="let social of socials" [href]="social.href" target="_blank" class="btn-icon circle-icon" [attr.aria-label]="social.label">
+                <span class="material-symbols-outlined">
+                  {{ getSocialIcon(social.icon) }}
+                </span>
               </a>
-              <a href="#" class="btn-icon circle-icon">
-                <span class="material-symbols-outlined">code</span>
-              </a>
-              <a href="#" class="btn-icon circle-icon">
-                <span class="material-symbols-outlined">link</span>
-              </a>
+              <!-- Fallback if no socials -->
+              <ng-container *ngIf="socials.length === 0">
+                <a href="https://github.com/abdallah670" target="_blank" class="btn-icon circle-icon" aria-label="GitHub">
+                  <span class="material-symbols-outlined">code</span>
+                </a>
+                <a href="https://linkedin.com/in/abdullah-mohammed-334475294" target="_blank" class="btn-icon circle-icon" aria-label="LinkedIn">
+                  <span class="material-symbols-outlined">link</span>
+                </a>
+                <a href="https://instagram.com/meno221104" target="_blank" class="btn-icon circle-icon" aria-label="Instagram">
+                  <span class="material-symbols-outlined">share</span>
+                </a>
+              </ng-container>
             </div>
           </div>
         </div>
 
         <!-- Right Column: Contact Form -->
         <div class="contact-form-wrapper">
-          <div class="form-panel glass-panel">
-            <form class="contact-form" (submit)="onSubmit($event)">
+          <div class="form-panel glass-panel reveal reveal-delay-1">
+            <!-- Success Message -->
+            <div *ngIf="success" class="alert alert-success">
+              <span class="material-symbols-outlined">check_circle</span>
+              <p>Message sent successfully! I'll get back to you soon.</p>
+            </div>
+
+            <!-- Error Message -->
+            <div *ngIf="error" class="alert alert-error">
+              <span class="material-symbols-outlined">error</span>
+              <p>{{ error }}</p>
+            </div>
+
+            <form class="contact-form" (submit)="onSubmit($event)" *ngIf="!success">
               <div class="form-row">
                 <div class="form-group">
-                  <label class="form-label">Name</label>
-                  <input type="text" class="form-input" placeholder="John Doe" />
+                  <label class="form-label">Name *</label>
+                  <input
+                    type="text"
+                    class="form-input"
+                    placeholder="Your name"
+                    [(ngModel)]="form.name"
+                    name="name"
+                    required
+                  />
                 </div>
                 <div class="form-group">
-                  <label class="form-label">Email</label>
-                  <input type="email" class="form-input" placeholder="john@domain.com" />
+                  <label class="form-label">Email *</label>
+                  <input
+                    type="email"
+                    class="form-input"
+                    placeholder="your@email.com"
+                    [(ngModel)]="form.email"
+                    name="email"
+                    required
+                  />
                 </div>
               </div>
               <div class="form-group">
                 <label class="form-label">Subject</label>
-                <input type="text" class="form-input" placeholder="Project Inquiry" />
+                <input
+                  type="text"
+                  class="form-input"
+                  placeholder="Project Inquiry"
+                  [(ngModel)]="form.subject"
+                  name="subject"
+                />
               </div>
               <div class="form-group">
-                <label class="form-label">Message</label>
-                <textarea class="form-textarea" placeholder="Tell me about your vision..." rows="6"></textarea>
+                <label class="form-label">Message *</label>
+                <textarea
+                  class="form-textarea"
+                  placeholder="Tell me about your project..."
+                  rows="6"
+                  [(ngModel)]="form.content"
+                  name="content"
+                  required
+                ></textarea>
               </div>
-              
+
               <div class="form-actions">
                 <p class="security-notice">
                   <span class="material-symbols-outlined">verified_user</span>
-                  Encrypted and secure transmission.
+                  Your message will be sent securely.
                 </p>
-                <button type="submit" class="btn btn-primary submit-btn">
-                  <span>Send Message</span>
-                  <span class="material-symbols-outlined icon-arrow">send</span>
+                <button
+                  type="submit"
+                  class="btn btn-primary submit-btn"
+                  [disabled]="loading"
+                >
+                  <span>{{ loading ? 'Sending...' : 'Send Message' }}</span>
+                  <span class="material-symbols-outlined icon-arrow" *ngIf="!loading">send</span>
+                  <span class="material-symbols-outlined icon-arrow" *ngIf="loading">hourglass_top</span>
                 </button>
               </div>
             </form>
           </div>
 
           <!-- Asymmetric Map Element -->
-          <div class="map-visual">
-             <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDgqWq-5VZiXy0n0vKqMmb0p44eWuBBnrFajFpcwyzo49JX5u2MOx2aYxLD2_FMwCickUXCTmWqCDw_6lMMeDumIvkG-LYZyOXu-o-stzhYHioSJijEZBT-xj2K6RD8quIKnQE5GgHBJoKkhox8kWElyL3DKxo0AMN3AjPTAMwnbpYRK54gAp_8HF3yyaTJkw_dtmD-r8ptkL74AKZRwcW2WrUexdN60zrXMpdxiVATl4QX8b_aC95yVoRhiTzix_HdfLzusMOn2us" alt="Monochrome London map" />
+          <div class="map-visual reveal reveal-delay-2">
+             <iframe
+               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d110502.60389552722!2d31.1760632!3d30.0594885!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14583fa60b21beeb%3A0x79dfb296e8423bba!2sCairo%2C%20Cairo%20Governorate!5e0!3m2!1sen!2seg!4v1704067200000!5m2!1sen!2seg"
+               width="100%"
+               height="250"
+               style="border:0; border-radius: 16px; filter: grayscale(100%) invert(92%) contrast(83%);"
+               allowfullscreen=""
+               loading="lazy"
+               referrerpolicy="no-referrer-when-downgrade">
+             </iframe>
              <div class="map-overlay"></div>
              <div class="map-location-tag">
                <span class="pulse-dot"></span>
-               <span class="location-text">Location: London SE1</span>
+               <span class="location-text">Location: {{ contact?.location || 'Cairo, Egypt' }}</span>
              </div>
           </div>
         </div>

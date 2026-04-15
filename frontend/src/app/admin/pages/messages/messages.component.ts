@@ -1,15 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-interface InquiryMessage {
-  id: string;
-  senderName: string;
-  subject: string;
-  previewText: string;
-  time: string;
-  isUnread: boolean;
-  isReplied?: boolean;
-}
+import { ApiService } from '../../../core/services/api.service';
+import { Message, PaginatedResponse } from '../../../core/models/portfolio.models';
 
 @Component({
   selector: 'app-admin-messages',
@@ -18,41 +10,74 @@ interface InquiryMessage {
   templateUrl: './messages.component.html',
   styleUrls: ['./messages.component.scss']
 })
-export class MessagesComponent {
-  messages: InquiryMessage[] = [
-    {
-      id: '1',
-      senderName: 'Marcus Thorne',
-      subject: 'Inquiry: Digital Art Direction',
-      previewText: "I've been following your Kinetic Archive series and I'm interested in a potential collaboration for a...",
-      time: '10:42 AM',
-      isUnread: true
-    },
-    {
-      id: '2',
-      senderName: 'Elena Rodriguez',
-      subject: 'Project: Web3 Ecosystem',
-      previewText: 'Thank you for the quick response. The budget parameters you mentioned align with our expectations for...',
-      time: 'Yesterday',
-      isUnread: false,
-      isReplied: true
-    },
-    {
-      id: '3',
-      senderName: 'Apex Systems',
-      subject: 'Job Offer: Lead Engineer',
-      previewText: 'We are impressed with your technical architecture background and would like to discuss a position...',
-      time: 'Mon',
-      isUnread: false
-    }
-  ];
+export class MessagesComponent implements OnInit {
+  messages: Message[] = [];
+  selectedMessage: Message | null = null;
+  loading = true;
+  page = 1;
+  pageSize = 20;
+  totalCount = 0;
+  totalPages = 1;
 
-  selectedMessage: InquiryMessage | null = this.messages[0];
+  constructor(private api: ApiService) {}
 
-  selectMessage(msg: InquiryMessage) {
+  ngOnInit(): void {
+    this.loadMessages();
+  }
+
+  loadMessages(): void {
+    this.loading = true;
+    this.api.getMessages(this.page, this.pageSize).subscribe({
+      next: (res: PaginatedResponse<Message>) => {
+        this.messages = res.items;
+        this.totalCount = res.totalCount;
+        this.totalPages = res.totalPages;
+        this.loading = false;
+      },
+      error: () => {
+        this.loading = false;
+      }
+    });
+  }
+
+  selectMessage(msg: Message): void {
     this.selectedMessage = msg;
-    if (msg.isUnread) {
-      msg.isUnread = false;
+    if (!msg.isRead) {
+      this.api.markMessageAsRead(msg.id).subscribe();
+      msg.isRead = true;
     }
+  }
+
+  deleteMessage(id: number): void {
+    if (!confirm('Delete this message?')) return;
+    this.api.deleteMessage(id).subscribe(() => {
+      this.messages = this.messages.filter(m => m.id !== id);
+      if (this.selectedMessage?.id === id) this.selectedMessage = null;
+    });
+  }
+
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.page = page;
+      this.loadMessages();
+    }
+  }
+
+  getStackTags(message: Message): string[] {
+    const tags: string[] = [];
+    if (message.email) tags.push(message.email);
+    if (message.subject) tags.push(message.subject);
+    return tags;
+  }
+
+  formatDate(dateStr: string): string {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   }
 }

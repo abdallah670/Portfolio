@@ -14,7 +14,8 @@ import {
   PaginatedResponse,
   CreateMessageRequest,
   SystemSetting,
-  DashboardAnalytics
+  DashboardAnalytics,
+  PortfolioConfig
 } from '../models/portfolio.models';
 
 @Injectable({
@@ -31,8 +32,8 @@ export class ApiService {
   }
 
   // Portfolio Config (Public)
-  getPortfolioConfig(): Observable<any> {
-    return this.http.get(`${this.API_URL}/portfolio/config`);
+  getPortfolioConfig(): Observable<PortfolioConfig> {
+    return this.http.get<PortfolioConfig>(`${this.API_URL}/portfolio/config`);
   }
 
   getSkills(): Observable<SkillCategory[]> {
@@ -41,6 +42,11 @@ export class ApiService {
 
   getProjects(): Observable<Project[]> {
     return this.http.get<Project[]>(`${this.API_URL}/portfolio/projects`);
+  }
+
+  // Projects (Admin - All including drafts)
+  getAllProjectsAdmin(): Observable<Project[]> {
+    return this.http.get<Project[]>(`${this.API_URL}/portfolio/admin/projects`);
   }
 
   // Dashboard Stats (Admin)
@@ -54,7 +60,7 @@ export class ApiService {
   }
 
   updateProject(project: Project): Observable<Project> {
-    return this.http.put<Project>(`${this.API_URL}/portfolio/projects`, project);
+    return this.http.put<Project>(`${this.API_URL}/portfolio/projects/${project.id}`, project);
   }
 
   deleteProject(id: number): Observable<void> {

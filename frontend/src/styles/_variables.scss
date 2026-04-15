@@ -1,37 +1,88 @@
-// Kinetic Archive Design System
+// Portfolio Design System - Based on portfolio-home.html
 // Dark Theme Color Palette
 
 :root {
+  // =============================================
+  // DESIGN TOKENS (from portfolio-home.html)
+  // =============================================
+  
   // Background Colors
-  --background: #060e20;
-  --surface: #060e20;
-  --surface-dim: #060e20;
-  --surface-bright: #1f2b49;
+  --bg-primary:    #04080f;
+  --bg-surface:    #070d1a;
+  --bg-elevated:   #0c1526;
+  --bg-card:       #0f1c31;
   
-  // Container Colors (Elevation Levels)
+  // Border Colors
+  --border:        rgba(59, 130, 246, 0.1);
+  --border-hover:  rgba(59, 130, 246, 0.3);
+  
+  // Accent Colors
+  --accent:        #3b82f6;
+  --accent-bright: #60a5fa;
+  --accent-dim:    rgba(59, 130, 246, 0.12);
+  --accent-glow:   rgba(59, 130, 246, 0.07);
+  
+  // Text Colors
+  --text-primary:   #e8edf5;
+  --text-secondary: #7e95b5;
+  --text-muted:     #3a4f6a;
+  
+  // Status Colors
+  --status-live:    #4ade80;
+  --status-wip:     #facc15;
+  
+  // Font Families
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-body:    'DM Sans', system-ui, sans-serif;
+  --font-mono:    'Fira Code', monospace;
+  
+  // Border Radius
+  --radius-sm: 4px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  
+  // Shadows
+  --shadow-card: 0 4px 40px rgba(0,0,0,0.5), 0 1px 0 rgba(59,130,246,0.06);
+  --shadow-glow: 0 0 60px rgba(59, 130, 246, 0.1);
+  
+  // Transitions
+  --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  // =============================================
+  // LEGACY COMPATIBILITY (for existing components)
+  // =============================================
+  
+  // Background Colors (mapped)
+  --background: var(--bg-primary);
+  --surface: var(--bg-surface);
+  --surface-dim: var(--bg-primary);
+  --surface-bright: var(--bg-elevated);
+  
+  // Container Colors
   --surface-container-lowest: #000000;
-  --surface-container-low: #091328;
-  --surface-container: #0f1930;
-  --surface-container-high: #141f38;
-  --surface-container-highest: #192540;
-  --surface-variant: #192540;
+  --surface-container-low: var(--bg-surface);
+  --surface-container: var(--bg-elevated);
+  --surface-container-high: var(--bg-card);
+  --surface-container-highest: #141f38;
+  --surface-variant: var(--bg-card);
   
-  // Primary (Purple/Blue)
-  --primary: #9ba8ff;
-  --primary-dim: #4963ff;
-  --primary-container: #8999ff;
-  --primary-fixed: #8999ff;
-  --primary-fixed-dim: #778aff;
-  --on-primary: #001c8e;
-  --on-primary-container: #001470;
-  --on-primary-fixed: #000000;
-  --on-primary-fixed-variant: #001a88;
-  --inverse-primary: #2949ef;
+  // Primary (mapped to accent)
+  --primary: var(--accent);
+  --primary-dim: var(--accent-bright);
+  --primary-container: var(--accent-dim);
+  --primary-fixed: var(--accent-bright);
+  --primary-fixed-dim: var(--accent);
+  --on-primary: #ffffff;
+  --on-primary-container: var(--text-primary);
+  --on-primary-fixed: #ffffff;
+  --on-primary-fixed-variant: var(--text-primary);
+  --inverse-primary: var(--accent-bright);
   
-  // Secondary (Cyan)
-  --secondary: #00e3fd;
+  // Secondary (cyan for compatibility)
+  --secondary: #22d3ee;
   --secondary-dim: #00d4ec;
-  --secondary-container: #006875;
+  --secondary-container: rgba(34, 211, 238, 0.12);
   --secondary-fixed: #26e6ff;
   --secondary-fixed-dim: #00d7f0;
   --on-secondary: #004d57;
@@ -39,77 +90,91 @@
   --on-secondary-fixed: #003a42;
   --on-secondary-fixed-variant: #005964;
   
-  // Tertiary (Light Purple)
-  --tertiary: #ebedff;
-  --tertiary-dim: #cbd0ef;
-  --tertiary-container: #d9defe;
-  --tertiary-fixed: #d9defe;
-  --tertiary-fixed-dim: #cbd0ef;
-  --on-tertiary: #525771;
-  --on-tertiary-container: #494f69;
-  --on-tertiary-fixed: #373c55;
-  --on-tertiary-fixed-variant: #535873;
+  // Tertiary
+  --tertiary: #a78bfa;
+  --tertiary-dim: #8b5cf6;
+  --tertiary-container: rgba(167, 139, 250, 0.12);
+  --tertiary-fixed: #c4b5fd;
+  --tertiary-fixed-dim: #a78bfa;
+  --on-tertiary: #4c1d95;
+  --on-tertiary-container: #ede9fe;
+  --on-tertiary-fixed: #5b21b6;
+  --on-tertiary-fixed-variant: #7c3aed;
   
-  // Error (Pink/Red)
+  // Error
   --error: #ff6e84;
   --error-dim: #d73357;
   --error-container: #a70138;
   --on-error: #490013;
   --on-error-container: #ffb2b9;
   
-  // Text Colors
-  --on-background: #dee5ff;
-  --on-surface: #dee5ff;
-  --on-surface-variant: #a3aac4;
-  --inverse-surface: #faf8ff;
-  --inverse-on-surface: #4d556b;
+  // Text Colors (mapped)
+  --on-background: var(--text-primary);
+  --on-surface: var(--text-primary);
+  --on-surface-variant: var(--text-secondary);
+  --inverse-surface: var(--text-primary);
+  --inverse-on-surface: var(--text-secondary);
   
-  // Outline/Border
-  --outline: #6d758c;
-  --outline-variant: #40485d;
+  // Outline/Border (mapped)
+  --outline: var(--border-hover);
+  --outline-variant: var(--border);
   
   // Surface Tint
-  --surface-tint: #9ba8ff;
+  --surface-tint: var(--accent);
   
   // Legacy compatibility
-  --border: #40485d;
-  --input: #0f1930;
-  --muted: #141f38;
-  --muted-foreground: #a3aac4;
-  --accent: #00e3fd;
-  --accent-foreground: #004d57;
-  --card: #0f1930;
-  --card-foreground: #dee5ff;
+  --input: var(--bg-elevated);
+  --muted: var(--bg-card);
+  --muted-foreground: var(--text-muted);
+  --card: var(--bg-card);
+  --card-foreground: var(--text-primary);
   --destructive: #ff6e84;
   --destructive-foreground: #490013;
   --warning: #f59e0b;
   --warning-foreground: #312200;
-  --success: #00e3fd;
-  --success-foreground: #004d57;
+  --success: #4ade80;
+  --success-foreground: #14532d;
   
-  // Border Radius
-  --radius-sm: 0.125rem;
-  --radius-md: 0.25rem;
-  --radius-lg: 0.5rem;
-  --radius-xl: 0.75rem;
-  --radius-full: 0.75rem;
+  // Border Radius (legacy compatibility)
+  --radius-full: 9999px;
   
-  // Fonts
-  --font-headline: 'Space Grotesk', sans-serif;
-  --font-body: 'Inter', sans-serif;
-  --font-label: 'Inter', sans-serif;
+  // Fonts (legacy compatibility)
+  --font-headline: var(--font-display);
+  --font-label: var(--font-mono);
 }
 
-// Dark theme is the default, no need for [data-theme="dark"]
-// But we keep light theme option for future
+// =============================================
+// LIGHT THEME
+// =============================================
 [data-theme="light"] {
-  --background: #fbfdff;
-  --on-background: #0f1724;
-  --surface-container-low: #f8fafc;
-  --surface-container: #ffffff;
-  --surface-container-high: #f1f5f9;
-  --primary: #0b6ff0;
-  --secondary: #00e3fd;
-  --on-surface: #0f1724;
-  --on-surface-variant: #64748b;
+  // Background Colors
+  --bg-primary:    #f4f7fc;
+  --bg-surface:    #ebf0f9;
+  --bg-elevated:   #ffffff;
+  --bg-card:       #f8faff;
+  
+  // Border Colors
+  --border:        rgba(37, 99, 235, 0.1);
+  --border-hover:  rgba(37, 99, 235, 0.28);
+  
+  // Accent Colors
+  --accent:        #2563eb;
+  --accent-bright: #3b82f6;
+  --accent-dim:    rgba(37, 99, 235, 0.1);
+  --accent-glow:   rgba(37, 99, 235, 0.05);
+  
+  // Text Colors
+  --text-primary:   #0d1a2e;
+  --text-secondary: #3a5278;
+  --text-muted:     #94adc8;
+  
+  // Shadows
+  --shadow-card: 0 4px 24px rgba(0,0,0,0.08);
+  --shadow-glow: 0 0 40px rgba(37, 99, 235, 0.08);
+  
+  // Legacy mappings
+  --background: var(--bg-primary);
+  --on-background: var(--text-primary);
+  --on-surface: var(--text-primary);
+  --on-surface-variant: var(--text-secondary);
 }

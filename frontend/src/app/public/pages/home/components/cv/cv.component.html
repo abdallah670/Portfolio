@@ -1,0 +1,44 @@
+<section id="cv-section" style="padding-top:clamp(3rem,6vw,5rem);padding-bottom:clamp(3rem,6vw,5rem)">
+  <div class="container">
+    <div class="cv-inner reveal">
+      <span class="cv-preview-badge">📄 Resume</span>
+
+      <div class="cv-text-side">
+        <p class="section-label" style="margin-bottom:.75rem">Curriculum Vitae</p>
+        <h2 class="cv-title">Get my <em>full résumé</em><br />in one click.</h2>
+        <p class="cv-desc">
+          My CV covers my technical skills, project experience, education at FCI, and backend development journey.
+          Up-to-date as of 2025 — PDF format, ready to share.
+        </p>
+        <div class="cv-meta">
+          <span class="cv-meta-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            PDF Format
+          </span>
+          <span class="cv-meta-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Updated 2025
+          </span>
+          <span class="cv-meta-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            .NET · SQL · Angular
+          </span>
+        </div>
+      </div>
+
+      <div class="cv-actions">
+        <!-- Changed onclick="downloadCV()" and onclick="previewCV()" back to Angular (click) ONLY if we want it to work in Angular, but the user said "Make it static like design" -->
+        <button class="btn-download" id="downloadCvBtn" onclick="downloadCV()">
+          <div class="dl-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          </div>
+          <span>Download CV</span>
+        </button>
+        <button class="btn-download-secondary" onclick="previewCV()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          Preview online
+        </button>
+      </div>
+    </div>
+  </div>
+</section>

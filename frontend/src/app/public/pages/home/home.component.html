@@ -1,0 +1,50 @@
+@if (loading) {
+  <div class="loading-container">
+    <div class="spinner"></div>
+    <p>Loading portfolio...</p>
+  </div>
+}
+@if (error) {
+  <div class="error-container">
+    <p>{{ error }}</p>
+    <button (click)="ngOnInit()">Retry</button>
+  </div>
+}
+@if (config) {
+  <div class="home-page">
+    <app-navbar></app-navbar>
+    
+    <main class="main-content">
+      <app-home-hero [hero]="config.hero"></app-home-hero>
+      
+      <div class="section-divider"></div>
+      
+      <app-home-cv></app-home-cv>
+      
+      <div class="section-divider"></div>
+      
+      <app-home-about [about]="config.about"></app-home-about>
+      
+      <div class="section-divider"></div>
+      
+      <app-home-skills [skills]="config.skills"></app-home-skills>
+      
+      <div class="section-divider"></div>
+      
+      <app-home-projects
+        [featuredProjects]="config.featuredProjects"
+        [moreProjects]="config.moreProjects">
+      </app-home-projects>
+      
+      <div class="section-divider"></div>
+      
+      <app-home-journey [journey]="config.journey"></app-home-journey>
+      
+      <div class="section-divider"></div>
+      
+      <app-home-cta [contact]="config.contact" [socials]="config.socials"></app-home-cta>
+    </main>
+
+    <app-footer [contact]="config.contact" [socials]="config.socials"></app-footer>
+  </div>
+}

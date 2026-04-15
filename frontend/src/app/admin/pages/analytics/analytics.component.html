@@ -1,256 +1,150 @@
 <div class="analytics-page">
-  <!-- Page Header -->
-  <section class="page-header">
-    <div class="header-titles">
-      <span class="header-kicker">Performance Data</span>
-      <h2 class="header-title">Analytics Overview</h2>
+  @if (loading) {
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>Loading analytics...</p>
     </div>
-    <div class="header-controls">
-      <div class="time-filters">
-        <button class="filter-btn" [class.active]="timeframe === '30 DAYS'" (click)="setTimeframe('30 DAYS')">30 DAYS</button>
-        <button class="filter-btn" [class.active]="timeframe === '90 DAYS'" (click)="setTimeframe('90 DAYS')">90 DAYS</button>
-        <button class="filter-btn" [class.active]="timeframe === '1 YEAR'" (click)="setTimeframe('1 YEAR')">1 YEAR</button>
-        <div class="divider"></div>
-        <button class="date-picker-btn">
-          <span class="material-symbols-outlined icon">calendar_today</span>
-          Oct 01 - Oct 31
-        </button>
-      </div>
-    </div>
-  </section>
+  }
 
-  <!-- Metric Cards -->
-  <section class="metrics-grid">
-    <!-- Total Visitors -->
-    <div class="metric-card">
-      <div class="metric-header">
-        <span class="metric-label">Total Visitors</span>
-        <span class="metric-badge positive">+12.4%</span>
+  @if (!loading && analytics) {
+    <!-- Page Header -->
+    <section class="page-header">
+      <div class="header-titles">
+        <span class="header-kicker">Performance Data</span>
+        <h2 class="header-title">Analytics Overview</h2>
       </div>
-      <h3 class="metric-value">142.8k</h3>
-      <div class="sparkline-sim">
-        <div class="bar h-4"></div>
-        <div class="bar h-6"></div>
-        <div class="bar h-3"></div>
-        <div class="bar h-8"></div>
-        <div class="bar h-5"></div>
-        <div class="bar h-10 glow"></div>
-        <div class="bar h-6"></div>
-        <div class="bar h-4"></div>
-      </div>
-    </div>
-
-    <!-- Conversion Rate -->
-    <div class="metric-card">
-      <div class="metric-header">
-        <span class="metric-label">Conversion Rate</span>
-        <span class="metric-badge neutral">Stable</span>
-      </div>
-      <h3 class="metric-value">4.82%</h3>
-      <div class="progress-bar">
-        <div class="progress-fill" style="width: 48%"></div>
-      </div>
-    </div>
-
-    <!-- Session Duration -->
-    <div class="metric-card">
-      <div class="metric-header">
-        <span class="metric-label">Avg. Session</span>
-        <span class="metric-badge negative">-2.1%</span>
-      </div>
-      <h3 class="metric-value">04:32</h3>
-      <p class="metric-context">Global benchmark: 03:15</p>
-    </div>
-
-    <!-- Bounce Rate -->
-    <div class="metric-card">
-      <div class="metric-header">
-        <span class="metric-label">Bounce Rate</span>
-        <span class="metric-badge positive">-5.4%</span>
-      </div>
-      <h3 class="metric-value">32.1%</h3>
-      <div class="segmented-bar">
-        <div class="segment active" style="flex: 1"></div>
-        <div class="segment active" style="flex: 1"></div>
-        <div class="segment" style="flex: 1"></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Traffic Trends & Top Projects -->
-  <section class="trends-projects-grid">
-    <!-- Large Traffic Trends Area Chart -->
-    <div class="chart-card area-chart-card">
-      <div class="chart-header">
-        <h4 class="chart-title">Traffic Trends</h4>
-        <div class="chart-legend">
-          <div class="legend-item">
-            <span class="legend-dot current glow"></span>
-            <span class="legend-label">Current</span>
-          </div>
-          <div class="legend-item">
-            <span class="legend-dot previous"></span>
-            <span class="legend-label">Previous</span>
-          </div>
+      <div class="header-controls">
+        <div class="time-filters">
+          <button class="filter-btn" [class.active]="timeframe === '30 DAYS'" (click)="setTimeframe('30 DAYS')">30 DAYS</button>
+          <button class="filter-btn" [class.active]="timeframe === '90 DAYS'" (click)="setTimeframe('90 DAYS')">90 DAYS</button>
+          <button class="filter-btn" [class.active]="timeframe === '1 YEAR'" (click)="setTimeframe('1 YEAR')">1 YEAR</button>
         </div>
       </div>
-      <div class="chart-area-visual">
-        <!-- Lines Grid -->
-        <div class="grid-lines">
-          <div class="line"></div>
-          <div class="line"></div>
-          <div class="line"></div>
-          <div class="line"></div>
-        </div>
-        <!-- Graph SVG representation -->
-        <svg class="chart-svg" preserveAspectRatio="none" viewBox="0 0 100 100">
-          <defs>
-            <linearGradient id="chartGradient" x1="0" x2="0" y1="0" y2="1">
-              <stop offset="0%" stop-color="rgba(0, 227, 253, 0.3)"></stop>
-              <stop offset="100%" stop-color="rgba(0, 227, 253, 0)"></stop>
-            </linearGradient>
-          </defs>
-          <path d="M0,80 Q10,75 20,60 T40,40 T60,50 T80,20 T100,30 L100,100 L0,100 Z" fill="url(#chartGradient)"></path>
-          <path class="chart-line glow-svg" d="M0,80 Q10,75 20,60 T40,40 T60,50 T80,20 T100,30" fill="none" stroke-width="2"></path>
-        </svg>
-      </div>
-      <div class="x-axis-labels">
-        <span>OCT 01</span>
-        <span>OCT 08</span>
-        <span>OCT 15</span>
-        <span>OCT 22</span>
-        <span>OCT 31</span>
-      </div>
-    </div>
+    </section>
 
-    <!-- Top Projects Bar Chart -->
-    <div class="chart-card projects-card">
-      <h4 class="chart-title">Top Projects</h4>
-      <div class="projects-list">
-        <div class="project-stat-row">
-          <div class="stat-header">
-            <span class="proj-name">Neural Interface V2</span>
-            <span class="proj-views">12.4k views</span>
-          </div>
-          <div class="stat-bar">
-            <div class="stat-fill" style="width: 92%"></div>
-          </div>
+    <!-- Metric Cards -->
+    <section class="metrics-grid">
+      <!-- Total Visitors -->
+      <div class="metric-card">
+        <div class="metric-header">
+          <span class="metric-label">Total Visitors</span>
         </div>
-        <div class="project-stat-row">
-          <div class="stat-header">
-            <span class="proj-name">Cryo-Genesis Branding</span>
-            <span class="proj-views">9.1k views</span>
-          </div>
-          <div class="stat-bar">
-            <div class="stat-fill" style="width: 74%"></div>
-          </div>
-        </div>
-        <div class="project-stat-row">
-          <div class="stat-header">
-            <span class="proj-name">Hyperloop Dashboard</span>
-            <span class="proj-views">7.8k views</span>
-          </div>
-          <div class="stat-bar">
-            <div class="stat-fill" style="width: 62%"></div>
-          </div>
-        </div>
-        <div class="project-stat-row">
-          <div class="stat-header">
-            <span class="proj-name">Satellite UI Kit</span>
-            <span class="proj-views">5.2k views</span>
-          </div>
-          <div class="stat-bar">
-            <div class="stat-fill" style="width: 45%"></div>
-          </div>
+        <h3 class="metric-value">{{ formatNumber(analytics.totalVisitors) }}</h3>
+        <div class="sparkline-sim">
+          @for (i of [1,2,3,4,5,6,7,8]; track i) {
+            <div class="bar" [class.h-4]="i % 2 === 0" [class.h-6]="i % 3 === 0" [class.h-8]="i === 5"></div>
+          }
         </div>
       </div>
-      <button class="view-all-btn">
-        VIEW ALL PROJECTS <span class="material-symbols-outlined icon">arrow_forward</span>
-      </button>
-    </div>
-  </section>
 
-  <!-- Demographics and Devices -->
-  <section class="demographics-devices-grid">
-    <!-- User Demographics -->
-    <div class="demo-card">
-      <div class="demo-info">
-        <h4 class="chart-title">User Demographics</h4>
-        <div class="geo-stats-list">
-          <div class="geo-row">
-            <div class="geo-country">
-              <span class="flag-color bg-blue"></span>
-              <span>United States</span>
+      <!-- Page Views -->
+      <div class="metric-card">
+        <div class="metric-header">
+          <span class="metric-label">Page Views</span>
+        </div>
+        <h3 class="metric-value">{{ formatNumber(analytics.totalPageViews) }}</h3>
+      </div>
+
+      <!-- Bounce Rate -->
+      <div class="metric-card">
+        <div class="metric-header">
+          <span class="metric-label">Bounce Rate</span>
+        </div>
+        <h3 class="metric-value">{{ analytics.bounceRate }}%</h3>
+      </div>
+
+      <!-- Session Duration -->
+      <div class="metric-card">
+        <div class="metric-header">
+          <span class="metric-label">Avg. Session</span>
+        </div>
+        <h3 class="metric-value">{{ analytics.averageSessionDuration }}</h3>
+      </div>
+    </section>
+
+    <!-- Traffic Trends & Top Projects -->
+    <section class="trends-projects-grid">
+      <!-- Large Traffic Trends Area Chart -->
+      <div class="chart-card area-chart-card">
+        <div class="chart-header">
+          <h4 class="chart-title">Traffic Trends</h4>
+        </div>
+        <div class="chart-area-visual">
+          <div class="grid-lines">
+            <div class="line"></div>
+            <div class="line"></div>
+            <div class="line"></div>
+            <div class="line"></div>
+          </div>
+          @if (analytics.trafficTrends?.length) {
+            <svg class="chart-svg" preserveAspectRatio="none" viewBox="0 0 100 100">
+              <defs>
+                <linearGradient id="chartGradient" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stop-color="rgba(0, 227, 253, 0.3)"></stop>
+                  <stop offset="100%" stop-color="rgba(0, 227, 253, 0)"></stop>
+                </linearGradient>
+              </defs>
+              <path [attr.d]="getTrafficPath()" fill="url(#chartGradient)"></path>
+              <path [attr.d]="getTrafficLinePath()" class="chart-line glow-svg" fill="none" stroke-width="2"></path>
+            </svg>
+          } @else {
+            <div class="no-data">No traffic data available</div>
+          }
+        </div>
+      </div>
+
+      <!-- Top Projects Bar Chart -->
+      <div class="chart-card projects-card">
+        <h4 class="chart-title">Top Projects</h4>
+        <div class="projects-list">
+          @for (project of analytics.topProjects || []; track project.projectId) {
+            <div class="project-stat-row">
+              <div class="stat-header">
+                <span class="proj-name">{{ project.projectName }}</span>
+                <span class="proj-views">{{ formatNumber(project.views) }} views</span>
+              </div>
+              <div class="stat-bar">
+                <div class="stat-fill" [style.width.%]="getProjectPercentage(project.views)"></div>
+              </div>
             </div>
-            <span class="geo-percent text-secondary">42%</span>
-          </div>
-          <div class="geo-row">
-            <div class="geo-country">
-              <span class="flag-color bg-orange"></span>
-              <span>Germany</span>
-            </div>
-            <span class="geo-percent text-secondary">18%</span>
-          </div>
-          <div class="geo-row">
-            <div class="geo-country">
-              <span class="flag-color bg-red"></span>
-              <span>United Kingdom</span>
-            </div>
-            <span class="geo-percent text-secondary">12%</span>
-          </div>
+          }
+          @empty {
+            <p class="no-data">No project data available</p>
+          }
         </div>
       </div>
-      <div class="demo-map">
-        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCD8P72B6jsEgFmD2UKikLb2GvjuIcpFHRnc9IaYvTrUIjghyAiySg2emHLeQEYtMxbG8_j5oIH7YDUUtHS-QS1DT_s9T66eg36miDhZusDg9wdaaaMN4VHdx9rYte_pj1BXBEBpmoTl3F3pnPhugCbf-9QdcwOyBw3cBKpBO5GWrhB132zJI3NvsX32leVR37YgrA42rJBlzsO9X3xkdjukjjbaXVbsvjx5v7j2Qn6irgsMDHZpsepA0-yU6mA1bJPJf5LJds_JPQ" alt="World Map" />
-        <div class="map-overlay"></div>
-        <div class="map-node node-primary glow"></div>
-        <div class="map-node node-secondary"></div>
-      </div>
-    </div>
+    </section>
 
-    <!-- Devices & Browsers -->
-    <div class="devices-card">
-      <h4 class="chart-title mb-large">Devices & Browsers</h4>
-      <div class="devices-content">
-        <!-- Donut Chart -->
-        <div class="donut-chart">
-          <svg viewBox="0 0 36 36" class="donut-svg">
-            <circle class="stroke-bg" cx="18" cy="18" r="15.915"></circle>
-            <circle class="stroke-primary glow-svg" cx="18" cy="18" r="15.915" stroke-dasharray="65 100" stroke-width="3"></circle>
-            <circle class="stroke-info" cx="18" cy="18" r="15.915" stroke-dasharray="25 100" stroke-dashoffset="-65" stroke-width="3"></circle>
-            <circle class="stroke-muted" cx="18" cy="18" r="15.915" stroke-dasharray="10 100" stroke-dashoffset="-90" stroke-width="3"></circle>
-          </svg>
-          <div class="donut-center">
-            <span class="donut-label">Mobile</span>
-            <span class="donut-value">65%</span>
-          </div>
-        </div>
-
-        <!-- Legend -->
-        <div class="devices-legend">
-          <div class="device-row">
-            <span class="material-symbols-outlined text-secondary icon">smartphone</span>
-            <div class="device-info">
-              <span class="device-name text-on-surface">Mobile</span>
-              <span class="device-desc">Chrome, Safari Mobile</span>
-            </div>
-          </div>
-          <div class="device-row">
-            <span class="material-symbols-outlined text-primary icon">laptop</span>
-            <div class="device-info">
-              <span class="device-name text-primary">Desktop</span>
-              <span class="device-desc">Chrome, Arc, Edge</span>
-            </div>
-          </div>
-          <div class="device-row">
-            <span class="material-symbols-outlined text-outline icon">tablet</span>
-            <div class="device-info">
-              <span class="device-name text-outline">Tablet</span>
-              <span class="device-desc">Safari, Firefox</span>
-            </div>
+    <!-- Demographics -->
+    <section class="demographics-devices-grid">
+      <!-- User Demographics -->
+      <div class="demo-card">
+        <div class="demo-info">
+          <h4 class="chart-title">Top Locations</h4>
+          <div class="geo-stats-list">
+            @for (location of analytics.topLocations || []; track location.country) {
+              <div class="geo-row">
+                <div class="geo-country">
+                  <span class="flag-color bg-blue"></span>
+                  <span>{{ location.country }}</span>
+                </div>
+                <span class="geo-percent text-secondary">{{ location.percentage }}%</span>
+              </div>
+            }
+            @empty {
+              <p class="no-data">No location data available</p>
+            }
           </div>
         </div>
       </div>
+    </section>
+  }
+
+  @if (!loading && !analytics) {
+    <div class="no-data-container">
+      <span class="material-symbols-outlined">analytics</span>
+      <p>No analytics data available</p>
+      <p class="hint">Analytics data will appear here once your portfolio starts receiving traffic.</p>
     </div>
-  </section>
+  }
 </div>

@@ -1,5 +1,5 @@
-import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, Inject, inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ThemeService } from '../../../core/services/theme.service';
@@ -10,224 +10,43 @@ import { ThemeService } from '../../../core/services/theme.service';
   imports: [CommonModule, RouterModule, FormsModule],
   template: `
     <header class="header">
-      <div class="header-left">
-        <!-- Search -->
-        <div class="search-box">
-          <span class="material-symbols-outlined search-icon">search</span>
-          <input 
-            type="text" 
-            placeholder="Search archive..."
-            [(ngModel)]="searchQuery"
-            (keyup.enter)="onSearch()"
-          />
-        </div>
-
-        <!-- Nav Tabs -->
-        <nav class="nav-tabs">
-          <a class="nav-tab active" href="#">Overview</a>
-          <a class="nav-tab" href="#">History</a>
-          <a class="nav-tab" href="#">Reports</a>
-        </nav>
-      </div>
-
-      <div class="header-right">
-        <!-- Notifications -->
-        <button class="icon-btn">
-          <span class="material-symbols-outlined">notifications</span>
-          <span class="badge" *ngIf="notificationCount > 0">{{ notificationCount }}</span>
+      <div class="navbar-actions">
+        <button class="theme-toggle" (click)="toggleTheme()" aria-label="Toggle theme">
+          <span>{{ isDarkTheme ? '☀' : '☾' }}</span>
         </button>
-
-        <!-- Apps Menu -->
-        <button class="icon-btn">
-          <span class="material-symbols-outlined">apps</span>
+        <button class="hamburger" [class.open]="mobileMenuOpen" (click)="toggleMobileMenu()" aria-expanded="mobileMenuOpen" aria-label="Open menu">
+          <span></span><span></span><span></span>
         </button>
-
-        <div class="divider"></div>
-
-        <!-- User -->
-        <div class="user-menu">
-          <span class="user-label">THE KINETIC<br/>ARCHIVE</span>
-          <div class="avatar">
-            <span>AM</span>
-          </div>
-        </div>
       </div>
     </header>
   `,
   styles: [`
-    .header {
-      position: fixed;
-      top: 0;
-      left: 260px;
-      right: 0;
-      height: 64px;
-      background: rgba(6, 14, 32, 0.8);
-      backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--outline-variant);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 32px;
-      z-index: 90;
-    }
+    .navbar-actions { 
+  display: flex; 
+  align-items: center; 
+  gap: 0.75rem; 
+}
 
-    .header-left {
-      display: flex;
-      align-items: center;
-      gap: 32px;
-    }
+.theme-toggle {
+  width: 34px; 
+  height: 34px; 
+  border-radius: 50%;
+  border: 1px solid var(--border); 
+  background: transparent;
+  color: var(--text-secondary); 
+  cursor: pointer;
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  font-size: 0.85rem; 
+  transition: all var(--transition);
+}
 
-    .search-box {
-      position: relative;
-      width: 320px;
-    }
-
-    .search-box input {
-      width: 100%;
-      background: var(--surface-container-low);
-      border: 1px solid transparent;
-      border-radius: var(--radius-full);
-      padding: 10px 16px 10px 40px;
-      color: var(--on-surface);
-      font-size: 13px;
-      font-family: var(--font-body);
-      transition: all 0.2s ease;
-    }
-
-    .search-box input::placeholder {
-      color: var(--on-surface-variant);
-      opacity: 0.5;
-    }
-
-    .search-box input:focus {
-      outline: none;
-      border-color: var(--secondary);
-      box-shadow: 0 0 0 2px rgba(0, 227, 253, 0.1);
-    }
-
-    .search-icon {
-      position: absolute;
-      left: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--on-surface-variant);
-      font-size: 18px;
-    }
-
-    .nav-tabs {
-      display: flex;
-      align-items: center;
-      gap: 24px;
-    }
-
-    .nav-tab {
-      font-family: var(--font-headline);
-      font-size: 13px;
-      font-weight: 500;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--on-surface);
-      opacity: 0.7;
-      text-decoration: none;
-      padding-bottom: 4px;
-      border-bottom: 2px solid transparent;
-      transition: all 0.2s ease;
-    }
-
-    .nav-tab:hover {
-      opacity: 1;
-      color: var(--secondary);
-    }
-
-    .nav-tab.active {
-      opacity: 1;
-      color: var(--secondary);
-      border-bottom-color: var(--secondary);
-    }
-
-    .header-right {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .icon-btn {
-      position: relative;
-      width: 40px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
-      color: var(--on-surface-variant);
-      transition: all 0.2s ease;
-      cursor: pointer;
-    }
-
-    .icon-btn:hover {
-      background: var(--surface-container-high);
-      color: var(--secondary);
-    }
-
-    .icon-btn .material-symbols-outlined {
-      font-size: 20px;
-    }
-
-    .badge {
-      position: absolute;
-      top: 4px;
-      right: 4px;
-      width: 16px;
-      height: 16px;
-      background: var(--error);
-      color: var(--on-error);
-      font-size: 10px;
-      font-weight: 700;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .divider {
-      width: 1px;
-      height: 24px;
-      background: var(--outline-variant);
-      opacity: 0.3;
-      margin: 0 8px;
-    }
-
-    .user-menu {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .user-label {
-      font-family: var(--font-headline);
-      font-size: 10px;
-      font-weight: 700;
-      color: var(--primary);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      line-height: 1.2;
-      text-align: right;
-    }
-
-    .avatar {
-      width: 36px;
-      height: 36px;
-      background: var(--surface-container-highest);
-      border-radius: var(--radius-lg);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 1px solid var(--outline-variant);
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--primary);
-    }
-
+.theme-toggle:hover { 
+  border-color: var(--accent); 
+  color: var(--accent); 
+  background: var(--accent-dim); 
+}
     @media (max-width: 1024px) {
       .nav-tabs {
         display: none;
@@ -239,13 +58,45 @@ import { ThemeService } from '../../../core/services/theme.service';
     }
   `]
 })
-export class HeaderComponent {
-  searchQuery = '';
-  notificationCount = 3;
+export class HeaderComponent implements OnInit {
+  isScrolled = false;
+  mobileMenuOpen = false;
+  isDarkTheme = true;
+  private isBrowser: boolean;
 
-  onSearch(): void {
-    if (this.searchQuery.trim()) {
-      console.log('Searching for:', this.searchQuery);
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) {
+    this.isBrowser = isPlatformBrowser(this.platformId);
+  }
+
+  ngOnInit(): void {
+    if (this.isBrowser) {
+      // Check for saved theme preference
+      const savedTheme = localStorage.getItem('am-theme');
+      if (savedTheme) {
+        this.isDarkTheme = savedTheme === 'dark';
+      } else {
+        this.isDarkTheme = true;
+      }
+      this.applyTheme();
+
+      // Listen for scroll events
+      window.addEventListener('scroll', () => {
+        this.isScrolled = window.scrollY > 20;
+      }, { passive: true });
     }
   }
+
+  toggleTheme(): void {
+    this.isDarkTheme = !this.isDarkTheme;
+    this.applyTheme();
+  }
+
+  private applyTheme(): void {
+    if (this.isBrowser) {
+      const theme = this.isDarkTheme ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('am-theme', theme);
+    }
+  }
+
 }

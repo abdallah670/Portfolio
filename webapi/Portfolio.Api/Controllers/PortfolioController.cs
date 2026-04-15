@@ -1,10 +1,12 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using PortfolioApi.Application.DTOs;
 using PortfolioApi.Domain.Entities;
 using PortfolioApi.Application.Features.Portfolio.Queries;
 using PortfolioApi.Application.Features.Portfolio.Commands;
+using PortfolioApi.Infrastructure.Data;
 
 namespace PortfolioApi.Api.Controllers;
 
@@ -14,11 +16,13 @@ public class PortfolioController : ControllerBase
 {
     private readonly ISender _mediator;
     private readonly ILogger<PortfolioController> _logger;
+    private readonly AppDbContext _context;
     
-    public PortfolioController(ISender mediator, ILogger<PortfolioController> logger)
+    public PortfolioController(ISender mediator, ILogger<PortfolioController> logger, AppDbContext context)
     {
         _mediator = mediator;
         _logger = logger;
+        _context = context;
     }
 
     // Public endpoint - only return published projects
@@ -230,5 +234,24 @@ public class PortfolioController : ControllerBase
         _logger.LogInformation("API: Getting dashboard stats");
         var stats = await _mediator.Send(new GetDashboardStatsQuery());
         return Ok(stats);
+    }
+
+    // GET: api/portfolio/cv
+    [HttpGet("cv")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetCV()
+    {
+        var setting = await _context.SystemSettings
+            .FirstOrDefaultAsync(s => s.Key == "cv_url");
+        
+        if (string.IsNullOrEmpty(setting?.Value))
+            return NotFound("CV not found");
+        
+        var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", setting.Value.TrimStart('/'));
+        
+        if (!System.IO.File.Exists(filePath))
+            return NotFound("CV file not found");
+        
+        return PhysicalFile(filePath, "application/pdf", "Abdullah_Mohammed_CV.pdf");
     }
 }

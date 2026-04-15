@@ -17,125 +17,137 @@
     </div>
   </section>
 
+  <!-- Loading State -->
+  @if (loading) {
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>Loading projects...</p>
+    </div>
+  }
+
   <!-- Table Section -->
-  <section class="table-card">
-    <div class="table-header">
-      <div class="table-status">
-        <span class="status-count">Displaying 24 Projects</span>
-        <div class="divider"></div>
-        <div class="status-pills">
-          <span class="pill pill-draft">Draft (8)</span>
-          <span class="pill pill-published">Published (16)</span>
+  @if (!loading) {
+    <section class="table-card">
+      <div class="table-header">
+        <div class="table-status">
+          <span class="status-count">Displaying {{ projects.length }} Projects</span>
+          <div class="divider"></div>
+          <div class="status-pills">
+            <span class="pill pill-draft">Draft ({{ getDraftCount() }})</span>
+            <span class="pill pill-published">Published ({{ getPublishedCount() }})</span>
+          </div>
+        </div>
+        <div class="table-controls">
+          <button class="control-btn active">
+            <span class="material-symbols-outlined">view_list</span>
+          </button>
+          <button class="control-btn">
+            <span class="material-symbols-outlined">grid_view</span>
+          </button>
         </div>
       </div>
-      <div class="table-controls">
-        <button class="control-btn active">
-          <span class="material-symbols-outlined">view_list</span>
-        </button>
-        <button class="control-btn">
-          <span class="material-symbols-outlined">grid_view</span>
-        </button>
-      </div>
-    </div>
 
-    <div class="table-responsive">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Project Identity</th>
-            <th>Tech Stack</th>
-            <th>Visibility</th>
-            <th>Chronology</th>
-            <th class="text-right">Commands</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (project of projects; track project.id) {
-            <tr class="table-row">
-              <td>
-                <div class="project-identity">
-                  <div class="project-img-thumb">
-                    <img [src]="project.image" alt="Project Thumbnail" />
-                  </div>
-                  <div class="project-info">
-                    <div class="project-name">{{ project.name }}</div>
-                    <div class="project-ref">Ref: {{ project.ref }}</div>
-                  </div>
-                </div>
-              </td>
-              <td>
-                <div class="tech-stack">
-                  @for (tag of project.tags; track tag) {
-                    <span class="tech-tag">{{ tag }}</span>
-                  }
-                </div>
-              </td>
-              <td>
-                <div class="visibility-status">
-                  <span class="status-dot" [ngClass]="project.status.toLowerCase()"></span>
-                  <span class="status-text">{{ project.status }}</span>
-                </div>
-              </td>
-              <td>
-                <div class="chronology">
-                  <div class="date-main">{{ project.createdAt }}</div>
-                  <div class="date-sub">{{ project.updatedAt }}</div>
-                </div>
-              </td>
-              <td class="text-right">
-                <div class="row-actions">
-                  <button class="action-btn edit-btn">
-                    <span class="material-symbols-outlined">edit_square</span>
-                  </button>
-                  <button class="action-btn delete-btn">
-                    <span class="material-symbols-outlined">delete_outline</span>
-                  </button>
-                </div>
-              </td>
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Project Identity</th>
+              <th>Tech Stack</th>
+              <th>Visibility</th>
+              <th>Chronology</th>
+              <th class="text-right">Commands</th>
             </tr>
-          }
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Pagination -->
-    <div class="table-footer">
-      <div class="pagination-info">Showing 1 to 10 of 24 projects</div>
-      <div class="pagination-controls">
-        <button class="page-btn nav-btn" disabled>
-          <span class="material-symbols-outlined">chevron_left</span>
-        </button>
-        <button class="page-btn active">1</button>
-        <button class="page-btn">2</button>
-        <button class="page-btn">3</button>
-        <button class="page-btn nav-btn">
-          <span class="material-symbols-outlined">chevron_right</span>
-        </button>
+          </thead>
+          <tbody>
+            @for (project of projects; track project.id) {
+              <tr class="table-row">
+                <td>
+                  <div class="project-identity">
+                    <div class="project-img-thumb">
+                      @if (project.image) {
+                        <img [src]="getImageUrl(project.image)" alt="Project Thumbnail" />
+                      } @else {
+                        <div class="placeholder-thumb"></div>
+                      }
+                    </div>
+                    <div class="project-info">
+                      <div class="project-name">{{ project.title }}</div>
+                      <div class="project-ref">Ref: {{ project.year }}</div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="tech-stack">
+                    @for (tag of getStack(project); track tag) {
+                      <span class="tech-tag">{{ tag }}</span>
+                    }
+                  </div>
+                </td>
+                <td>
+                  <div class="visibility-status">
+                    <span class="status-dot" [class]="project.status.toLowerCase()"></span>
+                    <span class="status-text">{{ project.status }}</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="chronology">
+                    <div class="date-main">{{ project.year }}</div>
+                    <div class="date-sub">{{ project.status }}</div>
+                  </div>
+                </td>
+                <td class="text-right">
+                  <div class="row-actions">
+                    <button class="action-btn edit-btn">
+                      <span class="material-symbols-outlined">edit_square</span>
+                    </button>
+                    <button class="action-btn delete-btn" (click)="deleteProject(project.id)">
+                      <span class="material-symbols-outlined">delete_outline</span>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
       </div>
-    </div>
-  </section>
+
+      <!-- Pagination -->
+      <div class="table-footer">
+        <div class="pagination-info">Showing 1 to {{ projects.length }} of {{ projects.length }} projects</div>
+        <div class="pagination-controls">
+          <button class="page-btn nav-btn" disabled>
+            <span class="material-symbols-outlined">chevron_left</span>
+          </button>
+          <button class="page-btn active">1</button>
+          <button class="page-btn nav-btn">
+            <span class="material-symbols-outlined">chevron_right</span>
+          </button>
+        </div>
+      </div>
+    </section>
+  }
 
   <!-- Quick Stats Bento Grid -->
   <section class="bento-grid">
     <div class="bento-card border-primary">
-      <div class="bento-label">Total Contributions</div>
-      <div class="bento-value">1,402</div>
-      <div class="bento-trend trend-up">↑ 12% from last month</div>
+      <div class="bento-label">Total Projects</div>
+      <div class="bento-value">{{ projects.length }}</div>
+      <div class="bento-trend trend-up">All projects</div>
     </div>
     <div class="bento-card border-secondary">
-      <div class="bento-label">Live Deployments</div>
-      <div class="bento-value">16</div>
-      <div class="bento-trend">85% Uptime average</div>
+      <div class="bento-label">Published</div>
+      <div class="bento-value">{{ getPublishedCount() }}</div>
+      <div class="bento-trend">Live on production</div>
     </div>
     <div class="bento-card border-primary-container">
-      <div class="bento-label">Active Sprints</div>
-      <div class="bento-value">03</div>
-      <div class="bento-trend">48 tasks pending</div>
+      <div class="bento-label">Draft Projects</div>
+      <div class="bento-value">{{ getDraftCount() }}</div>
+      <div class="bento-trend">In development</div>
     </div>
     <div class="bento-card border-outline">
-      <div class="bento-label">Server Health</div>
-      <div class="bento-value">99.9%</div>
-      <div class="bento-trend trend-up">All systems operational</div>
+      <div class="bento-label">Featured</div>
+      <div class="bento-value">{{ getFeaturedCount() }}</div>
+      <div class="bento-trend trend-up">Highlighted projects</div>
     </div>
   </section>
 </div>

@@ -1,61 +1,36 @@
-<section id="about-component" class="about-section">
+<section id="about" style="background:var(--bg-surface)">
   <div class="container">
     <div class="about-grid">
-      <div class="about-main">
-        <div>
-          <span class="about-kicker">Get to Know Me</span>
-          <h2 class="about-title">About Me</h2>
-        </div>
-        <p class="about-subtitle">
-          A backend developer focused on building reliable and
-          scalable systems. I enjoy turning complex system
-          requirements into clean, structured code that is practical,
-          maintainable, and ready for production.
-        </p>
-        <div class="about-cards-grid">
-          @for (card of aboutCards; track card.title) {
-            <div class="about-card">
-              <div class="about-card-title">{{ card.title }}</div>
-              <div class="about-card-subtitle">{{ card.subtitle }}</div>
-            </div>
-          }
-        </div>
-        <div class="about-foot">
-          <p class="fun-fact">
-            <span class="fun-fact-label">Fun fact:</span> I enjoy
-            turning complex system requirements into clean, structured
-            code.
-          </p>
-          <a href="#projects-component" class="btn btn-secondary">Explore Projects</a>
+      <div>
+        <p class="section-label reveal">Get to Know Me</p>
+        <div class="about-cards">
+          <div class="about-card reveal reveal-delay-1"><div class="about-card-icon">🔷</div><div class="about-card-title">.NET Developer</div><div class="about-card-sub">C#, ADO.NET, Windows Services</div></div>
+          <div class="about-card reveal reveal-delay-2"><div class="about-card-icon">🗄</div><div class="about-card-title">Database Specialist</div><div class="about-card-sub">SQL Server, Query Optimization</div></div>
+          <div class="about-card reveal reveal-delay-3"><div class="about-card-icon">🧱</div><div class="about-card-title">System Design</div><div class="about-card-sub">Layered Architecture, Clean Code</div></div>
+          <div class="about-card reveal reveal-delay-4"><div class="about-card-icon">🧩</div><div class="about-card-title">Problem Solver</div><div class="about-card-sub">Real-world system implementation</div></div>
         </div>
       </div>
-      <aside class="about-side">
-        <div>
-          <div class="side-block-title">Key achievements</div>
-          <div class="achievement-list">
-            @for (achieve of achievements; track achieve) {
-              <div class="achievement-item">
-                <span class="dot"></span>
-                <p class="achievement-text">{{ achieve }}</p>
-              </div>
-            }
-          </div>
+      <div>
+        <h2 class="section-title reveal" id="about-heading">
+          A backend developer focused on<br /><em style="font-style:italic;color:var(--accent)">reliable, scalable systems.</em>
+        </h2>
+        <p class="about-text reveal reveal-delay-1">
+          I'm <strong>Abdullah Mohammed</strong> — a backend-focused <strong>.NET developer</strong> from Cairo, Egypt, studying at the Faculty of Computers and Information. I specialize in building <strong>scalable, production-ready systems</strong> using C#, SQL Server, and clean architecture patterns.
+        </p>
+        <p class="about-text reveal reveal-delay-2">
+          My focus is on the backend — designing data layers, handling business logic, and structuring code that <strong>stays maintainable as systems grow</strong>. I also integrate Angular frontends to bring those systems to life end-to-end.
+        </p>
+        <div class="about-fun-fact reveal reveal-delay-3">
+          <span class="about-fun-fact-icon">💡</span>
+          <p class="about-fun-fact-text">I enjoy <em>turning complex system requirements into clean, structured code</em> — the kind that future-you (and your teammates) will actually be grateful for.</p>
         </div>
-        <div>
-          <div class="side-block-title">Core values</div>
-          <div class="values-list">
-            @for (val of values; track val.title) {
-              <div class="value-item">
-                <span class="dot"></span>
-                <div class="value-text">
-                  <strong>{{ val.title }}</strong>
-                  {{ val.desc }}
-                </div>
-              </div>
-            }
-          </div>
-        </div>
-      </aside>
+        <ul class="achievements reveal reveal-delay-4">
+          <li>Built Online Coaching System with complete transaction handling</li>
+          <li>Implemented layered architecture — DAL, Business Layer, DTOs</li>
+          <li>Designed SQL databases and Entity Framework models from scratch</li>
+          <li>Hands-on with real system logic, business constraints, and edge cases</li>
+        </ul>
+      </div>
     </div>
   </div>
 </section>

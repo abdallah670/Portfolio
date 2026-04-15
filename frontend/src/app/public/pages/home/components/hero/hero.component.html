@@ -1,29 +1,73 @@
-<section class="hero-section">
-  <div class="container hero-grid">
+<section id="hero">
+  <canvas id="particles-canvas"></canvas>
+  <div class="hero-grid"></div>
+  <div class="hero-orbit"></div>
+  <div class="hero-orbit hero-orbit-2"></div>
+  <div class="hero-glow"></div>
+
+  <div class="container hero-inner">
     <div class="hero-content">
-      <span class="hero-kicker">Full-Stack .NET Developer</span>
-      <h1 class="hero-title">
-        Building<br /><span class="highlight-text">Scalable</span><br />Solutions for<br />the Web.
-      </h1>
-      <p class="hero-desc">
-        Backend-focused .NET developer specializing in building scalable
-        systems using C#, SQL Server, and clean architecture. Passionate
-        about system design and writing maintainable code.
+      <div class="hero-badge"><span class="dot"></span>Available for Opportunities</div>
+      <p class="hero-greeting">Hi, I'm</p>
+      <h1 class="hero-name" id="hero-name-el">Abdullah Mohammed</h1>
+      <p class="hero-title">Full-Stack .NET Developer</p>
+      <p class="hero-tagline">
+        <span id="typed-text"></span><span class="typed-cursor"></span>
       </p>
-      <div class="hero-actions">
-        <button class="btn btn-primary">
-          View My Work
-        </button>
-        <button class="btn btn-secondary">
-          Let's Talk
-        </button>
+      <div class="hero-cta">
+        <a href="#projects" class="btn btn-primary mag-btn">
+          <span>View My Work</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+        </a>
+        <a href="#cv-section" class="btn btn-cv mag-btn">
+          <span>Download CV</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </a>
+        <a href="#cta" class="btn btn-ghost mag-btn">
+          <span>Get In Touch</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        </a>
+      </div>
+      <div class="hero-stats">
+        <div>
+          <div class="hero-stat-value" data-count="5" data-suffix="+">0</div>
+          <div class="hero-stat-label">Projects</div>
+        </div>
+        <div>
+          <div class="hero-stat-value" data-count="100" data-suffix="%">0</div>
+          <div class="hero-stat-label">Backend Focus</div>
+        </div>
+        <div>
+          <div class="hero-stat-value" style="font-size:1.3rem;letter-spacing:-.01em">Advanced</div>
+          <div class="hero-stat-label">SQL Expertise</div>
+        </div>
       </div>
     </div>
+
     <div class="hero-visual">
-      <img
-        alt="Code snippet preview"
-        src="https://storage.googleapis.com/banani-generated-images/generated-images/efb2615d-f446-47a1-90d2-53d75a224b91.jpg"
-      />
+      <div class="profile-card" id="tiltCard">
+        <div class="profile-card-photo">
+          <div class="profile-photo-placeholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span>Meno.png</span>
+          </div>
+        </div>
+        <div class="profile-card-body">
+          <div class="profile-name">Abdullah Mohammed</div>
+          <div class="profile-role">.NET Developer</div>
+          <div class="profile-location">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            Cairo, Egypt — FCI Student
+          </div>
+          <div class="profile-tags">
+            <span class="profile-tag">C# / .NET</span>
+            <span class="profile-tag">SQL Server</span>
+            <span class="profile-tag">Angular</span>
+            <span class="profile-tag">Clean Arch</span>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
+  <div class="hero-scroll"><div class="scroll-line"></div><span>scroll</span></div>
 </section>

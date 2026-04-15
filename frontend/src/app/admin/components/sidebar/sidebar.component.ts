@@ -16,17 +16,6 @@ interface NavItem {
   imports: [CommonModule, RouterModule],
   template: `
     <aside class="sidebar">
-      <!-- Logo -->
-      <div class="logo-section">
-        <div class="logo-icon">
-          <span class="material-symbols-outlined filled">bolt</span>
-        </div>
-        <div class="logo-text">
-          <h1>Kinetic Admin</h1>
-          <p>v2.4.0</p>
-        </div>
-      </div>
-
       <!-- Navigation -->
       <nav class="nav-section">
         @for (item of navItems; track item.route) {
@@ -67,7 +56,7 @@ interface NavItem {
         <!-- User Profile -->
         <div class="user-profile">
           <div class="avatar">
-            <span class="initials">AM</span>
+            <span class="initials"></span>
           </div>
           <div class="user-info">
             <p class="name">Abdullah Mohammed</p>

@@ -1,5 +1,8 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using PortfolioApi.Application.DTOs;
+using PortfolioApi.Domain.Entities;
 using PortfolioApi.Infrastructure.Data;
 
 namespace PortfolioApi.Api.Controllers;
@@ -83,5 +86,46 @@ public class UploadController : ControllerBase
         var imageUrl = $"{baseUrl}/uploads/{fileName}";
         
         return Ok(new ApiResponse<string> { Success = true, Message = "Image uploaded", Data = imageUrl });
+    }
+
+    [HttpPost("cv")]
+    [Authorize]
+    public async Task<IActionResult> UploadCV(IFormFile file)
+    {
+        if (file == null || file.Length == 0)
+            return BadRequest(new ApiResponse { Success = false, Message = "No file provided" });
+        
+        if (!file.ContentType.Equals("application/pdf", StringComparison.OrdinalIgnoreCase))
+            return BadRequest(new ApiResponse { Success = false, Message = "Only PDF files are allowed" });
+        
+        if (file.Length > 10 * 1024 * 1024) // 10MB max
+            return BadRequest(new ApiResponse { Success = false, Message = "File too large. Max 10MB" });
+        
+        var uploadsFolder = Path.Combine(_environment.ContentRootPath, "wwwroot", "uploads", "cv");
+        Directory.CreateDirectory(uploadsFolder);
+        
+        // Delete old CV if exists
+        var existingFiles = Directory.GetFiles(uploadsFolder, "*.pdf");
+        foreach (var f in existingFiles) System.IO.File.Delete(f);
+        
+        var fileName = $"Abdullah_Mohammed_CV.pdf";
+        var filePath = Path.Combine(uploadsFolder, fileName);
+        
+        using (var stream = new FileStream(filePath, FileMode.Create))
+        {
+            await file.CopyToAsync(stream);
+        }
+        
+        // Save path to SystemSettings
+        var setting = await _context.SystemSettings.FirstOrDefaultAsync(s => s.Key == "cv_url");
+        if (setting == null)
+        {
+            setting = new SystemSetting { Key = "cv_url", Category = "files", DataType = "string" };
+            _context.SystemSettings.Add(setting);
+        }
+        setting.Value = $"/uploads/cv/{fileName}";
+        await _context.SaveChangesAsync();
+        
+        return Ok(new ApiResponse<string> { Success = true, Message = "CV uploaded", Data = setting.Value });
     }
 }

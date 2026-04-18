@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PortfolioApi.Domain.Entities;
 using PortfolioApi.Infrastructure.Data;
-using PortfolioApi.Infrastructure.Middleware;
+
 using PortfolioApi.Infrastructure.Services;
 using PortfolioApi.Infrastructure.Services.Models;
 using PortfolioApi.Application.Interfaces;
@@ -143,7 +143,7 @@ app.UseSerilogRequestLogging(options =>
 });
 
 // Analytics middleware (before auth to capture all traffic)
-app.UseAnalytics();
+
 
 app.UseAuthentication();
 app.UseAuthorization();

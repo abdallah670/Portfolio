@@ -18,11 +18,6 @@ export interface HeroConfig {
   headlineMain: string;
   availabilityLabel: string;
   subtitle: string;
-  heroIntro: string;
-  ctaPrimaryLabel: string;
-  ctaPrimaryHref: string;
-  ctaSecondaryLabel: string;
-  ctaSecondaryHref: string;
   profileImage: string;
   stats: HeroStatConfig[];
 }
@@ -92,8 +87,9 @@ export interface Project {
   year: string;
   status: string;
   image: string;
-  liveUrl: string;
+  linkedinUrl: string;
   githubUrl: string;
+  liveUrl: string;
   isFeatured: boolean;
   color: string;
   stack: string;       // raw JSON string
@@ -110,6 +106,8 @@ export interface Message {
   isRead: boolean;
   createdAt: string;
   readAt?: string;
+  isReplied: boolean;
+  repliedAt?: string;
 }
 
 export interface Skill {
@@ -129,15 +127,12 @@ export interface SkillCategory {
 
 export interface Hero {
   id: number;
+  name:string;
   headlineTop: string;
   headlineMain: string;
   subtitle: string;
   availabilityLabel: string;
-  heroIntro: string;
-  ctaPrimaryLabel: string;
-  ctaPrimaryHref: string;
-  ctaSecondaryLabel: string;
-  ctaSecondaryHref: string;
+ 
   profileImage: string;
   stats: HeroStatConfig[];
 }
@@ -167,16 +162,16 @@ export interface SocialLink {
   displayOrder: number;
 }
 
-// Dashboard Stats — matches GET /api/portfolio/dashboard-stats
+// Dashboard Stats — matches GET /api/portfolio/dashboard-stats (PascalCase JSON from .NET)
 export interface DashboardStats {
-  totalProjects: number;
-  draftProjects: number;
-  totalMessages: number;
-  unreadMessages: number;
-  totalSkills: number;
-  skillCategories: number;
-  profileViews: number;
-  recentProjects: Project[];
+  TotalProjects: number;
+  DraftProjects: number;
+  TotalMessages: number;
+  UnreadMessages: number;
+  TotalSkills: number;
+  SkillCategories: number;
+  ProfileViews: number;
+  RecentProjects: { id: number; title: string; description: string; stack: string; status: string; image: string }[];
 }
 
 // Paginated Response

@@ -49,11 +49,7 @@ public class GetFullConfigQueryHandler : IRequestHandler<GetFullConfigQuery, Por
                 HeadlineMain = hero.HeadlineMain,
                 AvailabilityLabel = hero.AvailabilityLabel,
                 Subtitle = hero.Subtitle,
-                HeroIntro = hero.HeroIntro,
-                CtaPrimaryLabel = hero.CtaPrimaryLabel,
-                CtaPrimaryHref = hero.CtaPrimaryHref,
-                CtaSecondaryLabel = hero.CtaSecondaryLabel,
-                CtaSecondaryHref = hero.CtaSecondaryHref,
+
                 ProfileImage = hero.ProfileImage,
                 Stats = heroStats.Select(s => new HeroStatsDto { Label = s.Label, Value = s.Value }).ToList()
             },

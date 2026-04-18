@@ -57,7 +57,7 @@ body::before {
 // =============================================
 // SECTION LAYOUT
 // =============================================
-section { 
+.home-page section { 
   position: relative; 
   padding: clamp(5rem, 10vw, 8rem) clamp(1.5rem, 5vw, 4rem); 
 }
@@ -228,6 +228,17 @@ section {
   letter-spacing: 0.1em; text-transform: uppercase;
   cursor: pointer; border: 1px solid transparent;
   transition: all 0.25s ease; text-decoration: none;
+  position: relative; overflow: hidden;
+}
+
+// Magnetic button support - uses CSS custom properties for smooth animation
+.mag-btn {
+  --mag-x: 0px;
+  --mag-y: 0px;
+  transform: translate(var(--mag-x), var(--mag-y));
+}
+.mag-btn:hover {
+  transform: translate(var(--mag-x), calc(var(--mag-y) - 1px));
 }
 .btn svg { 
   width: 14px; height: 14px; transition: transform 0.25s ease; flex-shrink: 0; 
@@ -245,7 +256,6 @@ section {
 
 .btn-primary { 
   background: var(--accent); color: #fff; border-color: var(--accent); 
-  position: relative; overflow: hidden;
 }
 .btn-primary:hover {
   background: var(--accent-bright); border-color: var(--accent-bright);
@@ -254,7 +264,7 @@ section {
 
 .btn-ghost { 
   background: transparent; color: var(--text-primary); 
-  border-color: var(--border-hover); position: relative; overflow: hidden;
+  border-color: var(--border-hover);
 }
 .btn-ghost:hover {
   border-color: var(--accent); color: var(--accent);
@@ -264,7 +274,7 @@ section {
 // CV download button
 .btn-cv {
   background: transparent; color: var(--accent);
-  border: 1px solid var(--accent); position: relative; overflow: hidden;
+  border: 1px solid var(--accent);
 }
 .btn-cv::after {
   content: ''; position: absolute; inset: 0;
@@ -430,7 +440,7 @@ section {
   min-height: 100vh; background: var(--bg-primary);
   color: var(--text-primary);
 }
-.main-content { flex: 1; }
+.home-page .main-content { flex: 1; }
 
 // =============================================
 // PAGE TRANSITIONS

@@ -26,11 +26,6 @@ public class SeedService
             HeadlineMain = "Abdullah Mohammed",
             AvailabilityLabel = "Available for Opportunities",
             Subtitle = "Full-Stack .NET Developer",
-            HeroIntro = "Backend-focused .NET developer specializing in building scalable systems using C#, SQL Server, and clean architecture. Passionate about system design, data handling, and writing maintainable, production-ready code.",
-            CtaPrimaryLabel = "View My Work",
-            CtaPrimaryHref = "/projects",
-            CtaSecondaryLabel = "Get In Touch",
-            CtaSecondaryHref = "/contact",
             ProfileImage = "uploads/profile-image/Meno.png"
         };
         _context.Heroes.Add(hero);
@@ -121,6 +116,72 @@ public class SeedService
             Location = "Cairo, Egypt"
         };
         _context.Contacts.Add(contact);
+
+        // Seed test messages
+        var messages = new List<Message>
+        {
+            new()
+            {
+                Name = "Hatem",
+                Email = "hnbg14006@gmail.com",
+                Subject = "Collaboration Inquiry",
+                Content = "Hello Abdullah,\n\nI came across your portfolio and I'm impressed by your work. I'd like to discuss a potential collaboration on a .NET project.\n\nPlease let me know if you're interested.\n\nBest regards,\nHatem",
+                IsRead = false,
+                IsReplied = false,
+                CreatedAt = DateTime.UtcNow.AddDays(-3)
+            },
+            new()
+            {
+                Name = "Binfo",
+                Email = "binfof123@gmail.com",
+                Subject = "Project Collaboration",
+                Content = "Hi,\n\nI'm looking for a skilled .NET developer to join our team. Your experience with ASP.NET Core and Angular seems like a great match.\n\nAre you available for a quick chat?\n\nThanks,\nBinfo",
+                IsRead = true,
+                IsReplied = true,
+                CreatedAt = DateTime.UtcNow.AddDays(-5),
+                ReadAt = DateTime.UtcNow.AddDays(-5),
+                RepliedAt = DateTime.UtcNow.AddDays(-4)
+            },
+            new()
+            {
+                Name = "Student",
+                Email = "20231104@stud.fci-cu.edu.eg",
+                Subject = "Question about Clean Architecture",
+                Content = "Dear Abdullah,\n\nI'm a CS student at FCI and I've been studying your portfolio projects. Could you explain more about how you structured your Clean Architecture implementation?\n\nI'm currently working on my graduation project and your approach would be very helpful.\n\nThank you for your time.\n\nSincerely,\nFCI Student",
+                IsRead = false,
+                IsReplied = false,
+                CreatedAt = DateTime.UtcNow.AddDays(-1)
+            },
+            new()
+            {
+                Name = "Ahmed",
+                Email = "ahmed@example.com",
+                Subject = "Job Opportunity",
+                Content = "Hello,\n\nWe have an opening for a Senior .NET Developer at our company. Based on your portfolio, you might be a good fit.\n\nWould you be interested in learning more?\n\nBest,\nAhmed (HR Manager)",
+                IsRead = true,
+                IsReplied = false,
+                CreatedAt = DateTime.UtcNow.AddDays(-7),
+                ReadAt = DateTime.UtcNow.AddDays(-7)
+            }
+        };
+        _context.Messages.AddRange(messages);
+        
+        // Seed CV placeholder setting
+        var cvSetting = new SystemSetting
+        {
+            Key = "cv_url",
+            Value = "/uploads/cv/Abdullah_Mohammed_CV.pdf",
+            Category = "files",
+            DataType = "string"
+        };
+        _context.SystemSettings.Add(cvSetting);
+        
+        // Ensure CV directory exists (but we can't create the actual PDF file)
+        var cvFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "cv");
+        if (!Directory.Exists(cvFolder))
+        {
+            Directory.CreateDirectory(cvFolder);
+        }
         
         await _context.SaveChangesAsync();
     }

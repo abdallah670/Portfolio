@@ -9,11 +9,7 @@ public class HeroDto
     public string HeadlineMain { get; set; } = string.Empty;
     public string AvailabilityLabel { get; set; } = string.Empty;
     public string Subtitle { get; set; } = string.Empty;
-    public string HeroIntro { get; set; } = string.Empty;
-    public string CtaPrimaryLabel { get; set; } = string.Empty;
-    public string CtaPrimaryHref { get; set; } = string.Empty;
-    public string CtaSecondaryLabel { get; set; } = string.Empty;
-    public string CtaSecondaryHref { get; set; } = string.Empty;
+   
     public string ProfileImage { get; set; } = string.Empty;
     public List<HeroStatsDto> Stats { get; set; } = new();
 }
@@ -76,6 +72,15 @@ public class ContactDto
     public string WhatsApp { get; set; } = string.Empty;
     public string Phone { get; set; } = string.Empty;
     public string Location { get; set; } = string.Empty;
+}
+
+public class PaginatedResponse<T>
+{
+    public List<T> Items { get; set; } = new();
+    public int TotalCount { get; set; }
+    public int TotalPages { get; set; }
+    public int CurrentPage { get; set; }
+    public int PageSize { get; set; }
 }
 
 public class PortfolioConfigDto

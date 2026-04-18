@@ -1,5 +1,6 @@
 import { Component, Input, OnInit, Inject, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { ApiService } from '../../../../../core/services/api.service';
 
 @Component({
   selector: 'app-home-cv',
@@ -10,8 +11,12 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 })
 export class CvComponent implements OnInit {
   private isBrowser: boolean;
+  private readonly API_URL = 'http://localhost:5000';
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) {
+  constructor(
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private api: ApiService
+  ) {
     this.isBrowser = isPlatformBrowser(this.platformId);
   }
 
@@ -39,15 +44,32 @@ export class CvComponent implements OnInit {
   }
 
   downloadCV(): void {
-    const link = document.createElement('a');
-    link.href = 'uploads/cv/Abdullah_Mohammed_CV.pdf';
-    link.download = 'Abdullah_Mohammed_CV.pdf';
-    link.click();
-    this.showToast();
+    // First check if CV exists by fetching it
+    fetch(`${this.API_URL}/api/portfolio/cv`)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('CV not found');
+        }
+        return response.blob();
+      })
+      .then(blob => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'Abdullah_Mohammed_CV.pdf';
+        link.click();
+        window.URL.revokeObjectURL(url);
+        this.showToast();
+      })
+      .catch(err => {
+        console.error('Failed to download CV:', err);
+        this.showErrorToast('CV not available. Please upload it in the admin settings.');
+      });
   }
 
   previewCV(): void {
-    window.open('uploads/cv/Abdullah_Mohammed_CV.pdf', '_blank');
+    const cvUrl = `${this.API_URL}/api/portfolio/cv/preview`;
+    window.open(cvUrl);
   }
 
   private showToast(): void {
@@ -55,6 +77,18 @@ export class CvComponent implements OnInit {
     if (toast) {
       toast.classList.add('show');
       setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+  }
+
+  private showErrorToast(message: string): void {
+    const toast = document.getElementById('cv-toast');
+    if (toast) {
+      toast.textContent = message;
+      toast.classList.add('show', 'error');
+      setTimeout(() => {
+        toast.classList.remove('show', 'error');
+        toast.textContent = 'CV downloaded successfully!';
+      }, 3000);
     }
   }
 }

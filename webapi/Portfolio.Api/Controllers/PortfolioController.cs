@@ -6,6 +6,7 @@ using PortfolioApi.Application.DTOs;
 using PortfolioApi.Domain.Entities;
 using PortfolioApi.Application.Features.Portfolio.Queries;
 using PortfolioApi.Application.Features.Portfolio.Commands;
+using PortfolioApi.Application.Features.Projects.Commands;
 using PortfolioApi.Infrastructure.Data;
 using SQLitePCL;
 
@@ -39,11 +40,21 @@ public class PortfolioController : ControllerBase
     // Admin endpoint - return all projects including drafts
     [HttpGet("admin/projects")]
     [Authorize]
-    public async Task<IActionResult> GetAllProjectsAdmin()
+    public async Task<IActionResult> GetAllProjectsAdmin([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        _logger.LogInformation("API: Admin getting all projects");
-        var projects = await _mediator.Send(new GetAllProjectsAdminQuery());
-        return Ok(projects);
+        _logger.LogInformation("API: Admin getting projects page {Page} with size {PageSize}", page, pageSize);
+        var result = await _mediator.Send(new GetAllProjectsAdminQuery { Page = page, PageSize = pageSize });
+        return Ok(result);
+    }
+
+    // POST /api/portfolio/projects/{id}/views
+    [HttpPost("projects/{id}/views")]
+    [AllowAnonymous]
+    public async Task<IActionResult> IncrementProjectViews(int id)
+    {
+        _logger.LogInformation("API: Incrementing views for project {ProjectId}", id);
+        var result = await _mediator.Send(new IncrementProjectViewsCommand(id));
+        return result ? Ok() : NotFound();
     }
 
     // PUT /api/portfolio/projects/{id}/publish
@@ -94,6 +105,15 @@ public class PortfolioController : ControllerBase
         _logger.LogInformation("API: Updating hero section");
         var response = await _mediator.Send(new UpdateHeroCommand(hero));
         return Ok(response);
+    }
+    
+    [HttpGet("dashboard-stats")]
+    [Authorize]
+    public async Task<IActionResult> GetDashboardStats()
+    {
+        _logger.LogInformation("API: Getting dashboard stats");
+        var stats = await _mediator.Send(new GetDashboardStatsQuery());
+        return Ok(stats);
     }
     
     [Authorize]
@@ -222,33 +242,25 @@ public class PortfolioController : ControllerBase
         var result = await _mediator.Send(new DeleteSkillCommand { Id = id });
         return result ? Ok() : NotFound();
     }
-    
-    // GET: api/portfolio/dashboard-stats
-    [HttpGet("dashboard-stats")]
-    [Authorize]
-    public async Task<IActionResult> GetDashboardStats()
-    {
-        _logger.LogInformation("API: Getting dashboard stats");
-        var stats = await _mediator.Send(new GetDashboardStatsQuery());
-        return Ok(stats);
-    }
+  
 
     // GET: api/portfolio/cv
     [HttpGet("cv")]
     [AllowAnonymous]
-    public async Task<IActionResult> GetCV()
+    public IActionResult GetCV()
     {
-        var setting = await _context.SystemSettings
-            .FirstOrDefaultAsync(s => s.Key == "cv_url");
-        
-        if (string.IsNullOrEmpty(setting?.Value))
-            return NotFound("CV not found");
-        
-        var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", setting.Value.TrimStart('/'));
-        
+        string filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "cv", "Abdullah_Mohammed_CV.pdf");
         if (!System.IO.File.Exists(filePath))
             return NotFound("CV file not found");
         
-        return PhysicalFile(filePath, "application/pdf", "Abdullah_Mohammed_CV.pdf");
+        return PhysicalFile(filePath, "application/pdf");
+    }
+
+    // GET: api/portfolio/cv/preview
+    [HttpGet("cv/preview")]
+    [AllowAnonymous]
+    public IActionResult PreviewCV()
+    {
+        return Redirect("/uploads/cv/Abdullah_Mohammed_CV.pdf");
     }
 }

@@ -23,7 +23,7 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
     {
         try{
         _logger.LogInformation("Creating project: {ProjectTitle}", request.Project.Title);
-        var project = new Project
+         var project = new Project
         {
             Title = request.Project.Title,
             Year = request.Project.Year,
@@ -33,6 +33,7 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
             Image = request.Project.Image,
             linkedinUrl = request.Project.linkedinUrl,
             GithubUrl = request.Project.GithubUrl,
+            LiveUrl = request.Project.LiveUrl,
             Status = request.Project.Status,
             Color = request.Project.Color,
             IsFeatured = request.Project.IsFeatured,

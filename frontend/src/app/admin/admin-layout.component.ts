@@ -25,20 +25,17 @@ styles: [`
     }
 
     .main-content {
+      display: flex;
+      flex-direction: column;
+      min-height: calc(100vh - 64px);
       padding-top: 64px;
-      min-height: 100vh;
     }
 
     .content-wrapper {
-      padding: 32px;
+      width: 100%;
       max-width: 1600px;
       margin: 0 auto;
-    }
-
-    @media (max-width: 768px) {
-      .content-wrapper {
-        padding: 16px;
-      }
+      padding-top: 24px;
     }
   `]
 })

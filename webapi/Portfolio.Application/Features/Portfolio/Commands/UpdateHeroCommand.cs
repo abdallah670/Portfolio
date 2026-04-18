@@ -33,12 +33,7 @@ public class UpdateHeroCommandHandler : IRequestHandler<UpdateHeroCommand, ApiRe
         hero.HeadlineTop = request.Hero.HeadlineTop;
         hero.HeadlineMain = request.Hero.HeadlineMain;
         hero.AvailabilityLabel = request.Hero.AvailabilityLabel;
-        hero.Subtitle = request.Hero.Subtitle;
-        hero.HeroIntro = request.Hero.HeroIntro;
-        hero.CtaPrimaryLabel = request.Hero.CtaPrimaryLabel;
-        hero.CtaPrimaryHref = request.Hero.CtaPrimaryHref;
-        hero.CtaSecondaryLabel = request.Hero.CtaSecondaryLabel;
-        hero.CtaSecondaryHref = request.Hero.CtaSecondaryHref;
+     
         hero.ProfileImage = request.Hero.ProfileImage;
         hero.UpdatedAt = DateTime.UtcNow;
         

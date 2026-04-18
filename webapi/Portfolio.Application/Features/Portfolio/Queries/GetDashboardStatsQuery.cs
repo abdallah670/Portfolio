@@ -15,6 +15,7 @@ public class DashboardStatsDto
     public int DraftProjects { get; set; }
     public int TotalMessages { get; set; }
     public int UnreadMessages { get; set; }
+    public int RepliedMessages { get; set; }
     public int TotalSkills { get; set; }
     public int SkillCategories { get; set; }
     public int ProfileViews { get; set; }
@@ -43,9 +44,11 @@ public class GetDashboardStatsQueryHandler : IRequestHandler<GetDashboardStatsQu
         var totalSkills = await _context.Skills.CountAsync(cancellationToken);
         var skillCategories = await _context.SkillCategories.CountAsync(cancellationToken);
         
-        // Mock profile views - in production, this would come from analytics
-        var random = new Random();
-        var profileViews = 12450 + random.Next(-100, 100);
+        // Real project views from ViewsCount
+        var profileViews = await _context.Projects.SumAsync(p => p.ViewsCount, cancellationToken);
+        
+        // Reply counts
+        var repliedMessages = await _context.Messages.CountAsync(m => m.IsReplied, cancellationToken);
         
         var recentProjects = await _context.Projects
             .OrderByDescending(p => p.Id)
@@ -71,6 +74,7 @@ public class GetDashboardStatsQueryHandler : IRequestHandler<GetDashboardStatsQu
             DraftProjects = draftProjects,
             TotalMessages = totalMessages,
             UnreadMessages = unreadMessages,
+            RepliedMessages = repliedMessages,
             TotalSkills = totalSkills,
             SkillCategories = skillCategories,
             ProfileViews = profileViews,

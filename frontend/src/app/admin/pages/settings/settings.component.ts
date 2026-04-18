@@ -26,6 +26,9 @@ export class SettingsComponent implements OnInit {
   success = false;
   loading = true;
 
+  // CV Upload
+  cvUploading = false;
+
   constructor(private api: ApiService) {}
 
   ngOnInit(): void {
@@ -58,12 +61,7 @@ export class SettingsComponent implements OnInit {
       headlineTop: 'Hi, I\'m',
       headlineMain: 'Abdullah\nMohammed',
       subtitle: 'Full-Stack .NET Developer',
-      heroIntro: 'Backend-focused .NET developer.',
       availabilityLabel: 'Available for Opportunities',
-      ctaPrimaryLabel: 'View My Work',
-      ctaPrimaryHref: '#projects',
-      ctaSecondaryLabel: 'Get In Touch',
-      ctaSecondaryHref: '#cta',
       profileImage: '',
       stats: []
     };
@@ -89,15 +87,11 @@ export class SettingsComponent implements OnInit {
     
     const heroData: Hero = {
       id: 1,
+      name:this.hero.name,
       headlineTop: this.hero.headlineTop || '',
       headlineMain: this.hero.headlineMain || '',
       subtitle: this.hero.subtitle || '',
       availabilityLabel: this.hero.availabilityLabel || '',
-      heroIntro: this.hero.heroIntro || '',
-      ctaPrimaryLabel: this.hero.ctaPrimaryLabel || '',
-      ctaPrimaryHref: this.hero.ctaPrimaryHref || '',
-      ctaSecondaryLabel: this.hero.ctaSecondaryLabel || '',
-      ctaSecondaryHref: this.hero.ctaSecondaryHref || '',
       profileImage: this.hero.profileImage || '',
       stats: this.hero.stats || []
     };
@@ -283,5 +277,45 @@ export class SettingsComponent implements OnInit {
         this.saving = false;
       }
     });
+  }
+
+  onCVSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+      
+      // Validate file type
+      if (file.type !== 'application/pdf') {
+        this.message = 'Only PDF files are allowed';
+        this.success = false;
+        return;
+      }
+      
+      // Validate file size (10MB max)
+      if (file.size > 10 * 1024 * 1024) {
+        this.message = 'File too large. Max 10MB allowed.';
+        this.success = false;
+        return;
+      }
+
+      this.cvUploading = true;
+      this.message = '';
+      
+      this.api.uploadCV(file).subscribe({
+        next: (res) => {
+          this.message = 'CV uploaded successfully';
+          this.success = true;
+          this.cvUploading = false;
+          // Reset the input
+          input.value = '';
+        },
+        error: (err) => {
+          this.message = err.error?.message || 'Failed to upload CV';
+          this.success = false;
+          this.cvUploading = false;
+          input.value = '';
+        }
+      });
+    }
   }
 }

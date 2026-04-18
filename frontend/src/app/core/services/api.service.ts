@@ -34,24 +34,29 @@ export class ApiService {
     return this.http.get<PortfolioConfig>(`${this.API_URL}/portfolio/config`);
   }
 
-  getSkills(): Observable<SkillCategory[]> {
-    return this.http.get<SkillCategory[]>(`${this.API_URL}/portfolio/skills`);
-  }
-
-  getProjects(): Observable<Project[]> {
+   getSkills(): Observable<SkillCategory[]> {
+     return this.http.get<SkillCategory[]>(`${this.API_URL}/portfolio/skills`);
+   }
+ 
+   // Dashboard Stats (Admin)
+   getDashboardStats(): Observable<DashboardStats> {
+     return this.http.get<DashboardStats>(`${this.API_URL}/portfolio/dashboard-stats`);
+   }
+ 
+   getProjects(): Observable<Project[]> {
     return this.http.get<Project[]>(`${this.API_URL}/portfolio/projects`);
   }
 
   // Projects (Admin - All including drafts)
-  getAllProjectsAdmin(): Observable<Project[]> {
-    return this.http.get<Project[]>(`${this.API_URL}/portfolio/admin/projects`);
+  getAllProjectsAdmin(page: number = 1, pageSize: number = 10): Observable<PaginatedResponse<Project>> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('pageSize', pageSize.toString());
+    
+    return this.http.get<PaginatedResponse<Project>>(`${this.API_URL}/portfolio/admin/projects`, { params });
   }
 
-  // Dashboard Stats (Admin)
-  getDashboardStats(): Observable<DashboardStats> {
-    return this.http.get<DashboardStats>(`${this.API_URL}/portfolio/dashboard-stats`);
-  }
-
+ 
   // Projects (Admin)
   createProject(project: Partial<Project>): Observable<Project> {
     return this.http.post<Project>(`${this.API_URL}/portfolio/projects`, project);
@@ -69,6 +74,17 @@ export class ApiService {
    // Dashboard Stats (Admin)
   getProfileImage(): Observable<string> {
     return this.http.get(`${this.API_URL}/portfolio/ProfileImage`, { responseType: 'text' });
+  }
+
+  // CV
+  getCV(): Observable<Blob> {
+    return this.http.get(`${this.API_URL}/portfolio/cv`, { responseType: 'blob' });
+  }
+
+  uploadCV(file: File): Observable<{ url: string }> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<{ url: string }>(`${this.API_URL}/upload/cv`, formData);
   }
 
   updateHero(hero: Hero): Observable<Hero> {
@@ -91,6 +107,11 @@ export class ApiService {
   // Contact (Admin)
   updateContact(contact: Contact): Observable<Contact> {
     return this.http.put<Contact>(`${this.API_URL}/portfolio/contact`, contact);
+  }
+
+  // Project Views (Public)
+  incrementProjectViews(projectId: number): Observable<void> {
+    return this.http.post<void>(`${this.API_URL}/portfolio/projects/${projectId}/views`, {});
   }
 
   // Social Links (Admin)
@@ -145,15 +166,24 @@ export class ApiService {
     return this.http.get<Message>(`${this.API_URL}/messages/${id}`);
   }
 
-  markMessageAsRead(id: number): Observable<void> {
-    return this.http.put<void>(`${this.API_URL}/messages/${id}/read`, {});
-  }
+   markMessageAsRead(id: number): Observable<void> {
+     return this.http.put<void>(`${this.API_URL}/messages/${id}/read`, {});
+   }
 
-  deleteMessage(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.API_URL}/messages/${id}`);
-  }
+   markAllMessagesAsRead(): Observable<{ markedAsReadCount: number }> {
+     return this.http.put<{ markedAsReadCount: number }>(`${this.API_URL}/messages/read-all`, {});
+   }
 
-  getUnreadCount(): Observable<number> {
+   deleteMessage(id: number): Observable<void> {
+     return this.http.delete<void>(`${this.API_URL}/messages/${id}`);
+   }
+
+   // Reply to message
+   respondToMessage(id: number, content: string): Observable<{ message: string }> {
+     return this.http.post<{ message: string }>(`${this.API_URL}/messages/${id}/respond`, { content });
+   }
+
+   getUnreadCount(): Observable<number> {
     return this.http.get<number>(`${this.API_URL}/messages/unread-count`);
   }
 

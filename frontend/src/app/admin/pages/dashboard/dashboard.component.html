@@ -1,0 +1,108 @@
+<div class="dashboard">
+  <!-- Page Header -->
+  <section class="page-header">
+    <div>
+      <span class="section-label">Dashboard</span>
+      <h1>Welcome back, <span class="highlight">Abdullah</span></h1>
+    </div>
+    <div class="sync-time">
+      <p class="label">Last Synced</p>
+      <p class="time">{{ currentTime }}</p>
+    </div>
+  </section>
+
+  <!-- Metrics Grid -->
+  <section class="metrics-grid">
+    <!-- Projects -->
+    <div class="metric-card">
+      <div class="metric-content">
+        <p class="metric-label">Projects</p>
+        <h3 class="metric-value">{{ stats?.TotalProjects || 0 }}</h3>
+        <div class="metric-trend neutral">
+          <span class="material-symbols-outlined">rocket_launch</span>
+          <span>{{ stats?.DraftProjects || 0 }} Drafts</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Messages -->
+    <div class="metric-card">
+      <div class="metric-content">
+        <p class="metric-label">Messages</p>
+        <h3 class="metric-value">{{ stats?.TotalMessages || 0 }}</h3>
+        <div class="metric-trend attention" *ngIf="stats?.UnreadMessages">
+          <span class="material-symbols-outlined">mark_email_unread</span>
+          <span>{{ stats?.UnreadMessages }} Unread</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Skills -->
+    <div class="metric-card">
+      <div class="metric-content">
+        <p class="metric-label">Skills</p>
+        <h3 class="metric-value">{{ stats?.TotalSkills || 0 }}</h3>
+        <div class="metric-trend up">
+          <span class="material-symbols-outlined">psychology</span>
+          <span>{{ stats?.SkillCategories || 0 }} Categories</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quick Actions -->
+  <section class="quick-actions">
+    <button class="action-btn primary" (click)="router.navigate(['/admin/projects'])">
+      <span class="material-symbols-outlined">add</span>
+      Add Project
+    </button>
+    <button class="action-btn secondary" (click)="router.navigate(['/admin/messages'])">
+      <span class="material-symbols-outlined">mail</span>
+      Messages
+       <span class="badge" *ngIf="stats?.UnreadMessages">{{ stats?.UnreadMessages }}</span>
+    </button>
+    <button class="action-btn secondary" (click)="router.navigate(['/admin/settings'])">
+      <span class="material-symbols-outlined">settings</span>
+      Settings
+    </button>
+  </section>
+
+  <!-- Skills Chart -->
+  @if (skillCategories.length > 0) {
+  <section class="skills-section">
+    <div class="panel skills-panel">
+      <div class="panel-header">
+        <h3>Skills Overview</h3>
+      </div>
+      <div class="chart-container-large">
+        <canvas #skillsChart></canvas>
+      </div>
+    </div>
+  </section>
+  }
+
+  <!-- Recent Projects -->
+  @if (recentProjects.length > 0) {
+  <section class="recent-section">
+    <div class="panel recent-panel">
+      <div class="panel-header">
+        <h3>Recent Projects</h3>
+        <button class="btn-link" (click)="router.navigate(['/admin/projects'])">View All</button>
+      </div>
+      <div class="projects-list">
+        @for (project of recentProjects; track project.id) {
+          <div class="project-item" (click)="router.navigate(['/admin/projects'])">
+            <div class="project-info">
+              <h4 class="project-title">{{ project.title }}</h4>
+              <p class="project-meta">{{ project.year }} • {{ project.category }}</p>
+            </div>
+            <span class="status-badge" [class]="project.status === 'Production' ? 'live' : 'draft'">
+              {{ project.status === 'Production' ? 'Live' : 'Draft' }}
+            </span>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+  }
+</div>

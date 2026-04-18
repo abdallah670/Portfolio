@@ -95,6 +95,16 @@ public class MessagesController : ControllerBase
         return result ? NoContent() : NotFound();
     }
 
+    // PUT: api/messages/read-all
+    [HttpPut("read-all")]
+    [Authorize]
+    public async Task<IActionResult> MarkAllAsRead()
+    {
+        _logger.LogInformation("API: Marking all messages as read");
+        var count = await _mediator.Send(new MarkAllMessagesAsReadCommand());
+        return Ok(new { markedAsReadCount = count });
+    }
+
     // DELETE: api/messages/5
     [HttpDelete("{id}")]
     [Authorize]

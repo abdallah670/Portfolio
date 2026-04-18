@@ -10,7 +10,6 @@
     <header class="page-header">
       <p class="kicker">Workspace Configuration</p>
     </header>
-
     <!-- Tab Navigation -->
     <div class="tab-nav">
       <button class="tab-btn" [class.active]="activeTab === 'profile'" (click)="setTab('profile')">
@@ -279,6 +278,35 @@
           <div class="form-actions">
             <button class="btn btn-secondary" (click)="saveSocials()" [disabled]="saving">
               Save Socials
+            </button>
+          </div>
+        </section>
+
+        <!-- CV Upload -->
+        <section class="settings-card">
+          <div class="card-header">
+            <h2>CV / Resume</h2>
+          </div>
+          <div class="cv-section">
+            <div class="form-group">
+              <label>Upload CV (PDF only, max 10MB)</label>
+              <input 
+                type="file" 
+                #cvInput
+                accept=".pdf" 
+                (change)="onCVSelected($event)" 
+                class="form-input" 
+                hidden
+              />
+            </div>
+          </div>
+          <div class="form-actions">
+            <button 
+              class="btn btn-secondary" 
+              (click)="cvInput.click()" 
+              [disabled]="cvUploading">
+              <span class="material-symbols-outlined">upload_file</span>
+              {{ cvUploading ? 'Uploading...' : 'Upload CV' }}
             </button>
           </div>
         </section>

@@ -42,10 +42,22 @@ public class AuthController : ControllerBase
         
         return Ok(new { message = "Password updated successfully" });
     }
+
+    // PUT /api/auth/username
+    [HttpPut("username")]
+    [Authorize]
+    public async Task<IActionResult> ChangeUsername([FromBody] ChangeUsernameRequest request)
+    {
+        var username = User.Identity?.Name ?? string.Empty;
+        var result = await _mediator.Send(new UpdateUsernameCommand(
+            request.NewUsername, username));
+        
+        if (!result.Success)
+            return BadRequest(new { errors = result.Errors });
+        
+        return Ok(new { message = "Username updated successfully" });
+    }
+    
+
 }
 
-public class ChangePasswordRequest
-{
-    public string CurrentPassword { get; set; } = string.Empty;
-    public string NewPassword { get; set; } = string.Empty;
-}

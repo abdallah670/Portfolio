@@ -6,11 +6,7 @@
       <h1 class="header-title">The Project Archive</h1>
     </div>
     <div class="header-actions">
-      <button class="btn btn-secondary with-icon">
-        <span class="material-symbols-outlined icon">filter_list</span>
-        Filters
-      </button>
-      <button class="btn btn-primary with-icon">
+      <button class="btn btn-primary with-icon" (click)="openCreate()">
         <span class="material-symbols-outlined icon">add_circle</span>
         Create New Project
       </button>
@@ -27,6 +23,29 @@
 
   <!-- Table Section -->
   @if (!loading) {
+     <!-- Quick Stats Bento Grid -->
+  <section class="bento-grid">
+    <div class="bento-card border-primary">
+      <div class="bento-label">Total Projects</div>
+      <div class="bento-value">{{ projects.length }}</div>
+      <div class="bento-trend trend-up">All projects</div>
+    </div>
+    <div class="bento-card border-secondary">
+      <div class="bento-label">Published</div>
+      <div class="bento-value">{{ getPublishedCount() }}</div>
+      <div class="bento-trend">Live on production</div>
+    </div>
+    <div class="bento-card border-primary-container">
+      <div class="bento-label">Draft Projects</div>
+      <div class="bento-value">{{ getDraftCount() }}</div>
+      <div class="bento-trend">In development</div>
+    </div>
+    <div class="bento-card border-outline">
+      <div class="bento-label">Featured</div>
+      <div class="bento-value">{{ getFeaturedCount() }}</div>
+      <div class="bento-trend trend-up">Highlighted projects</div>
+    </div>
+  </section>
     <section class="table-card">
       <div class="table-header">
         <div class="table-status">
@@ -36,14 +55,6 @@
             <span class="pill pill-draft">Draft ({{ getDraftCount() }})</span>
             <span class="pill pill-published">Published ({{ getPublishedCount() }})</span>
           </div>
-        </div>
-        <div class="table-controls">
-          <button class="control-btn active">
-            <span class="material-symbols-outlined">view_list</span>
-          </button>
-          <button class="control-btn">
-            <span class="material-symbols-outlined">grid_view</span>
-          </button>
         </div>
       </div>
 
@@ -97,7 +108,7 @@
                 </td>
                 <td class="text-right">
                   <div class="row-actions">
-                    <button class="action-btn edit-btn">
+                    <button class="action-btn edit-btn" (click)="openEdit(project)">
                       <span class="material-symbols-outlined">edit_square</span>
                     </button>
                     <button class="action-btn delete-btn" (click)="deleteProject(project.id)">
@@ -113,13 +124,23 @@
 
       <!-- Pagination -->
       <div class="table-footer">
-        <div class="pagination-info">Showing 1 to {{ projects.length }} of {{ projects.length }} projects</div>
+        <div class="pagination-info">Showing {{ paginationStartIndex }} to {{ paginationEndIndex }} of {{ projects.length }} projects</div>
         <div class="pagination-controls">
-          <button class="page-btn nav-btn" disabled>
+          <button class="page-btn nav-btn" [disabled]="currentPage === 1" (click)="goToPreviousPage()">
             <span class="material-symbols-outlined">chevron_left</span>
           </button>
-          <button class="page-btn active">1</button>
-          <button class="page-btn nav-btn">
+          
+          @for (page of [].constructor(totalPages); track page; let i = $index) {
+            <button 
+              class="page-btn" 
+              [class.active]="currentPage === i + 1"
+              (click)="goToPage(i + 1)"
+            >
+              {{ i + 1 }}
+            </button>
+          }
+          
+          <button class="page-btn nav-btn" [disabled]="currentPage === totalPages" (click)="goToNextPage()">
             <span class="material-symbols-outlined">chevron_right</span>
           </button>
         </div>
@@ -127,27 +148,227 @@
     </section>
   }
 
-  <!-- Quick Stats Bento Grid -->
-  <section class="bento-grid">
-    <div class="bento-card border-primary">
-      <div class="bento-label">Total Projects</div>
-      <div class="bento-value">{{ projects.length }}</div>
-      <div class="bento-trend trend-up">All projects</div>
+ 
+
+  <!-- Project Edit/Create Modal -->
+  @if (modalOpen) {
+    <div class="modal-overlay" (click)="closeModal()">
+      <div class="modal-container" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>{{ editMode ? 'Edit Project' : 'Create New Project' }}</h2>
+          <button class="close-btn" (click)="closeModal()">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <form (ngSubmit)="saveProject()" #projectForm="ngForm">
+            <!-- Title & Year Row -->
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Title *</label>
+                <input
+                  type="text"
+                  class="form-input"
+                  placeholder="Project title"
+                  [(ngModel)]="form.title"
+                  name="title"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Year *</label>
+                <input
+                  type="text"
+                  class="form-input"
+                  placeholder="2025"
+                  [(ngModel)]="form.year"
+                  name="year"
+                  required
+                />
+              </div>
+            </div>
+
+            <!-- Category & Status Row -->
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Category *</label>
+                <select
+                  class="form-select"
+                  [(ngModel)]="form.category"
+                  name="category"
+                  required
+                >
+                  <option value="" disabled>Select category</option>
+                  @for (cat of categoryOptions; track cat) {
+                    <option [value]="cat">{{ cat }}</option>
+                  }
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Status</label>
+                <select
+                  class="form-select"
+                  [(ngModel)]="form.status"
+                  name="status"
+                >
+                  <option value="Production">Production</option>
+                  <option value="Draft">Draft</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Description -->
+            <div class="form-group">
+              <label class="form-label">Description</label>
+              <textarea
+                class="form-textarea"
+                placeholder="Project description..."
+                rows="4"
+                [(ngModel)]="form.description"
+                name="description"
+              ></textarea>
+            </div>
+
+            <!-- Tech Stack Multi-Select -->
+            <div class="form-group">
+              <label class="form-label">Tech Stack</label>
+              <div class="stack-selector">
+                @for (tech of stackOptions; track tech) {
+                  <button
+                    type="button"
+                    class="stack-chip"
+                    [class.active]="form.stack.includes(tech)"
+                    (click)="toggleStackTag(tech)"
+                  >
+                    {{ tech }}
+                  </button>
+                }
+              </div>
+              @if (form.stack.length > 0) {
+                <div class="stack-preview">
+                  @for (tag of form.stack; track tag) {
+                    <span class="stack-tag">
+                      {{ tag }}
+                      <button type="button" (click)="removeStackTag(tag)">
+                        <span class="material-symbols-outlined">close</span>
+                      </button>
+                    </span>
+                  }
+                </div>
+              }
+            </div>
+
+            <!-- URLs Row -->
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">LinkedIn URL</label>
+                <input
+                  type="url"
+                  class="form-input"
+                  placeholder="https://linkedin.com/..."
+                  [(ngModel)]="form.linkedinUrl"
+                  name="linkedinUrl"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">GitHub URL</label>
+                <input
+                  type="url"
+                  class="form-input"
+                  placeholder="https://github.com/..."
+                  [(ngModel)]="form.githubUrl"
+                  name="githubUrl"
+                />
+              </div>
+            </div>
+
+            <!-- Live URL -->
+            <div class="form-group">
+              <label class="form-label">Live Project URL</label>
+              <input
+                type="url"
+                class="form-input"
+                placeholder="https://your-project.com"
+                [(ngModel)]="form.liveUrl"
+                name="liveUrl"
+              />
+            </div>
+
+            <!-- Meta Row -->
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Color Theme</label>
+                <select
+                  class="form-select"
+                  [(ngModel)]="form.color"
+                  name="color"
+                >
+                  @for (color of colorOptions; track color.value) {
+                    <option [value]="color.value">{{ color.label }}</option>
+                  }
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Display Order</label>
+                <input
+                  type="number"
+                  class="form-input"
+                  placeholder="0"
+                  [(ngModel)]="form.displayOrder"
+                  name="displayOrder"
+                />
+              </div>
+            </div>
+
+            <!-- Image Upload -->
+            <div class="form-group">
+              <label class="form-label">Project Image</label>
+              <div class="image-upload-area">
+                @if (form.image) {
+                  <div class="image-preview">
+                    <img [src]="getImageUrl(form.image)" alt="Preview" />
+                    <button type="button" class="remove-image" (click)="form.image = ''">
+                      <span class="material-symbols-outlined">close</span>
+                    </button>
+                  </div>
+                } @else {
+                  <label class="upload-label">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      (change)="onImageSelect($event)"
+                      class="file-input"
+                    />
+                    <span class="material-symbols-outlined">cloud_upload</span>
+                    <span>Click to upload image</span>
+                  </label>
+                }
+              </div>
+            </div>
+
+            <!-- Featured Checkbox -->
+            <div class="form-group">
+              <label class="checkbox-label">
+                <input
+                  type="checkbox"
+                  [(ngModel)]="form.isFeatured"
+                  name="isFeatured"
+                />
+                <span class="checkbox-custom"></span>
+                <span>Featured Project (shows on homepage)</span>
+              </label>
+            </div>
+          </form>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn btn-secondary" (click)="closeModal()">Cancel</button>
+          <button class="btn btn-primary" (click)="saveProject()">
+            {{ editMode ? 'Update Project' : 'Create Project' }}
+          </button>
+        </div>
+      </div>
     </div>
-    <div class="bento-card border-secondary">
-      <div class="bento-label">Published</div>
-      <div class="bento-value">{{ getPublishedCount() }}</div>
-      <div class="bento-trend">Live on production</div>
-    </div>
-    <div class="bento-card border-primary-container">
-      <div class="bento-label">Draft Projects</div>
-      <div class="bento-value">{{ getDraftCount() }}</div>
-      <div class="bento-trend">In development</div>
-    </div>
-    <div class="bento-card border-outline">
-      <div class="bento-label">Featured</div>
-      <div class="bento-value">{{ getFeaturedCount() }}</div>
-      <div class="bento-trend trend-up">Highlighted projects</div>
-    </div>
-  </section>
+  }
 </div>

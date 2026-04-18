@@ -29,6 +29,8 @@ public class MessageDto
     public string Subject { get; set; } = string.Empty;
     public string Preview { get; set; } = string.Empty;
     public bool IsRead { get; set; }
+    public bool IsReplied { get; set; }
+    public DateTime? RepliedAt { get; set; }
     public DateTime CreatedAt { get; set; }
 }
 
@@ -68,6 +70,8 @@ public class GetMessagesQueryHandler : IRequestHandler<GetMessagesQuery, PagedMe
                 Subject = m.Subject,
                 Preview = m.Content.Length > 100 ? m.Content.Substring(0, 100) + "..." : m.Content,
                 IsRead = m.IsRead,
+                IsReplied = m.IsReplied,
+                RepliedAt = m.RepliedAt,
                 CreatedAt = m.CreatedAt
             })
             .ToListAsync(cancellationToken);

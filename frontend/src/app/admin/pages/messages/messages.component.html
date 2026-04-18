@@ -7,43 +7,80 @@
     </div>
   }
 
-  <!-- Inbox Layout -->
-  <div class="inbox-container">
-    <!-- Message List Sidebar -->
-    <aside class="inbox-sidebar">
-      <div class="sidebar-header">
-        <h2 class="inbox-title">Inbox</h2>
-        <span class="new-badge">{{ totalCount }} Messages</span>
-      </div>
-      
-      <div class="message-list">
-        @for (msg of messages; track msg.id) {
-          <div 
-            class="message-item" 
-            [class.unread]="!msg.isRead"
-            [class.active]="selectedMessage?.id === msg.id"
-            (click)="selectMessage(msg)">
-            <div class="item-header">
-              <span class="subject-kicker">{{ msg.subject || 'No Subject' }}</span>
-              <span class="time">{{ formatDate(msg.createdAt) }}</span>
-            </div>
-            <h3 class="sender-name">{{ msg.name }}</h3>
-            <p class="preview-text">{{ msg.content | slice:0:80 }}...</p>
-            <div class="status-tags">
-              @if (!msg.isRead) {
-                <span class="tag tag-unread">Unread</span>
-              }
-            </div>
-          </div>
-        }
-        @empty {
-          @if (!loading) {
-            <div class="empty-state">
-              <p>No messages yet</p>
-            </div>
-          }
-        }
-      </div>
+   <!-- Inbox Layout -->
+   <div class="inbox-container">
+     <!-- Message List Sidebar -->
+     <aside class="inbox-sidebar">
+       <div class="sidebar-header">
+         <div class="header-top">
+           <h2 class="inbox-title">Inbox</h2>
+           <span class="new-badge">{{ totalCount }} Messages</span>
+         </div>
+         <div class="header-actions">
+           <div class="search-box">
+             <span class="material-symbols-outlined">search</span>
+             <input
+               type="text"
+               class="search-input"
+               placeholder="Search messages..."
+               [(ngModel)]="searchQuery"
+             />
+           </div>
+           <div class="bulk-actions">
+             <button class="btn btn-sm btn-secondary" (click)="markAllAsRead()" [disabled]="!messages.some(m => !m.isRead)">
+               <span class="material-symbols-outlined">check_circle</span>
+               Mark All Read
+             </button>
+             @if (selectedIds.size > 0) {
+               <button class="btn btn-sm btn-danger" (click)="bulkDelete()">
+                 <span class="material-symbols-outlined">delete</span>
+                 Delete ({{ selectedIds.size }})
+               </button>
+             }
+           </div>
+         </div>
+       </div>
+       
+       <div class="message-list">
+         @for (msg of filteredMessages; track msg.id) {
+           <div 
+             class="message-item" 
+             [class.unread]="!msg.isRead"
+             [class.active]="selectedMessage?.id === msg.id"
+             (click)="selectMessage(msg)">
+             <div class="item-checkbox" (click)="$event.stopPropagation()">
+               <input
+                 type="checkbox"
+                 [checked]="isSelected(msg.id)"
+                 (change)="toggleSelect(msg.id)"
+               />
+             </div>
+             <div class="item-header">
+               <span class="subject-kicker">{{ msg.subject || 'No Subject' }}</span>
+               <span class="time">{{ formatDate(msg.createdAt) }}</span>
+             </div>
+             <h3 class="sender-name">{{ msg.name }}</h3>
+             <p class="preview-text">{{ msg.content | slice:0:80 }}...</p>
+             <div class="status-tags">
+               @if (!msg.isRead) {
+                 <span class="tag tag-unread">Unread</span>
+               }
+               @if (msg.isReplied) {
+                 <span class="tag tag-replied">Replied</span>
+               }
+             </div>
+           </div>
+         }
+         @empty {
+           @if (!loading) {
+             <div class="empty-state">
+               <span class="material-symbols-outlined empty-icon">mail</span>
+               <p class="empty-title">No messages yet</p>
+               <p class="empty-subtitle">When someone contacts you, their message will appear here.</p>
+             </div>
+           }
+         }
+       </div>
 
       <!-- Pagination -->
       @if (totalPages > 1) {
@@ -59,62 +96,67 @@
       }
     </aside>
 
-    <!-- Message Detail Panel -->
-    <main class="message-detail-panel">
-      @if (selectedMessage) {
-        <!-- Detail Header -->
-        <div class="detail-header">
-          <div class="sender-info">
-            <div class="avatar">
-              <span class="initials">{{ selectedMessage.name?.[0] || 'A' }}</span>
-            </div>
-            <div class="contact-card">
-              <div class="sender-name-lg">{{ selectedMessage.name }}</div>
-              <div class="sender-meta">
-                <span>{{ selectedMessage.email }}</span>
-                <span class="bullet">&bull;</span>
-                <span>{{ formatDate(selectedMessage.createdAt) }}</span>
-              </div>
-            </div>
-          </div>
-          <div class="header-actions">
+     <!-- Message Detail Panel -->
+     <main class="message-detail-panel">
+       @if (selectedMessage) {
+         <!-- Detail Header -->
+         <div class="detail-header">
+           <div class="sender-info">
+             <div class="avatar">
+               <span class="initials">{{ selectedMessage.name?.[0] || 'A' }}</span>
+             </div>
+             <div class="contact-card">
+               <div class="sender-name-lg">{{ selectedMessage.name }}</div>
+               <div class="sender-meta">
+                 <span>{{ selectedMessage.email }}</span>
+                 <span class="bullet">&bull;</span>
+                 <span>{{ formatDate(selectedMessage.createdAt) }}</span>
+               </div>
+             </div>
+           </div>
+           <div class="header-actions">
+             <button class="action-btn text-error" (click)="deleteMessage(selectedMessage.id)">
+               <span class="material-symbols-outlined">delete</span>
+             </button>
+           </div>
+         </div>
+
+         <!-- Detail Body -->
+         <div class="detail-body glass-panel">
+           <h1 class="message-subject">{{ selectedMessage.subject || 'No Subject' }}</h1>
            
-            <button class="action-btn text-error" (click)="deleteMessage(selectedMessage.id)">
-              <span class="material-symbols-outlined">delete</span>
-            </button>
-          </div>
-        </div>
+           <div class="message-content">
+             <p>{{ selectedMessage.content }}</p>
+           </div>
+         </div>
 
-        <!-- Detail Body -->
-        <div class="detail-body glass-panel">
-          <h1 class="message-subject">{{ selectedMessage.subject || 'No Subject' }}</h1>
-          
-          <div class="message-content">
-            <p>{{ selectedMessage.content }}</p>
-          </div>
-        </div>
-
-        <!-- Reply Box -->
-        <div class="reply-box">
-          <div class="reply-header">
-            <span class="material-symbols-outlined icon">reply</span>
-            <span>Reply to {{ selectedMessage.name }}</span>
-          </div>
-          <textarea class="reply-textarea" rows="4" placeholder="Draft your response..."></textarea>
-          <div class="reply-footer">
-          
-            <button class="send-btn">
-              <span>Send</span>
-              <span class="material-symbols-outlined text-sm">send</span>
-            </button>
-          </div>
-        </div>
-      } @else {
-        <div class="no-selection">
-          <span class="material-symbols-outlined">mail</span>
-          <p>Select a message to view</p>
-        </div>
-      }
-    </main>
+         <!-- Reply Box -->
+         <div class="reply-box">
+           <div class="reply-header">
+             <span class="material-symbols-outlined icon">reply</span>
+             <span>Reply to {{ selectedMessage.name }}</span>
+           </div>
+           <textarea
+             class="reply-textarea"
+             rows="4"
+             placeholder="Draft your response..."
+             [(ngModel)]="replyText"
+           ></textarea>
+           <div class="reply-footer">
+             <button class="btn btn-secondary" (click)="clearSelection()">Clear</button>
+             <button class="btn btn-primary" (click)="sendReply()" [disabled]="!replyText.trim()">
+               <span>Send</span>
+               <span class="material-symbols-outlined text-sm">send</span>
+             </button>
+           </div>
+         </div>
+       } @else {
+         <div class="no-selection">
+           <span class="material-symbols-outlined empty-icon">mail</span>
+           <p class="empty-title">Select a message to read</p>
+           <p class="empty-subtitle">Choose a message from the inbox to view its full content and reply.</p>
+         </div>
+       }
+     </main>
   </div>
 </div>

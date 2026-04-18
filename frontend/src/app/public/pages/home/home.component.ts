@@ -120,13 +120,13 @@ export class HomeComponent implements OnInit {
         const rect = target.getBoundingClientRect();
         const x = (e as MouseEvent).clientX - rect.left - rect.width / 2;
         const y = (e as MouseEvent).clientY - rect.top - rect.height / 2;
-        target.style.transform = `translate(${x * 0.15}px, ${y * 0.15}px)`;
+        target.style.setProperty('--mag-x', `${x * 0.15}px`);
+        target.style.setProperty('--mag-y', `${y * 0.15}px`);
       });
       btn.addEventListener('mouseleave', () => {
         const target = btn as HTMLElement;
-        target.style.transform = '';
-        target.style.transition = 'transform 0.4s ease';
-        setTimeout(() => target.style.transition = '', 400);
+        target.style.setProperty('--mag-x', '0px');
+        target.style.setProperty('--mag-y', '0px');
       });
     });
   }

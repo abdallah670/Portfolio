@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using PortfolioApi.Domain.Entities;
 
 namespace PortfolioApi.Application.DTOs;
 
@@ -22,6 +23,7 @@ public class HeroStatsDto
 
 public class SkillCategoryDto
 {
+    public int Id { get; set; }
     public string Title { get; set; } = string.Empty;
     public string Color { get; set; } = string.Empty;
     public List<SkillDto> Skills { get; set; } = new();
@@ -29,6 +31,7 @@ public class SkillCategoryDto
 
 public class SkillDto
 {
+    public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
     public int Level { get; set; }
 }
@@ -48,6 +51,7 @@ public class ProjectDto
     public string Status { get; set; } = string.Empty;
     public string Color { get; set; } = string.Empty;
     public bool IsFeatured { get; set; }
+    public bool IsPublished{get;set;}
 }
 
 public class JourneyItemDto
@@ -57,6 +61,7 @@ public class JourneyItemDto
     public string Period { get; set; } = string.Empty;
     public string Org { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
+    public int DisplayOrder { get; set; }
 }
 
 public class SocialLinkDto
@@ -92,4 +97,10 @@ public class PortfolioConfigDto
     public List<JourneyItemDto> Journey { get; set; } = new();
     public List<SocialLinkDto> Socials { get; set; } = new();
     public ContactDto Contact { get; set; } = new();
+}
+
+public class UpdateHeroRequest
+{
+    public Hero Hero { get; set; } = new();
+    public List<HeroStats>? Stats { get; set; }
 }

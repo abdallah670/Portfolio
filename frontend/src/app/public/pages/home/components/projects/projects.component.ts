@@ -1,8 +1,10 @@
 import { Component, Input, OnInit, Inject, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ProjectConfig } from '../../../../../core/models/portfolio.models';
+import { ApiService } from '../../../../../core/services/api.service';
 
 interface Project {
+  id: number;
   name: string;
   category: string;
   status: 'live' | 'wip';
@@ -31,6 +33,7 @@ export class ProjectsComponent implements OnInit {
 
   projects: Project[] = [
     {
+      id: 1,
       name: 'MenoPro — Gym Management',
       category: 'Web Application',
       status: 'live',
@@ -44,6 +47,7 @@ export class ProjectsComponent implements OnInit {
       icon: '🏋'
     },
     {
+      id: 2,
       name: 'Labor Marketplace System',
       category: 'Full-Stack Platform',
       status: 'live',
@@ -57,6 +61,7 @@ export class ProjectsComponent implements OnInit {
       icon: '🔗'
     },
     {
+      id: 3,
       name: 'Outfit Planner',
       category: 'Web Application',
       status: 'wip',
@@ -71,7 +76,10 @@ export class ProjectsComponent implements OnInit {
 
   private isBrowser: boolean;
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) {
+  constructor(
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private api: ApiService
+  ) {
     this.isBrowser = isPlatformBrowser(this.platformId);
   }
 
@@ -117,6 +125,7 @@ export class ProjectsComponent implements OnInit {
     }
 
     return {
+      id: p.id,
       name: p.title,
       category: p.category || 'Web Application',
       status: p.status === 'Production' ? 'live' : 'wip',
@@ -157,5 +166,12 @@ export class ProjectsComponent implements OnInit {
     if (!path) return '';
     if (path.startsWith('http')) return path;
     return `http://localhost:5000/${path}`;
+  }
+
+  onProjectLinkClick(projectId: number, event: Event): void {
+    this.api.incrementProjectViews(projectId).subscribe({
+      next: () => console.log(`View tracked for project ${projectId}`),
+      error: (err) => console.error('Failed to track view:', err)
+    });
   }
 }

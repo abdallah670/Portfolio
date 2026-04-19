@@ -21,14 +21,14 @@
         {{ typedText }}<span class="typed-cursor"></span>
       </p>
       <div class="hero-cta" style="animation: fadeSlideUp 0.7s cubic-bezier(0.4,0,0.2,1) 0.58s both;">
-        <a href="#projects" class="btn btn-primary mag-btn">
+         <a (click)="scrollTo('projects', $event)" class="btn btn-primary mag-btn">
           <span>{{  'View My Work' }}</span>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
             stroke-linejoin="round">
             <path d="M7 17L17 7M17 7H7M17 7v10" />
           </svg>
         </a>
-        <a href="#cv-section" class="btn btn-cv mag-btn">
+         <a (click)="scrollTo('cv-section', $event)" class="btn btn-cv mag-btn">
           <span>{{ 'Download CV' }}</span>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
             stroke-linejoin="round">
@@ -37,7 +37,7 @@
             <line x1="12" y1="15" x2="12" y2="3" />
           </svg>
         </a>
-        <a href="#cta" class="btn btn-ghost mag-btn">
+         <a (click)="scrollTo('cta', $event)" class="btn btn-ghost mag-btn">
           <span>Get In Touch</span>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
             stroke-linejoin="round">

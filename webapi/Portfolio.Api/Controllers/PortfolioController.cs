@@ -100,10 +100,10 @@ public class PortfolioController : ControllerBase
     }
     [Authorize]
     [HttpPut("hero")]
-    public async Task<IActionResult> UpdateHero([FromBody] Hero hero)
+    public async Task<IActionResult> UpdateHero([FromBody] UpdateHeroRequest request)
     {
         _logger.LogInformation("API: Updating hero section");
-        var response = await _mediator.Send(new UpdateHeroCommand(hero));
+        var response = await _mediator.Send(new UpdateHeroCommand(request.Hero, request.Stats));
         return Ok(response);
     }
     
@@ -127,9 +127,12 @@ public class PortfolioController : ControllerBase
     }
     
     [Authorize]
-    [HttpPut("projects")]
-    public async Task<IActionResult> UpdateProject([FromBody] Project project)
+    [HttpPut("projects/{id}")]
+    public async Task<IActionResult> UpdateProject(int id, [FromBody] Project project)
     {
+        if (id != project.Id)
+            return BadRequest(new ApiResponse { Success = false, Message = "ID mismatch" });
+            
         _logger.LogInformation("API: Updating project {ProjectId}", project.Id);
         var response = await _mediator.Send(new UpdateProjectCommand { Project = project });
         return Ok(response);
@@ -162,14 +165,23 @@ public class PortfolioController : ControllerBase
         return Ok(response);
     }
     
-    [Authorize]
-    [HttpDelete("journey/{id}")]
-    public async Task<IActionResult> DeleteJourney(int id)
-    {
-        _logger.LogInformation("API: Deleting journey item {JourneyId}", id);
-        var result = await _mediator.Send(new DeleteJourneyCommand { Id = id });
-        return result ? Ok() : NotFound();
-    }
+     [Authorize]
+     [HttpDelete("journey/{id}")]
+     public async Task<IActionResult> DeleteJourney(int id)
+     {
+         _logger.LogInformation("API: Deleting journey item {JourneyId}", id);
+         var result = await _mediator.Send(new DeleteJourneyCommand { Id = id });
+         return result ? Ok() : NotFound();
+     }
+     
+     [HttpGet("journey")]
+     [Authorize]
+     public async Task<IActionResult> GetJourney()
+     {
+         _logger.LogInformation("API: Getting journey items");
+         var journey = await _mediator.Send(new GetJourneyQuery());
+         return Ok(journey);
+     }
     
     [Authorize]
     [HttpPut("contact")]
@@ -235,6 +247,15 @@ public class PortfolioController : ControllerBase
     }
     
     [Authorize]
+    [HttpPut("skills")]
+    public async Task<IActionResult> UpdateSkill([FromBody] Skill skill)
+    {
+        _logger.LogInformation("API: Updating skill {SkillId}: {Name}", skill.Id, skill.Name);
+        var response = await _mediator.Send(new UpdateSkillCommand { Skill = skill });
+        return Ok(response);
+    }
+    
+[Authorize]
     [HttpDelete("skills/{id}")]
     public async Task<IActionResult> DeleteSkill(int id)
     {
@@ -242,7 +263,16 @@ public class PortfolioController : ControllerBase
         var result = await _mediator.Send(new DeleteSkillCommand { Id = id });
         return result ? Ok() : NotFound();
     }
-  
+    
+    [Authorize]
+    [HttpDelete("skills/categories/{id}")]
+    public async Task<IActionResult> DeleteSkillCategory(int id)
+    {
+        _logger.LogInformation("API: Deleting skill category {CategoryId}", id);
+        var result = await _mediator.Send(new DeleteSkillCategoryCommand { Id = id });
+        return result ? Ok() : NotFound();
+    }
+   
 
     // GET: api/portfolio/cv
     [HttpGet("cv")]

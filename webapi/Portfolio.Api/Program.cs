@@ -1,8 +1,10 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.FileProviders;
 using PortfolioApi.Domain.Entities;
 using PortfolioApi.Infrastructure.Data;
 
@@ -136,6 +138,12 @@ app.UseCors("AllowFrontend");
 
 app.UseStaticFiles();
 
+app.UseDirectoryBrowser(new DirectoryBrowserOptions
+{
+    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads")),
+    RequestPath = "/uploads"
+});
+
 // Add request logging
 app.UseSerilogRequestLogging(options =>
 {
@@ -151,25 +159,26 @@ app.UseAuthorization();
 app.MapControllers();
 
 // Seed default admin user and initial data
-using (var scope = app.Services.CreateScope())
-{
-    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AdminUser>>();
-    
-    dbContext.Database.EnsureCreated();
-    
-    var adminUsername = builder.Configuration["Admin:Username"] ?? "Menomo";
-    var adminPassword = builder.Configuration["Admin:Password"] ?? "Menomo@123";
-    
-    if (await userManager.FindByNameAsync(adminUsername) == null)
+    using (var scope = app.Services.CreateScope())
     {
-        var admin = new AdminUser { UserName = adminUsername, Email = "admin@portfolio.com" };
-        await userManager.CreateAsync(admin, adminPassword);
-    }
+        var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AdminUser>>();
+        
+        // Apply migrations
+        dbContext.Database.Migrate();
+        
+        var adminUsername = builder.Configuration["Admin:Username"] ?? "Menomo";
+        var adminPassword = builder.Configuration["Admin:Password"] ?? "Menomo@123";
+        
+        if (await userManager.FindByNameAsync(adminUsername) == null)
+        {
+            var admin = new AdminUser { UserName = adminUsername, Email = "admin@portfolio.com" };
+            await userManager.CreateAsync(admin, adminPassword);
+        }
 
-    var seedService = new SeedService(dbContext);
-    await seedService.SeedInitialDataAsync();
-}
+        var seedService = new SeedService(dbContext);
+        await seedService.SeedInitialDataAsync();
+    }
 
     app.Run();
 }

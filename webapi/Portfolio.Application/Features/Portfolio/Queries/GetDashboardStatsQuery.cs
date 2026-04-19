@@ -20,6 +20,21 @@ public class DashboardStatsDto
     public int SkillCategories { get; set; }
     public int ProfileViews { get; set; }
     public List<object> RecentProjects { get; set; } = new();
+    public List<MonthlyStatDto> ProjectsByMonth { get; set; } = new();
+    public List<MonthlyStatDto> MessagesByMonth { get; set; } = new();
+    public List<ProjectViewsDto> ViewsByMonth { get; set; } = new();
+}
+
+public class MonthlyStatDto
+{
+    public string Month { get; set; } = string.Empty;
+    public int Count { get; set; }
+}
+
+public class ProjectViewsDto
+{
+    public string Name { get; set; } = string.Empty;
+    public int Views { get; set; }
 }
 
 public class GetDashboardStatsQueryHandler : IRequestHandler<GetDashboardStatsQuery, DashboardStatsDto>
@@ -38,7 +53,7 @@ public class GetDashboardStatsQueryHandler : IRequestHandler<GetDashboardStatsQu
         _logger.LogInformation("Fetching dashboard statistics");
         
         var totalProjects = await _context.Projects.CountAsync(cancellationToken);
-        var draftProjects = await _context.Projects.CountAsync(p => p.Status == "Draft", cancellationToken);
+        var draftProjects = await _context.Projects.CountAsync(p => !p.IsPublished, cancellationToken);
         var totalMessages = await _context.Messages.CountAsync(cancellationToken);
         var unreadMessages = await _context.Messages.CountAsync(m => !m.IsRead, cancellationToken);
         var totalSkills = await _context.Skills.CountAsync(cancellationToken);
@@ -60,13 +75,47 @@ public class GetDashboardStatsQueryHandler : IRequestHandler<GetDashboardStatsQu
                 p.Description,
                 p.Stack,
                 p.Status,
-                p.Image
+                p.Image,
+                p.Year,
+                p.Category
             })
             .ToListAsync(cancellationToken);
+
+        // Monthly stats (last 12 months including current)
+        var now = DateTime.UtcNow;
+        var twelveMonthsAgo = now.AddMonths(-11);
+        
+        // Get all projects with their names and view counts
+        var projectViews = await _context.Projects
+            .Where(p => p.ViewsCount > 0)
+            .OrderByDescending(p => p.ViewsCount)
+            .Take(10) // Top 10 most viewed projects
+            .Select(p => new ProjectViewsDto { Name = p.Title, Views = p.ViewsCount })
+            .ToListAsync(cancellationToken);
+        
+        // Generate last 12 months list
+        var months = Enumerable.Range(0, 12)
+            .Select(i => {
+                var d = now.AddMonths(-i);
+                return $"{d.Year}-{d.Month:D2}";
+            })
+            .Reverse()
+            .ToList();
+        
+        // Monthly Messages stats (last 12 months)
+        var messageMonthlyRaw = await _context.Messages
+            .Where(m => m.CreatedAt >= twelveMonthsAgo)
+            .Select(m => new { m.CreatedAt.Year, m.CreatedAt.Month })
+            .ToListAsync(cancellationToken);
+        
+        var messageMonthly = months.Select(month => {
+            var count = messageMonthlyRaw.Count(m => $"{m.Year}-{m.Month:D2}" == month);
+            return new MonthlyStatDto { Month = month, Count = count };
+        }).ToList();
         
         _logger.LogInformation(
-            "Dashboard stats: Projects={Projects}, Drafts={Drafts}, Messages={Messages}, Unread={Unread}",
-            totalProjects, draftProjects, totalMessages, unreadMessages);
+            "Dashboard stats: Projects={Projects}, Drafts={Drafts}, Messages={Messages}, Unread={Unread}, Replied={Replied}, Skills={Skills}, Categories={Categories}, Views={Views}",
+            totalProjects, draftProjects, totalMessages, unreadMessages, repliedMessages, totalSkills, skillCategories, profileViews);
         
         return new DashboardStatsDto
         {
@@ -78,7 +127,10 @@ public class GetDashboardStatsQueryHandler : IRequestHandler<GetDashboardStatsQu
             TotalSkills = totalSkills,
             SkillCategories = skillCategories,
             ProfileViews = profileViews,
-            RecentProjects = recentProjects.Cast<object>().ToList()
+            RecentProjects = recentProjects.Cast<object>().ToList(),
+            ProjectsByMonth = months.Select(m => new MonthlyStatDto { Month = m, Count = 0 }).ToList(),
+            MessagesByMonth = messageMonthly,
+            ViewsByMonth = projectViews
         };
     }
 }

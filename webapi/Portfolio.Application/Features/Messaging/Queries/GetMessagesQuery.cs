@@ -27,10 +27,12 @@ public class MessageDto
     public string Name { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
     public string Subject { get; set; } = string.Empty;
+    public string Content { get; set; } = string.Empty;
     public string Preview { get; set; } = string.Empty;
     public bool IsRead { get; set; }
     public bool IsReplied { get; set; }
     public DateTime? RepliedAt { get; set; }
+    public string?ReplyContent { get; set; }
     public DateTime CreatedAt { get; set; }
 }
 
@@ -62,16 +64,18 @@ public class GetMessagesQueryHandler : IRequestHandler<GetMessagesQuery, PagedMe
             .OrderByDescending(m => m.CreatedAt)
             .Skip((request.Page - 1) * request.PageSize)
             .Take(request.PageSize)
-            .Select(m => new MessageDto
+.Select(m => new MessageDto
             {
                 Id = m.Id,
                 Name = m.Name,
                 Email = m.Email,
                 Subject = m.Subject,
+                Content = m.Content,
                 Preview = m.Content.Length > 100 ? m.Content.Substring(0, 100) + "..." : m.Content,
                 IsRead = m.IsRead,
                 IsReplied = m.IsReplied,
                 RepliedAt = m.RepliedAt,
+                ReplyContent = m.ReplyContent,
                 CreatedAt = m.CreatedAt
             })
             .ToListAsync(cancellationToken);

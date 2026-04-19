@@ -47,4 +47,26 @@ export class CtaComponent implements OnInit {
   openContactForm(): void {
     this.router.navigate(['/contact']);
   }
+
+  scrollTo(elementId: string, event?: Event): void {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+      
+      // Final nuclear fix: lock button completely - bypass Angular change detection
+      const button = event.currentTarget as HTMLElement;
+      button.classList.add('clicked');
+      setTimeout(() => button.classList.remove('clicked'), 250);
+    }
+    if (this.isBrowser) {
+      // Critical fix: defer scrolling to next event loop after click processing finishes
+      // This completely avoids the browser layout bug during smooth scroll anchor navigation
+      setTimeout(() => {
+        const element = document.getElementById(elementId);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 0);
+    }
+  }
 }

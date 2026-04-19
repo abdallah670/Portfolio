@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using PortfolioApi.Application.DTOs;
 using PortfolioApi.Domain.Entities;
 using PortfolioApi.Infrastructure.Data;
@@ -9,28 +10,37 @@ namespace PortfolioApi.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class UploadController : ControllerBase
 {
     private readonly AppDbContext _context;
     private readonly IWebHostEnvironment _environment;
+    private readonly ILogger<UploadController> _logger;
     
-    public UploadController(AppDbContext context, IWebHostEnvironment environment)
+    public UploadController(AppDbContext context, IWebHostEnvironment environment, ILogger<UploadController> logger)
     {
         _context = context;
         _environment = environment;
+        _logger = logger;
     }
     
     [HttpPost("project-image")]
-    public async Task<IActionResult> UploadProjectImage(IFormFile file)
+    public async Task<IActionResult> UploadProjectImage([FromForm] IFormFile file)
     {
         if (file == null || file.Length == 0)
             return BadRequest(new ApiResponse { Success = false, Message = "No file provided" });
+        
+        _logger.LogInformation("Uploaded file: {FileName}, ContentType: {ContentType}, Size: {Size}", 
+            file.FileName, file.ContentType, file.Length);
             
-        var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
-        var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
+        var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg" };
+        var extension = Path.GetExtension(file.FileName)?.ToLowerInvariant();
+        
+        if (string.IsNullOrEmpty(extension))
+            return BadRequest(new ApiResponse { Success = false, Message = "No file extension found" });
         
         if (!allowedExtensions.Contains(extension))
-            return BadRequest(new ApiResponse { Success = false, Message = "Invalid file type. Allowed: jpg, jpeg, png, gif, webp" });
+            return BadRequest(new ApiResponse { Success = false, Message = $"Invalid file type: {extension}. Allowed: jpg, jpeg, png, gif, webp, svg" });
             
         if (file.Length > 5 * 1024 * 1024)
             return BadRequest(new ApiResponse { Success = false, Message = "File too large. Max 5MB" });

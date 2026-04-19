@@ -16,4 +16,5 @@ public class Project{
     public int DisplayOrder { get; set; } = 0;
     public bool IsPublished { get; set; } = true;
     public int ViewsCount { get; set; } = 0;
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

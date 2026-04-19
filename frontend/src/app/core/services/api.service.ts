@@ -6,6 +6,7 @@ import {
   Message, 
   SkillCategory, 
   Hero, 
+  HeroStatConfig,
   JourneyItem, 
   Contact, 
   SocialLink,
@@ -87,22 +88,26 @@ export class ApiService {
     return this.http.post<{ url: string }>(`${this.API_URL}/upload/cv`, formData);
   }
 
-  updateHero(hero: Hero): Observable<Hero> {
-    return this.http.put<Hero>(`${this.API_URL}/portfolio/hero`, hero);
+  updateHero(hero: Hero, stats?: HeroStatConfig[]): Observable<Hero> {
+    return this.http.put<Hero>(`${this.API_URL}/portfolio/hero`, { hero, stats });
   }
 
-  // Journey (Admin)
-  createJourney(item: Partial<JourneyItem>): Observable<JourneyItem> {
-    return this.http.post<JourneyItem>(`${this.API_URL}/portfolio/journey`, item);
-  }
+   // Journey (Admin)
+   getJourney(): Observable<JourneyItem[]> {
+     return this.http.get<JourneyItem[]>(`${this.API_URL}/portfolio/journey`);
+   }
 
-  updateJourney(item: JourneyItem): Observable<JourneyItem> {
-    return this.http.put<JourneyItem>(`${this.API_URL}/portfolio/journey`, item);
-  }
+   createJourney(item: Partial<JourneyItem>): Observable<JourneyItem> {
+     return this.http.post<JourneyItem>(`${this.API_URL}/portfolio/journey`, item);
+   }
 
-  deleteJourney(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.API_URL}/portfolio/journey/${id}`);
-  }
+   updateJourney(item: JourneyItem): Observable<JourneyItem> {
+     return this.http.put<JourneyItem>(`${this.API_URL}/portfolio/journey`, item);
+   }
+
+   deleteJourney(id: number): Observable<void> {
+     return this.http.delete<void>(`${this.API_URL}/portfolio/journey/${id}`);
+   }
 
   // Contact (Admin)
   updateContact(contact: Contact): Observable<Contact> {
@@ -136,12 +141,20 @@ export class ApiService {
     return this.http.put<SkillCategory>(`${this.API_URL}/portfolio/skills/categories`, category);
   }
 
+  deleteSkillCategory(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.API_URL}/portfolio/skills/categories/${id}`);
+  }
+
   createSkill(skill: { name: string; level: number; categoryId: number }): Observable<any> {
     return this.http.post(`${this.API_URL}/portfolio/skills`, skill);
   }
 
   deleteSkill(id: number): Observable<void> {
     return this.http.delete<void>(`${this.API_URL}/portfolio/skills/${id}`);
+  }
+
+  updateSkill(skill: { id?: number; name: string; level: number; categoryId: number }): Observable<any> {
+    return this.http.put(`${this.API_URL}/portfolio/skills`, skill);
   }
 
   // Messages (Public - Contact Form)
@@ -194,10 +207,10 @@ export class ApiService {
     return this.http.post<{ url: string }>(`${this.API_URL}/upload/project-image`, formData);
   }
 
-  uploadProfileImage(file: File): Observable<{ url: string }> {
+  uploadProfileImage(file: File): Observable<{ data: string }> {
     const formData = new FormData();
     formData.append('file', file);
-    return this.http.post<{ url: string }>(`${this.API_URL}/upload/profile-image`, formData);
+    return this.http.post<{ data: string }>(`${this.API_URL}/upload/profile-image`, formData);
   }
 
   // Settings
@@ -209,6 +222,13 @@ export class ApiService {
 
   updateSetting(key: string, value: string, dataType: string = 'string'): Observable<void> {
     return this.http.put<void>(`${this.API_URL}/settings`, { key, value, dataType });
+  }
+
+  // Username Change
+  updateUsername(newUsername: string): Observable<{ message: string }> {
+    return this.http.put<{ message: string }>(`${this.API_URL}/auth/username`, { 
+      newUsername 
+    });
   }
 
   // Password Change

@@ -33,12 +33,12 @@
     <div class="bento-card border-secondary">
       <div class="bento-label">Published</div>
       <div class="bento-value">{{ getPublishedCount() }}</div>
-      <div class="bento-trend">Live on production</div>
+      <div class="bento-trend">Live</div>
     </div>
     <div class="bento-card border-primary-container">
       <div class="bento-label">Draft Projects</div>
       <div class="bento-value">{{ getDraftCount() }}</div>
-      <div class="bento-trend">In development</div>
+      <div class="bento-trend">Draft</div>
     </div>
     <div class="bento-card border-outline">
       <div class="bento-label">Featured</div>
@@ -94,10 +94,15 @@
                     }
                   </div>
                 </td>
-                <td>
+<td>
                   <div class="visibility-status">
-                    <span class="status-dot" [class]="project.status.toLowerCase()"></span>
-                    <span class="status-text">{{ project.status }}</span>
+                    @if(project.isPublished){
+                      <span class="status-dot"></span>
+                      <span class="status-text live">Published</span>
+                    } @else {
+                      <span class="status-dot draft"></span>
+                      <span class="status-text draft">Unpublished</span>
+                    }
                   </div>
                 </td>
                 <td>
@@ -108,10 +113,13 @@
                 </td>
                 <td class="text-right">
                   <div class="row-actions">
-                    <button class="action-btn edit-btn" (click)="openEdit(project)">
+                    <button class="action-btn view-btn" (click)="openView(project)" title="View Details">
+                      <span class="material-symbols-outlined">visibility</span>
+                    </button>
+                    <button class="action-btn edit-btn" (click)="openEdit(project)" title="Edit">
                       <span class="material-symbols-outlined">edit_square</span>
                     </button>
-                    <button class="action-btn delete-btn" (click)="deleteProject(project.id)">
+                    <button class="action-btn delete-btn" (click)="deleteProject(project.id)" title="Delete">
                       <span class="material-symbols-outlined">delete_outline</span>
                     </button>
                   </div>
@@ -150,8 +158,137 @@
 
  
 
+  <!-- Project View Details Modal -->
+  @if (modalOpen && viewMode && currentProject) {
+    <div class="modal-overlay" (click)="closeModal()">
+      <div class="modal-container view-modal" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>Project Details</h2>
+          <button class="close-btn" (click)="closeModal()">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+
+        <div class="modal-body view-body">
+          <!-- Project Image -->
+          @if (currentProject.image) {
+            <div class="view-image-section">
+              <img [src]="getImageUrl(currentProject.image)" alt="Project Image" class="view-project-image" />
+            </div>
+          }
+
+          <!-- Project Title & Status -->
+          <div class="view-header-section">
+            <h3 class="view-title">{{ currentProject.title }}</h3>
+            <div class="view-badges">
+              <span class="view-badge" [class]="currentProject.isPublished ? 'published' : 'draft'">
+                {{ currentProject.isPublished ? 'Published' : 'Draft' }}
+              </span>
+              <span class="view-badge" [class]="currentProject.status === 'Production' ? 'production' : 'development'">
+                {{ currentProject.status }}
+              </span>
+              @if (currentProject.isFeatured) {
+                <span class="view-badge featured">Featured</span>
+              }
+            </div>
+          </div>
+
+          <!-- Project Info Grid -->
+          <div class="view-info-grid">
+            <div class="view-info-item">
+              <label>Year</label>
+              <span>{{ currentProject.year }}</span>
+            </div>
+            <div class="view-info-item">
+              <label>Category</label>
+              <span>{{ currentProject.category }}</span>
+            </div>
+            <div class="view-info-item">
+              <label>Display Order</label>
+              <span>{{ currentProject.displayOrder }}</span>
+            </div>
+            <div class="view-info-item">
+              <label>Color Theme</label>
+              <span class="color-indicator" [style.background]="'var(--' + currentProject.color + ')'">{{ currentProject.color }}</span>
+            </div>
+          </div>
+
+          <!-- Description -->
+          <div class="view-section">
+            <label>Description</label>
+            <p class="view-description">{{ currentProject.description || 'No description provided' }}</p>
+          </div>
+
+          <!-- Tech Stack -->
+          <div class="view-section">
+            <label>Tech Stack</label>
+            <div class="view-tech-stack">
+              @for (tech of getStack(currentProject); track tech) {
+                <span class="view-tech-tag">{{ tech }}</span>
+              }
+              @if (getStack(currentProject).length === 0) {
+                <span class="view-empty">No tech stack specified</span>
+              }
+            </div>
+          </div>
+
+          <!-- URLs -->
+          <div class="view-section">
+            <label>Links</label>
+            <div class="view-links">
+              @if (currentProject.linkedinUrl) {
+                <a [href]="currentProject.linkedinUrl" target="_blank" class="view-link">
+                  <span class="material-symbols-outlined">link</span>
+                  LinkedIn
+                </a>
+              }
+              @if (currentProject.githubUrl) {
+                <a [href]="currentProject.githubUrl" target="_blank" class="view-link">
+                  <span class="material-symbols-outlined">link</span>
+                  GitHub
+                </a>
+              }
+              @if (currentProject.liveUrl) {
+                <a [href]="currentProject.liveUrl" target="_blank" class="view-link">
+                  <span class="material-symbols-outlined">open_in_new</span>
+                  Live Project
+                </a>
+              }
+              @if (!currentProject.linkedinUrl && !currentProject.githubUrl && !currentProject.liveUrl) {
+                <span class="view-empty">No links provided</span>
+              }
+            </div>
+          </div>
+
+          <!-- Stats -->
+          <div class="view-section">
+            <label>Statistics</label>
+            <div class="view-stats">
+              <div class="view-stat">
+                <span class="view-stat-value">{{ currentProject.viewsCount || 0 }}</span>
+                <span class="view-stat-label">Views</span>
+              </div>
+              <div class="view-stat">
+                <span class="view-stat-value">{{ currentProject.id }}</span>
+                <span class="view-stat-label">Project ID</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn btn-secondary" (click)="closeModal()">Close</button>
+          <button class="btn btn-primary" (click)="closeModal(); openEdit(currentProject!)">
+            <span class="material-symbols-outlined">edit</span>
+            Edit Project
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
   <!-- Project Edit/Create Modal -->
-  @if (modalOpen) {
+  @if (modalOpen && !viewMode) {
     <div class="modal-overlay" (click)="closeModal()">
       <div class="modal-container" (click)="$event.stopPropagation()">
         <div class="modal-header">
@@ -213,9 +350,21 @@
                   name="status"
                 >
                   <option value="Production">Production</option>
-                  <option value="Draft">Draft</option>
+                  <option value="In development">In development</option>
                 </select>
               </div>
+            </div>
+
+            <!-- Published Toggle -->
+            <div class="form-group">
+              <label class="toggle-label">
+                <span>Published</span>
+                <span class="toggle-subtitle">Show on homepage</span>
+              </label>
+              <label class="switch">
+                <input type="checkbox" [(ngModel)]="form.isPublished" name="isPublished" />
+                <span class="slider"></span>
+              </label>
             </div>
 
             <!-- Description -->
@@ -356,7 +505,7 @@
                   name="isFeatured"
                 />
                 <span class="checkbox-custom"></span>
-                <span>Featured Project (shows on homepage)</span>
+                <span>Featured (shows first on homepage)</span>
               </label>
             </div>
           </form>

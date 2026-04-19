@@ -16,4 +16,5 @@ public class Message {
     public string? UserAgent { get; set; }
     public bool IsReplied { get; set; }
     public DateTime? RepliedAt { get; set; }
+    public string? ReplyContent { get; set; }
 }

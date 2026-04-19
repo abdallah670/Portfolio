@@ -1,22 +1,12 @@
-import { Component, Input, OnInit, OnDestroy, Inject, PLATFORM_ID, Pipe, PipeTransform, ElementRef, ViewChild, AfterViewInit, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, Inject, PLATFORM_ID, ElementRef, ViewChild, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Subject } from 'rxjs';
 import { HeroConfig } from '../../../../../core/models/portfolio.models';
 
-@Pipe({
-  name: 'toChars',
-  standalone: true
-})
-export class ToCharsPipe implements PipeTransform {
-  transform(value: string): string[] {
-    return value ? value.split('').map(c => c === ' ' ? '\u00A0' : c) : [];
-  }
-}
-
 @Component({
   selector: 'app-home-hero',
   standalone: true,
-  imports: [CommonModule, ToCharsPipe],
+  imports: [CommonModule],
   templateUrl: './hero.component.html',
   styleUrls: ['./hero.component.scss']
 })
@@ -250,12 +240,22 @@ export class HeroComponent implements OnInit, OnDestroy, AfterViewInit {
   scrollTo(elementId: string, event?: Event): void {
     if (event) {
       event.preventDefault();
+      event.stopPropagation();
+      
+      // Final nuclear fix: lock button completely - bypass Angular change detection
+      const button = event.currentTarget as HTMLElement;
+      button.classList.add('clicked');
+      setTimeout(() => button.classList.remove('clicked'), 250);
     }
     if (this.isBrowser) {
-      const element = document.getElementById(elementId);
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
-      }
+      // Critical fix: defer scrolling to next event loop after click processing finishes
+      // This completely avoids the browser layout bug during smooth scroll anchor navigation
+      setTimeout(() => {
+        const element = document.getElementById(elementId);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 0);
     }
   }
 

@@ -28,12 +28,14 @@ export interface HeroStatConfig {
 }
 
 export interface SkillCategoryConfig {
+  id?: number;
   title: string; // NOTE: "title" not "name"
   color: string;
   skills: SkillConfig[];
 }
 
 export interface SkillConfig {
+  id?: number;
   name: string;  // NOTE: "name" not "label"
   level: number;
 }
@@ -52,6 +54,7 @@ export interface ProjectConfig {
   status: string;
   color: string;
   isFeatured: boolean;
+  viewsCount?: number;
 }
 
 export interface JourneyItemConfig {
@@ -91,9 +94,11 @@ export interface Project {
   githubUrl: string;
   liveUrl: string;
   isFeatured: boolean;
+  isPublished:boolean;
   color: string;
   stack: string;       // raw JSON string
   displayOrder: number;
+  viewsCount?: number;
 }
 
 export interface Message {
@@ -108,6 +113,7 @@ export interface Message {
   readAt?: string;
   isReplied: boolean;
   repliedAt?: string;
+  replyContent?: string;
 }
 
 export interface Skill {
@@ -162,16 +168,20 @@ export interface SocialLink {
   displayOrder: number;
 }
 
-// Dashboard Stats — matches GET /api/portfolio/dashboard-stats (PascalCase JSON from .NET)
+// Dashboard Stats — matches GET /api/portfolio/dashboard-stats (camelCase JSON from .NET)
 export interface DashboardStats {
-  TotalProjects: number;
-  DraftProjects: number;
-  TotalMessages: number;
-  UnreadMessages: number;
-  TotalSkills: number;
-  SkillCategories: number;
-  ProfileViews: number;
-  RecentProjects: { id: number; title: string; description: string; stack: string; status: string; image: string }[];
+  totalProjects: number;
+  draftProjects: number;
+  totalMessages: number;
+  unreadMessages: number;
+  repliedMessages: number;
+  totalSkills: number;
+  skillCategories: number;
+  profileViews: number;
+  recentProjects: { id: number; title: string; description: string; stack: string; status: string; image: string; year: string; category: string }[];
+  projectsByMonth: { month: string; count: number }[];
+  messagesByMonth: { month: string; count: number }[];
+  viewsByMonth: { name: string; views: number }[];
 }
 
 // Paginated Response

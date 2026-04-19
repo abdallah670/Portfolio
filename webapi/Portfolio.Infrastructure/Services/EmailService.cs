@@ -18,7 +18,7 @@ public class EmailService : IEmailService
     {
         using var client = new SmtpClient(_settings.SmtpServer)
         {
-            Port = _settings.Port,
+            Port = _settings.SmtpPort,
             Credentials = new NetworkCredential(_settings.Username, _settings.Password),
             EnableSsl = true,
         };

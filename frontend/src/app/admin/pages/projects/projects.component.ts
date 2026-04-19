@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from '../../../core/services/api.service';
 import { Project, PaginatedResponse } from '../../../core/models/portfolio.models';
 import { SweetAlertService } from '../../../core/services/sweetalert.service';
@@ -25,6 +26,7 @@ export class ProjectsComponent implements OnInit {
   // Modal state
   modalOpen = false;
   editMode = false;
+  viewMode = false;
   currentProject: Project | null = null;
 
   // Form model
@@ -38,9 +40,10 @@ export class ProjectsComponent implements OnInit {
     linkedinUrl: '',
     githubUrl: '',
     liveUrl: '',
-    status: 'Production' as 'Production' | 'Draft',
+    status: 'In development' as 'Production' | 'In development',
     color: 'blue',
     isFeatured: false,
+    isPublished: false,
     displayOrder: 0
   };
 
@@ -71,10 +74,44 @@ export class ProjectsComponent implements OnInit {
     { value: 'purple', label: 'Purple' }
   ];
 
-  constructor(private api: ApiService, private sweetAlert: SweetAlertService) {}
+  constructor(
+    private api: ApiService,
+    private sweetAlert: SweetAlertService,
+    private route: ActivatedRoute,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.loadProjects();
+    // Handle view query param from dashboard
+    this.route.queryParams.subscribe(params => {
+      if (params['view']) {
+        const projectId = parseInt(params['view'], 10);
+        if (!isNaN(projectId)) {
+          this.loadAndViewProject(projectId);
+        }
+      }
+    });
+  }
+
+  loadAndViewProject(projectId: number): void {
+    // First check if project is in current list
+    const project = this.projects.find(p => p.id === projectId);
+    if (project) {
+      this.openView(project);
+    } else {
+      // Fetch specific project if not in current page
+      this.api.getAllProjectsAdmin(1, 100).subscribe({
+        next: (response) => {
+          const found = response.items.find(p => p.id === projectId);
+          if (found) {
+            this.openView(found);
+          } else {
+            this.sweetAlert.error('Not Found', 'Project not found.');
+          }
+        }
+      });
+    }
   }
 
   loadProjects(): void {
@@ -104,12 +141,12 @@ export class ProjectsComponent implements OnInit {
 
   getPublishedCount(): number {
     // Count from all projects (we only have current page, this will be updated later)
-    return this.projects.filter(p => p.status === 'Production').length;
+    return this.projects.filter(p => p.status === 'Production'||p.isPublished).length;
   }
 
   getDraftCount(): number {
     // Count from all projects (we only have current page, this will be updated later)
-    return this.projects.filter(p => p.status !== 'Production').length;
+    return this.projects.filter(p => !p.isPublished).length;
   }
 
   getFeaturedCount(): number {
@@ -120,13 +157,22 @@ export class ProjectsComponent implements OnInit {
   // Modal operations
   openCreate(): void {
     this.editMode = false;
+    this.viewMode = false;
     this.currentProject = null;
     this.resetForm();
     this.modalOpen = true;
   }
 
+  openView(project: Project): void {
+    this.viewMode = true;
+    this.editMode = false;
+    this.currentProject = project;
+    this.modalOpen = true;
+  }
+
   openEdit(project: Project): void {
     this.editMode = true;
+    this.viewMode = false;
     this.currentProject = project;
     this.form = {
       title: project.title,
@@ -138,9 +184,10 @@ export class ProjectsComponent implements OnInit {
       linkedinUrl: project.linkedinUrl,
       githubUrl: project.githubUrl,
       liveUrl: project.liveUrl,
-      status: project.status as 'Production' | 'Draft',
+      status: project.status as 'Production' | 'In development',
       color: project.color,
       isFeatured: project.isFeatured,
+      isPublished:project.isPublished,
       displayOrder: project.displayOrder
     };
     this.modalOpen = true;
@@ -148,6 +195,8 @@ export class ProjectsComponent implements OnInit {
 
   closeModal(): void {
     this.modalOpen = false;
+    this.viewMode = false;
+    this.editMode = false;
     this.resetForm();
   }
 
@@ -165,6 +214,7 @@ export class ProjectsComponent implements OnInit {
       status: 'Production',
       color: 'blue',
       isFeatured: false,
+      isPublished:false,
       displayOrder: 0
     };
   }
@@ -196,11 +246,9 @@ export class ProjectsComponent implements OnInit {
   }
 
   private uploadImage(file: File): void {
-    const formData = new FormData();
-    formData.append('file', file);
     this.api.uploadProjectImage(file).subscribe({
-      next: (res) => {
-        this.form.image = res.url;
+      next: (res: any) => {
+        this.form.image = res.data || res.url;
       },
       error: (err) => {
         console.error('Upload failed:', err);
@@ -255,7 +303,7 @@ export class ProjectsComponent implements OnInit {
       ? this.api.unpublishProject(p.id)
       : this.api.publishProject(p.id);
     action.subscribe(() => {
-      p.status = p.status === 'Production' ? 'Draft' : 'Production';
+      p.status = p.status === 'Production' ? 'In development' : 'Production';
     });
   }
 

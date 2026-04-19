@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../../core/services/api.service';
-import { HeroConfig, SkillCategoryConfig, ContactConfig, SocialLinkConfig, Hero, Contact, SocialLink } from '../../../core/models/portfolio.models';
+import { SweetAlertService } from '../../../core/services/sweetalert.service';
+import { HeroConfig, SkillCategoryConfig, ContactConfig, SocialLinkConfig, Hero, Contact, SocialLink, JourneyItem, SkillCategory } from '../../../core/models/portfolio.models';
 
 @Component({
   selector: 'app-admin-settings',
@@ -12,16 +13,19 @@ import { HeroConfig, SkillCategoryConfig, ContactConfig, SocialLinkConfig, Hero,
   styleUrls: ['./settings.component.scss']
 })
 export class SettingsComponent implements OnInit {
-  activeTab: 'profile' | 'skills' | 'config' = 'profile';
+  activeTab: 'profile' | 'skills' | 'config' | 'journey' = 'profile';
   
   hero: HeroConfig | null = null;
   skills: SkillCategoryConfig[] = [];
   contact: ContactConfig | null = null;
   socials: SocialLinkConfig[] = [];
+  journey: JourneyItem[] = [];
   
   passwordForm = { currentPassword: '', newPassword: '', confirmPassword: '' };
+  usernameForm = { newUsername: '' };
   
   saving = false;
+  updatingUsername = false;
   message = '';
   success = false;
   loading = true;
@@ -29,7 +33,7 @@ export class SettingsComponent implements OnInit {
   // CV Upload
   cvUploading = false;
 
-  constructor(private api: ApiService) {}
+  constructor(private api: ApiService, private sweetAlert: SweetAlertService) {}
 
   ngOnInit(): void {
     this.loadAllData();
@@ -53,9 +57,21 @@ export class SettingsComponent implements OnInit {
         this.loading = false;
       }
     });
+    this.loadJourney();
   }
 
-  private getDefaultHero(): HeroConfig {
+   loadJourney(): void {
+     this.api.getJourney().subscribe({
+       next: (journey) => {
+         this.journey = journey;
+       },
+       error: () => {
+         this.journey = [];
+       }
+     });
+   }
+
+   private getDefaultHero(): HeroConfig {
     return {
       name: 'Abdullah Mohammed',
       headlineTop: 'Hi, I\'m',
@@ -76,7 +92,7 @@ export class SettingsComponent implements OnInit {
     };
   }
 
-  setTab(tab: 'profile' | 'skills' | 'config'): void {
+  setTab(tab: 'profile' | 'skills' | 'config' | 'journey'): void {
     this.activeTab = tab;
   }
 
@@ -85,18 +101,26 @@ export class SettingsComponent implements OnInit {
     this.saving = true;
     this.message = '';
     
+    // Extract stats from hero config
+    const stats = this.hero.stats?.map((s, index) => ({
+      id: 0,
+      label: s.label,
+      value: s.value,
+      displayOrder: index
+    })) || [];
+    
     const heroData: Hero = {
       id: 1,
-      name:this.hero.name,
+      name: this.hero.name,
       headlineTop: this.hero.headlineTop || '',
       headlineMain: this.hero.headlineMain || '',
       subtitle: this.hero.subtitle || '',
       availabilityLabel: this.hero.availabilityLabel || '',
       profileImage: this.hero.profileImage || '',
-      stats: this.hero.stats || []
+      stats: [] // Stats sent separately
     };
     
-    this.api.updateHero(heroData).subscribe({
+    this.api.updateHero(heroData, stats).subscribe({
       next: () => {
         this.message = 'Profile updated successfully';
         this.success = true;
@@ -116,11 +140,11 @@ export class SettingsComponent implements OnInit {
       const file = input.files[0];
       this.api.uploadProfileImage(file).subscribe({
         next: (res) => {
-          if (this.hero) this.hero.profileImage = res.url;
+          if (this.hero && res.data) this.hero.profileImage = res.data;
+          this.sweetAlert.success('Image Uploaded', 'Profile image has been updated.');
         },
         error: () => {
-          this.message = 'Failed to upload image';
-          this.success = false;
+          this.sweetAlert.error('Error', 'Failed to upload image.');
         }
       });
     }
@@ -159,11 +183,89 @@ export class SettingsComponent implements OnInit {
   }
 
   removeSkill(categoryIndex: number, skillIndex: number): void {
-    this.skills[categoryIndex].skills?.splice(skillIndex, 1);
+    const skill = this.skills[categoryIndex].skills?.[skillIndex];
+    if (!skill) return;
+    
+    this.sweetAlert.deleteConfirm(skill.name).then((confirmed) => {
+      if (confirmed) {
+        this.skills[categoryIndex].skills?.splice(skillIndex, 1);
+        this.sweetAlert.success('Deleted', 'Skill removed successfully.');
+      }
+    });
   }
 
   removeCategory(index: number): void {
-    this.skills.splice(index, 1);
+    const category = this.skills[index];
+    if (!category) return;
+    
+    this.sweetAlert.deleteConfirm(category.title).then((confirmed) => {
+      if (confirmed) {
+        if (category.id) {
+          this.api.deleteSkillCategory(category.id).subscribe({
+            next: () => {
+              this.skills.splice(index, 1);
+              this.sweetAlert.success('Deleted', 'Category deleted successfully.');
+            },
+            error: () => {
+              this.sweetAlert.error('Error', 'Failed to delete category.');
+            }
+          });
+        } else {
+          this.skills.splice(index, 1);
+          this.sweetAlert.success('Deleted', 'Category removed successfully.');
+        }
+      }
+    });
+  }
+
+  saveSkills(): void {
+    this.saving = true;
+    this.message = '';
+    let completed = 0;
+    const total = this.skills.length;
+
+    if (total === 0) {
+      this.saving = false;
+      return;
+    }
+
+    this.skills.forEach((catConfig, index) => {
+      const category: SkillCategory = {
+        id: catConfig.id || 0,
+        title: catConfig.title || 'Untitled',
+        color: catConfig.color || 'blue',
+        displayOrder: index,
+        skills: (catConfig.skills || []).map(s => ({
+          id: 0,
+          name: s.name || 'Untitled',
+          level: s.level || 50,
+          categoryId: catConfig.id || 0
+        }))
+      };
+
+      const request = category.id ? this.api.updateSkillCategory(category) : this.api.createSkillCategory(category);
+
+      request.subscribe({
+        next: (savedCategory) => {
+          completed++;
+          if (catConfig.id === 0 && savedCategory.id) {
+            catConfig.id = savedCategory.id;
+          }
+          if (completed === total) {
+            this.saving = false;
+            this.sweetAlert.success('Skills Updated', 'Skills have been saved successfully.');
+            this.loadAllData();
+          }
+        },
+        error: () => {
+          completed++;
+          if (completed === total) {
+            this.saving = false;
+            this.sweetAlert.error('Error', 'Failed to save some skill categories.');
+          }
+        }
+      });
+    });
   }
 
   addSocial(): void {
@@ -189,14 +291,12 @@ export class SettingsComponent implements OnInit {
     
     this.api.updateContact(contactData).subscribe({
       next: () => {
-        this.message = 'Contact info updated successfully';
-        this.success = true;
         this.saving = false;
+        this.sweetAlert.success('Contact Updated', 'Contact information has been saved successfully.');
       },
       error: () => {
-        this.message = 'Failed to update contact info';
-        this.success = false;
         this.saving = false;
+        this.sweetAlert.error('Error', 'Failed to update contact info. Please try again.');
       }
     });
   }
@@ -225,55 +325,75 @@ export class SettingsComponent implements OnInit {
         next: () => {
           completed++;
           if (completed === total) {
-            this.message = 'Social links updated successfully';
-            this.success = true;
             this.saving = false;
+            this.sweetAlert.success('Social Links Updated', 'Social links have been saved successfully.');
           }
         },
         error: () => {
           completed++;
           if (completed === total) {
-            this.message = 'Failed to update some social links';
-            this.success = false;
             this.saving = false;
+            this.sweetAlert.error('Error', 'Failed to update some social links.');
           }
         }
       });
     });
   }
 
+  changeUsername(): void {
+    if (!this.usernameForm.newUsername || this.usernameForm.newUsername.trim().length < 3) {
+      this.setMessage('Username must be at least 3 characters', false);
+      return;
+    }
+
+    this.updatingUsername = true;
+    this.setMessage('', false);
+
+    this.api.updateUsername(this.usernameForm.newUsername.trim()).subscribe({
+      next: () => {
+        this.setMessage('Username updated successfully. Please log in again.', true);
+        this.usernameForm = { newUsername: '' };
+        this.updatingUsername = false;
+        // Logout after 2 seconds since token is now invalid
+        setTimeout(() => {
+          localStorage.removeItem('token');
+          window.location.href = '/admin/login';
+        }, 2000);
+      },
+      error: (err) => {
+        this.setMessage(err.error?.errors?.[0] || 'Failed to update username', false);
+        this.updatingUsername = false;
+      }
+    });
+  }
+
   changePassword(): void {
     if (!this.passwordForm.currentPassword || !this.passwordForm.newPassword) {
-      this.message = 'Please fill all password fields';
-      this.success = false;
+      this.setMessage('Please fill all password fields', false);
       return;
     }
 
     if (this.passwordForm.newPassword !== this.passwordForm.confirmPassword) {
-      this.message = 'New passwords do not match';
-      this.success = false;
+      this.setMessage('New passwords do not match', false);
       return;
     }
 
     if (this.passwordForm.newPassword.length < 6) {
-      this.message = 'Password must be at least 6 characters';
-      this.success = false;
+      this.setMessage('Password must be at least 6 characters', false);
       return;
     }
 
     this.saving = true;
-    this.message = '';
+    this.setMessage('', false);
 
     this.api.updatePassword(this.passwordForm.currentPassword, this.passwordForm.newPassword).subscribe({
       next: () => {
-        this.message = 'Password updated successfully';
-        this.success = true;
+        this.setMessage('Password updated successfully', true);
         this.passwordForm = { currentPassword: '', newPassword: '', confirmPassword: '' };
         this.saving = false;
       },
       error: (err) => {
-        this.message = err.error?.message || 'Failed to update password';
-        this.success = false;
+        this.setMessage(err.error?.message || 'Failed to update password', false);
         this.saving = false;
       }
     });
@@ -302,20 +422,100 @@ export class SettingsComponent implements OnInit {
       this.message = '';
       
       this.api.uploadCV(file).subscribe({
-        next: (res) => {
-          this.message = 'CV uploaded successfully';
-          this.success = true;
+        next: () => {
+          this.sweetAlert.success('CV Uploaded', 'Your CV has been uploaded successfully.');
           this.cvUploading = false;
-          // Reset the input
           input.value = '';
         },
         error: (err) => {
-          this.message = err.error?.message || 'Failed to upload CV';
-          this.success = false;
+          this.sweetAlert.error('Error', err.error?.message || 'Failed to upload CV.');
           this.cvUploading = false;
           input.value = '';
         }
       });
     }
-  }
-}
+   }
+   
+   // Journey
+   addJourneyItem(): void {
+     const newItem: JourneyItem = {
+       id: 0,
+       title: 'New Journey Item',
+       period: '2024 - Present',
+       org: 'Company Name',
+       description: '',
+       displayOrder: this.journey.length
+     };
+     this.journey.push(newItem);
+   }
+
+removeJourneyItem(index: number): void {
+      const item = this.journey[index];
+      this.sweetAlert.deleteConfirm(item.title).then((confirmed) => {
+        if (confirmed) {
+          if (item.id && item.id !== 0) {
+            this.api.deleteJourney(item.id).subscribe({
+              next: () => {
+                this.journey.splice(index, 1);
+                this.sweetAlert.success('Deleted', 'Journey item deleted successfully.');
+              },
+              error: () => this.sweetAlert.error('Failed', 'Could not delete journey item.')
+            });
+          } else {
+            this.journey.splice(index, 1);
+          }
+        }
+      });
+    }
+
+   saveJourney(): void {
+     this.saving = true;
+     this.message = '';
+     const items = this.journey.filter(item => item.title && item.period && item.org);
+     let completed = 0;
+     const total = items.length;
+
+     if (total === 0) {
+       this.saving = false;
+       return;
+     }
+
+     items.forEach((item) => {
+const payload: Partial<JourneyItem> = {
+          title: item.title,
+          period: item.period,
+          org: item.org,
+          description: item.description || '',
+          displayOrder: this.journey.indexOf(item)
+        };
+        if (item.id) {
+          payload.id = item.id;
+        }
+
+        const request = item.id ? this.api.updateJourney(payload as JourneyItem) : this.api.createJourney(payload);
+
+request.subscribe({
+          next: () => {
+            completed++;
+            if (completed === total) {
+              this.saving = false;
+              this.sweetAlert.success('Journey Updated', 'Journey items have been saved successfully.');
+              this.loadAllData();
+            }
+          },
+          error: () => {
+            completed++;
+            if (completed === total) {
+              this.saving = false;
+              this.sweetAlert.error('Error', 'Failed to save some journey items.');
+            }
+          }
+        });
+     });
+   }
+
+   private setMessage(msg: string, success: boolean): void {
+     this.message = msg;
+     this.success = success;
+   }
+ }

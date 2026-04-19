@@ -529,3 +529,104 @@
   }
 }
 
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px;
+  border-top: 1px solid var(--outline-variant);
+}
+
+.page-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--on-surface-variant);
+  background: transparent;
+  border: 1px solid var(--outline-variant);
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background: var(--surface-container-high);
+    border-color: var(--secondary);
+    color: var(--secondary);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .material-symbols-outlined {
+    font-size: 20px;
+  }
+}
+
+.page-info {
+  font-size: 13px;
+  color: var(--on-surface-variant);
+}
+
+// Reply History Styles
+.reply-history {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid var(--outline-variant);
+}
+
+.reply-history-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--on-surface-variant);
+  margin-bottom: 16px;
+
+  .material-symbols-outlined {
+    font-size: 18px;
+    color: var(--secondary);
+  }
+}
+
+.previous-reply {
+  background: var(--surface-container-high);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  margin-bottom: 12px;
+  border-left: 3px solid var(--secondary);
+}
+
+.reply-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+
+  .reply-sender {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--secondary);
+    text-transform: uppercase;
+  }
+
+  .reply-date {
+    font-size: 11px;
+    color: var(--on-surface-variant);
+  }
+}
+
+.reply-text {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--on-surface);
+  margin: 0;
+}
+

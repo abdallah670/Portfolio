@@ -215,6 +215,21 @@
   }
 }
 
+.btn-danger {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+
+  &:hover {
+    background: rgba(239, 68, 68, 0.2);
+    transform: scale(1.02);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
 .btn-outline {
   background: var(--surface-container-highest);
   color: var(--on-surface);
@@ -831,5 +846,27 @@
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+// Journey
+.journey-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.journey-item {
+  background: var(--surface-container-low);
+  border-radius: var(--radius-xl);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.item-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
 }
 

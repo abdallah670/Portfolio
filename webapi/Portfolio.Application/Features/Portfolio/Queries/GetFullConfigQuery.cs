@@ -55,19 +55,21 @@ public class GetFullConfigQueryHandler : IRequestHandler<GetFullConfigQuery, Por
             },
             Skills = skillCategories.Select(c => new SkillCategoryDto
             {
+                Id = c.Id,
                 Title = c.Title,
                 Color = c.Color,
                 Skills = c.Skills.Select(s => new SkillDto { Name = s.Name, Level = s.Level }).ToList()
             }).ToList(),
-            FeaturedProjects = projects.Where(p => p.IsFeatured).Select(MapProject).ToList(),
-            MoreProjects = projects.Where(p => !p.IsFeatured).Select(MapProject).ToList(),
+            FeaturedProjects = projects.Where(p => p.IsPublished&&p.IsFeatured).Select(MapProject).ToList(),
+            MoreProjects = projects.Where(p => !p.IsFeatured&&p.IsPublished).Select(MapProject).ToList(),
             Journey = journey.Select(j => new JourneyItemDto
             {
                 Id = j.Id,
                 Title = j.Title,
                 Period = j.Period,
                 Org = j.Org,
-                Description = j.Description
+                Description = j.Description,
+                DisplayOrder = j.DisplayOrder
             }).ToList(),
             Socials = socials.Select(s => new SocialLinkDto { Label = s.Label, Href = s.Href, Icon = s.Icon }).ToList(),
             Contact = new ContactDto
@@ -96,7 +98,8 @@ public class GetFullConfigQueryHandler : IRequestHandler<GetFullConfigQuery, Por
             LiveUrl = p.LiveUrl,
             Status = p.Status,
             Color = p.Color,
-            IsFeatured = p.IsFeatured
+            IsFeatured = p.IsFeatured,
+            IsPublished=p.IsPublished
         };
     }
 }

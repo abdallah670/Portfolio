@@ -41,6 +41,7 @@ public class GetPublicProjectsQueryHandler : IRequestHandler<GetPublicProjectsQu
                     p.Category,
                     p.linkedinUrl,
                     p.GithubUrl,
+                    p.LiveUrl,
                     p.Color,
                     p.IsFeatured,
                     p.ViewsCount

@@ -103,7 +103,7 @@
          <div class="detail-header">
            <div class="sender-info">
              <div class="avatar">
-               <span class="initials">{{ selectedMessage.name?.[0] || 'A' }}</span>
+               <span class="initials">{{ selectedMessage.name[0] || 'A' }}</span>
              </div>
              <div class="contact-card">
                <div class="sender-name-lg">{{ selectedMessage.name }}</div>
@@ -128,13 +128,32 @@
            <div class="message-content">
              <p>{{ selectedMessage.content }}</p>
            </div>
+
+           <!-- Previous Replies -->
+           @if (replyHistory.length > 0) {
+             <div class="reply-history">
+               <h4 class="reply-history-title">
+                 <span class="material-symbols-outlined">history</span>
+                 Previous Replies ({{ replyHistory.length }})
+               </h4>
+               @for (reply of replyHistory; track $index) {
+                 <div class="previous-reply">
+                   <div class="reply-meta">
+                     <span class="reply-sender">You</span>
+                     <span class="reply-date">{{ selectedMessage.repliedAt ? (selectedMessage.repliedAt | date:'short') : 'Just now' }}</span>
+                   </div>
+                   <p class="reply-text">{{ reply }}</p>
+                 </div>
+               }
+             </div>
+           }
          </div>
 
          <!-- Reply Box -->
          <div class="reply-box">
            <div class="reply-header">
              <span class="material-symbols-outlined icon">reply</span>
-             <span>Reply to {{ selectedMessage.name }}</span>
+             <span>{{ selectedMessage.isReplied ? 'Send Another Reply to' : 'Reply to' }} {{ selectedMessage.name }}</span>
            </div>
            <textarea
              class="reply-textarea"

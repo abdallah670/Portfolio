@@ -77,6 +77,7 @@ public class RespondToMessageCommandHandler : IRequestHandler<RespondToMessageCo
         message.ReadAt = DateTime.UtcNow;
         message.IsReplied = true;
         message.RepliedAt = DateTime.UtcNow;
+        message.ReplyContent = request.ResponseContent;
 
         await _context.SaveChangesAsync(cancellationToken);
         

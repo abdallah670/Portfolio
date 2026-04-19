@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from '../../../core/services/api.service';
 import { Message, PaginatedResponse } from '../../../core/models/portfolio.models';
 import { forkJoin } from 'rxjs';
@@ -27,14 +28,51 @@ export class MessagesComponent implements OnInit {
 
   // Reply draft
   replyText = '';
+  replyHistory: string[] = [];
 
   // Bulk selection
   selectedIds: Set<number> = new Set();
 
-  constructor(private api: ApiService, private sweetAlert: SweetAlertService) {}
+  constructor(
+    private api: ApiService,
+    private sweetAlert: SweetAlertService,
+    private route: ActivatedRoute,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.loadMessages();
+    // Handle message query param from dashboard
+    this.route.queryParams.subscribe(params => {
+      if (params['message']) {
+        const messageId = parseInt(params['message'], 10);
+        if (!isNaN(messageId)) {
+          this.loadAndSelectMessage(messageId);
+        }
+      }
+    });
+  }
+
+  loadAndSelectMessage(messageId: number): void {
+    // Check if message is already loaded
+    const message = this.messages.find(m => m.id === messageId);
+    if (message) {
+      this.selectMessage(message);
+    } else {
+      // Load all messages to find the specific one
+      this.api.getMessages(1, 100).subscribe({
+        next: (res) => {
+          const found = res.items.find(m => m.id === messageId);
+          if (found) {
+            this.messages = res.items;
+            this.totalCount = res.totalCount;
+            this.selectMessage(found);
+          } else {
+            this.sweetAlert.error('Not Found', 'Message not found.');
+          }
+        }
+      });
+    }
   }
 
   loadMessages(): void {
@@ -43,7 +81,7 @@ export class MessagesComponent implements OnInit {
       next: (res: PaginatedResponse<Message>) => {
         this.messages = res.items;
         this.totalCount = res.totalCount;
-        this.totalPages = res.totalPages;
+        this.totalPages = res.totalPages || 1;
         this.loading = false;
       },
       error: () => {
@@ -54,9 +92,28 @@ export class MessagesComponent implements OnInit {
 
   selectMessage(msg: Message): void {
     this.selectedMessage = msg;
+    this.replyText = '';
+    // Load existing reply into history if present
+    if (msg.replyContent) {
+      this.replyHistory = [msg.replyContent];
+    } else {
+      this.replyHistory = [];
+    }
     if (!msg.isRead) {
-      this.api.markMessageAsRead(msg.id).subscribe();
-      msg.isRead = true;
+      this.api.markMessageAsRead(msg.id).subscribe({
+        next: () => {
+          msg.isRead = true;
+          this.updateUnreadCount();
+        }
+      });
+    }
+  }
+
+  private updateUnreadCount(): void {
+    const unread = this.messages.filter(m => !m.isRead).length;
+    const headerComponent = document.querySelector('app-admin-header');
+    if (headerComponent && (headerComponent as any).unreadCount !== undefined) {
+      (headerComponent as any).unreadCount = unread;
     }
   }
 
@@ -79,7 +136,15 @@ export class MessagesComponent implements OnInit {
         this.api.deleteMessage(id).subscribe({
           next: () => {
             this.messages = this.messages.filter(m => m.id !== id);
+            this.totalCount--;
             if (this.selectedMessage?.id === id) this.selectedMessage = null;
+            this.updateUnreadCount();
+            
+            if (this.messages.length === 0 && this.page > 1) {
+              this.page--;
+              this.loadMessages();
+            }
+            
             this.sweetAlert.success('Deleted', 'Message deleted successfully.');
           },
           error: (err) => {
@@ -136,6 +201,7 @@ export class MessagesComponent implements OnInit {
         if (this.selectedMessage) {
           this.selectedMessage.isRead = true;
         }
+        this.updateUnreadCount();
         this.sweetAlert.success('Marked as Read', 'All messages marked as read.');
       },
       error: (err) => {
@@ -149,15 +215,21 @@ export class MessagesComponent implements OnInit {
   sendReply(): void {
     if (!this.selectedMessage || !this.replyText.trim()) return;
 
-    this.api.respondToMessage(this.selectedMessage.id, this.replyText).subscribe({
+    const replyContent = this.replyText.trim();
+
+    this.api.respondToMessage(this.selectedMessage.id, replyContent).subscribe({
       next: () => {
         const msg = this.messages.find(m => m.id === this.selectedMessage!.id);
         if (msg) {
           msg.isRead = true;
           msg.isReplied = true;
+          msg.replyContent = replyContent;
         }
         this.selectedMessage!.isRead = true;
         this.selectedMessage!.isReplied = true;
+        this.selectedMessage!.replyContent = replyContent;
+        // Add to history
+        this.replyHistory.push(replyContent);
         this.replyText = '';
         this.sweetAlert.success('Reply Sent', 'Your response has been sent via email.');
       },

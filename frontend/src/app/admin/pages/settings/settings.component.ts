@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../../core/services/api.service';
 import { SweetAlertService } from '../../../core/services/sweetalert.service';
+import { UserService } from '../../../core/services/user.service';
 import { HeroConfig, SkillCategoryConfig, ContactConfig, SocialLinkConfig, Hero, Contact, SocialLink, JourneyItem, SkillCategory } from '../../../core/models/portfolio.models';
 
 @Component({
@@ -32,8 +33,9 @@ export class SettingsComponent implements OnInit {
 
   // CV Upload
   cvUploading = false;
+  savingCategory: number | null = null;
 
-  constructor(private api: ApiService, private sweetAlert: SweetAlertService) {}
+  constructor(private api: ApiService, private sweetAlert: SweetAlertService, private userService: UserService) {}
 
   ngOnInit(): void {
     this.loadAllData();
@@ -122,14 +124,12 @@ export class SettingsComponent implements OnInit {
     
     this.api.updateHero(heroData, stats).subscribe({
       next: () => {
-        this.message = 'Profile updated successfully';
-        this.success = true;
         this.saving = false;
+        this.sweetAlert.success('Profile Updated', 'Your profile has been saved successfully.');
       },
       error: () => {
-        this.message = 'Failed to update profile';
-        this.success = false;
         this.saving = false;
+        this.sweetAlert.error('Error', 'Failed to update profile.');
       }
     });
   }
@@ -138,21 +138,35 @@ export class SettingsComponent implements OnInit {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
       const file = input.files[0];
-      this.api.uploadProfileImage(file).subscribe({
-        next: (res) => {
-          if (this.hero && res.data) this.hero.profileImage = res.data;
-          this.sweetAlert.success('Image Uploaded', 'Profile image has been updated.');
-        },
-        error: () => {
-          this.sweetAlert.error('Error', 'Failed to upload image.');
-        }
-      });
+      this.uploadProfileImage(file);
+    
+     
+       
     }
+  }
+  uploadProfileImage(file: File): void {
+      this.api.uploadProfileImage(file).subscribe({
+           next: (res) => {
+          if (this.hero && res.data) {
+            // Add cache-busting timestamp to force browser to reload image
+            const cacheBuster = `?t=${Date.now()}`;
+            this.hero.profileImage = res.data + cacheBuster;
+            // Update header image immediately
+            this.userService.setProfileImage(this.hero.profileImage);
+          }
+          this.sweetAlert.success('Image Uploaded', 'Profile image has been updated.');
+           },
+            error: () => {
+          this.sweetAlert.error('Error', 'Failed to upload image.');
+            }
+         });
   }
 
   getImageUrl(path: string | undefined): string {
     if (!path) return '';
     if (path.startsWith('http')) return path;
+    // Handle cache-buster query string - don't prepend if it starts with /
+    if (path.startsWith('/')) return `http://localhost:5000${path}`;
     return `http://localhost:5000/${path}`;
   }
 
@@ -218,6 +232,49 @@ export class SettingsComponent implements OnInit {
     });
   }
 
+  saveCategory(index: number): void {
+    const catConfig = this.skills[index];
+    this.savingCategory = index;
+
+    const category: SkillCategory = {
+      id: catConfig.id || 0,
+      title: catConfig.title || 'Untitled',
+      color: catConfig.color || 'blue',
+      displayOrder: index,
+      skills: (catConfig.skills || []).map(s => ({
+        id: s.id || 0,
+        name: s.name || 'Untitled',
+        level: s.level || 50,
+        categoryId: catConfig.id || 0
+      }))
+    };
+
+    const request = category.id
+      ? this.api.updateSkillCategory(category)
+      : this.api.createSkillCategory(category);
+
+    request.subscribe({
+      next: (saved) => {
+        if (!catConfig.id && saved.id) {
+          catConfig.id = saved.id;
+        }
+        if (saved.skills) {
+          saved.skills.forEach((savedSkill, i) => {
+            if (catConfig.skills?.[i] && !catConfig.skills[i].id) {
+              catConfig.skills[i].id = savedSkill.id;
+            }
+          });
+        }
+        this.savingCategory = null;
+        this.sweetAlert.success('Saved', `${catConfig.title} updated.`);
+      },
+      error: () => {
+        this.savingCategory = null;
+        this.sweetAlert.error('Error', 'Failed to save category.');
+      }
+    });
+  }
+
   saveSkills(): void {
     this.saving = true;
     this.message = '';
@@ -236,7 +293,7 @@ export class SettingsComponent implements OnInit {
         color: catConfig.color || 'blue',
         displayOrder: index,
         skills: (catConfig.skills || []).map(s => ({
-          id: 0,
+          id: s.id || 0, // Preserve existing skill ID
           name: s.name || 'Untitled',
           level: s.level || 50,
           categoryId: catConfig.id || 0
@@ -342,59 +399,55 @@ export class SettingsComponent implements OnInit {
 
   changeUsername(): void {
     if (!this.usernameForm.newUsername || this.usernameForm.newUsername.trim().length < 3) {
-      this.setMessage('Username must be at least 3 characters', false);
+      this.sweetAlert.warning('Invalid Username', 'Username must be at least 3 characters.');
       return;
     }
 
     this.updatingUsername = true;
-    this.setMessage('', false);
 
     this.api.updateUsername(this.usernameForm.newUsername.trim()).subscribe({
       next: () => {
-        this.setMessage('Username updated successfully. Please log in again.', true);
-        this.usernameForm = { newUsername: '' };
         this.updatingUsername = false;
-        // Logout after 2 seconds since token is now invalid
+        this.sweetAlert.success('Username Updated', 'Please log in again.');
         setTimeout(() => {
           localStorage.removeItem('token');
           window.location.href = '/admin/login';
         }, 2000);
       },
       error: (err) => {
-        this.setMessage(err.error?.errors?.[0] || 'Failed to update username', false);
         this.updatingUsername = false;
+        this.sweetAlert.error('Error', err.error?.errors?.[0] || 'Failed to update username.');
       }
     });
   }
 
   changePassword(): void {
     if (!this.passwordForm.currentPassword || !this.passwordForm.newPassword) {
-      this.setMessage('Please fill all password fields', false);
+      this.sweetAlert.warning('Missing Fields', 'Please fill all password fields.');
       return;
     }
 
     if (this.passwordForm.newPassword !== this.passwordForm.confirmPassword) {
-      this.setMessage('New passwords do not match', false);
+      this.sweetAlert.warning('Mismatch', 'New passwords do not match.');
       return;
     }
 
     if (this.passwordForm.newPassword.length < 6) {
-      this.setMessage('Password must be at least 6 characters', false);
+      this.sweetAlert.warning('Weak Password', 'Password must be at least 6 characters.');
       return;
     }
 
     this.saving = true;
-    this.setMessage('', false);
 
     this.api.updatePassword(this.passwordForm.currentPassword, this.passwordForm.newPassword).subscribe({
       next: () => {
-        this.setMessage('Password updated successfully', true);
-        this.passwordForm = { currentPassword: '', newPassword: '', confirmPassword: '' };
         this.saving = false;
+        this.sweetAlert.success('Password Updated', 'Your password has been changed.');
+        this.passwordForm = { currentPassword: '', newPassword: '', confirmPassword: '' };
       },
       error: (err) => {
-        this.setMessage(err.error?.message || 'Failed to update password', false);
         this.saving = false;
+        this.sweetAlert.error('Error', err.error?.message || 'Failed to update password.');
       }
     });
   }
@@ -420,6 +473,7 @@ export class SettingsComponent implements OnInit {
 
       this.cvUploading = true;
       this.message = '';
+    
       
       this.api.uploadCV(file).subscribe({
         next: () => {

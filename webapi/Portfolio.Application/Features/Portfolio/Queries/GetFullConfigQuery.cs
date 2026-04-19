@@ -58,7 +58,7 @@ public class GetFullConfigQueryHandler : IRequestHandler<GetFullConfigQuery, Por
                 Id = c.Id,
                 Title = c.Title,
                 Color = c.Color,
-                Skills = c.Skills.Select(s => new SkillDto { Name = s.Name, Level = s.Level }).ToList()
+                Skills = c.Skills.Select(s => new SkillDto { Id = s.Id, Name = s.Name, Level = s.Level }).ToList()
             }).ToList(),
             FeaturedProjects = projects.Where(p => p.IsPublished&&p.IsFeatured).Select(MapProject).ToList(),
             MoreProjects = projects.Where(p => !p.IsFeatured&&p.IsPublished).Select(MapProject).ToList(),

@@ -1,8 +1,10 @@
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using PortfolioApi.Application.DTOs;
+using PortfolioApi.Application.Features.Portfolio.Commands;
 using PortfolioApi.Domain.Entities;
 using PortfolioApi.Infrastructure.Data;
 
@@ -16,16 +18,18 @@ public class UploadController : ControllerBase
     private readonly AppDbContext _context;
     private readonly IWebHostEnvironment _environment;
     private readonly ILogger<UploadController> _logger;
+    private readonly IMediator _mediator;
     
-    public UploadController(AppDbContext context, IWebHostEnvironment environment, ILogger<UploadController> logger)
+    public UploadController(AppDbContext context, IWebHostEnvironment environment, ILogger<UploadController> logger, IMediator mediator)
     {
         _context = context;
         _environment = environment;
         _logger = logger;
+        _mediator = mediator;
     }
     
     [HttpPost("project-image")]
-    public async Task<IActionResult> UploadProjectImage([FromForm] IFormFile file)
+    public async Task<IActionResult> UploadProjectImage( IFormFile file)
     {
         if (file == null || file.Length == 0)
             return BadRequest(new ApiResponse { Success = false, Message = "No file provided" });
@@ -57,7 +61,8 @@ public class UploadController : ControllerBase
         {
             await file.CopyToAsync(stream);
         }
-        
+        //upadte path in hero
+     
         var baseUrl = $"{Request.Scheme}://{Request.Host}";
         var imageUrl = $"{baseUrl}/uploads/projects/{fileName}";
         
@@ -76,14 +81,15 @@ public class UploadController : ControllerBase
         if (!allowedExtensions.Contains(extension))
             return BadRequest(new ApiResponse { Success = false, Message = "Invalid file type" });
             
-        var fileName = $"profile{extension}";
-        var uploadsFolder = Path.Combine(_environment.ContentRootPath, "wwwroot", "uploads");
+        var fileName = $"{Guid.NewGuid()}{extension}";
+        var uploadsFolder = Path.Combine(_environment.ContentRootPath, "wwwroot", "uploads/profile-image");
         
         if (!Directory.Exists(uploadsFolder))
             Directory.CreateDirectory(uploadsFolder);
-            
+        // Delete old profile image if exists
+        var existingFiles = Directory.GetFiles(uploadsFolder);
+        foreach (var f in existingFiles) System.IO.File.Delete(f);
         var filePath = Path.Combine(uploadsFolder, fileName);
-        
         if (System.IO.File.Exists(filePath))
             System.IO.File.Delete(filePath);
             
@@ -91,9 +97,14 @@ public class UploadController : ControllerBase
         {
             await file.CopyToAsync(stream);
         }
-        
+        var response = await _mediator.Send(new UpdateHeroImageCommand { ImagePath = $"/uploads/profile-image/{fileName}" });
+        if (!response.Success || response.Data == null)
+        {
+            _logger.LogError("Failed to update hero image in database");
+            return StatusCode(500, new ApiResponse { Success = false, Message = "Image uploaded but failed to update profile" });
+        }
         var baseUrl = $"{Request.Scheme}://{Request.Host}";
-        var imageUrl = $"{baseUrl}/uploads/{fileName}";
+        var imageUrl = $"{baseUrl}/uploads/profile-image/{fileName}";
         
         return Ok(new ApiResponse<string> { Success = true, Message = "Image uploaded", Data = imageUrl });
     }
@@ -138,4 +149,21 @@ public class UploadController : ControllerBase
         
         return Ok(new ApiResponse<string> { Success = true, Message = "CV uploaded", Data = setting.Value });
     }
+    [HttpDelete("file/{*filePath}")]
+    [Authorize]
+    public async Task<IActionResult> DeleteFile([FromRoute] string filePath)
+    {
+        if (string.IsNullOrEmpty(filePath))
+            return BadRequest(new ApiResponse { Success = false, Message = "File path is required" });
+        
+        var fullPath = Path.Combine(_environment.ContentRootPath, "wwwroot", filePath.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
+        
+        if (!System.IO.File.Exists(fullPath))
+            return NotFound(new ApiResponse { Success = false, Message = "File not found" });
+        
+        System.IO.File.Delete(fullPath);
+        
+        return Ok(new ApiResponse { Success = true, Message = "File deleted" });
+    }
 }
+

@@ -478,15 +478,14 @@ export class SkillsComponent implements OnInit {
     category.skills = category.skills || [];
     category.skills.push(newSkill);
     
-    // If category has an id, also save the skill
+    // If category has been saved (has id), also create the skill in the database
     if (category.id) {
       this.api.createSkill({ name: newSkill.name, level: newSkill.level, categoryId: category.id }).subscribe({
         next: (saved) => {
           newSkill.id = saved.id;
-          this.sweetAlert.success('Added', 'Skill added to category.');
         },
         error: () => {
-          this.sweetAlert.error('Error', 'Failed to add skill.');
+          // Silently fail - skill will be saved when user edits name
         }
       });
     }
@@ -499,26 +498,27 @@ export class SkillsComponent implements OnInit {
     }
 
     if (skill.id) {
+      // Update existing skill
       this.api.updateSkill({ id: skill.id, name: skill.name, level: skill.level, categoryId: category.id }).subscribe({
         next: () => {
-          this.sweetAlert.success('Saved', 'Skill updated.');
+          // Silent save
         },
         error: () => {
           this.sweetAlert.error('Error', 'Failed to update skill.');
         }
       });
     } else if (category.id) {
-      // New skill without id, create it
+      // Create skill for saved category
       this.api.createSkill({ name: skill.name, level: skill.level, categoryId: category.id }).subscribe({
         next: (saved) => {
           skill.id = saved.id;
-          this.sweetAlert.success('Added', 'Skill added to category.');
         },
         error: () => {
           this.sweetAlert.error('Error', 'Failed to add skill.');
         }
       });
     }
+    // If category.id is 0 (new category), skill will be saved when category is saved
   }
 
   deleteSkill(skill: Skill, category: SkillCategory): void {

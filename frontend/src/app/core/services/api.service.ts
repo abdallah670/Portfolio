@@ -25,6 +25,11 @@ export class ApiService {
 
   constructor(private http: HttpClient) {}
 
+  //Delete file
+  deleteFile(fileUrl: string): Observable<void> {
+    const fileName = fileUrl.split('/').pop() || '';
+    return this.http.delete<void>(`${this.API_URL}/upload/file/${fileName}`);
+  }
   // Auth
   login(username: string, password: string): Observable<{ token: string }> {
     return this.http.post<{ token: string }>(`${this.API_URL}/auth/login`, { username, password });

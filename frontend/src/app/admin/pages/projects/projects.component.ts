@@ -240,8 +240,22 @@ export class ProjectsComponent implements OnInit {
   onImageSelect(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
-      const file = input.files[0];
-      this.uploadImage(file);
+      // If editing and already has an image, delete the old one first
+      if (this.editMode && this.currentProject?.image) {
+        this.api.deleteFile(this.currentProject.image).subscribe({
+          next: () => {
+            const file = input.files![0];
+            this.uploadImage(file);
+          },
+          error: () => {
+            const file = input.files![0];
+            this.uploadImage(file);
+          }
+        });
+      } else {
+        const file = input.files[0];
+        this.uploadImage(file);
+      }
     }
   }
 
@@ -270,6 +284,13 @@ export class ProjectsComponent implements OnInit {
     };
 
     if (this.editMode && this.currentProject) {
+      //delete old image if changed
+      if (projectData.image !== this.currentProject.image && this.currentProject.image) {
+        this.api.deleteFile(this.currentProject.image).subscribe({
+          next: () => { },
+          error: () => { }
+        });
+      // Old image deleted, now update project
       // Update existing
       this.api.updateProject({ ...this.currentProject, ...projectData }).subscribe({
         next: () => {
@@ -296,6 +317,8 @@ export class ProjectsComponent implements OnInit {
         }
       });
     }
+  }
+
   }
 
   togglePublish(p: Project): void {

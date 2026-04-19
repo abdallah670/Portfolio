@@ -3,6 +3,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { HeaderComponent } from './components/header/header.component';
 import { ApiService } from '../core/services/api.service';
+import { UserService } from '../core/services/user.service';
 
 @Component({
   selector: 'app-admin-layout',
@@ -44,22 +45,26 @@ export class AdminLayoutComponent implements OnInit {
   private isBrowser: boolean;
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private userService: UserService
   ) {
     this.isBrowser = isPlatformBrowser(platformId);
   }
 
   ngOnInit(): void {
     if (this.isBrowser) {
-      const saved = localStorage.getItem('am-profile-image');
-      if (saved) {
-        this.profileImage = saved;
-      } else {
+      // Subscribe to profile image changes
+      this.userService.profileImage$.subscribe(image => {
+        this.profileImage = image;
+      });
+      
+      // Initial load from API if not in localStorage
+      const cachedImage = localStorage.getItem('am-profile-image');
+      if (!cachedImage) {
         this.apiService.getProfileImage().subscribe({
           next: (image) => {
             if (image) {
-              this.profileImage = image;
-              localStorage.setItem('am-profile-image', this.profileImage);
+              this.userService.setProfileImage(image);
             }
           },
           error: () => {}

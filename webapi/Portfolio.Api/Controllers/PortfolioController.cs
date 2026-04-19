@@ -95,8 +95,8 @@ public class PortfolioController : ControllerBase
     [HttpGet("ProfileImage")]
     public async Task<IActionResult> GetProfileImage()
     {
-        var response="uploads/profile-image/Meno.png";
-        return Ok(response);
+        var imagePath = await _mediator.Send(new GetProfileImageQuery());
+        return Ok(imagePath);
     }
     [Authorize]
     [HttpPut("hero")]

@@ -8,6 +8,9 @@ export class UserService {
   private profileImageSubject = new BehaviorSubject<string>('');
   public profileImage$: Observable<string> = this.profileImageSubject.asObservable();
 
+  private unreadCountSubject = new BehaviorSubject<number>(0);
+  public unreadCount$: Observable<number> = this.unreadCountSubject.asObservable();
+
   constructor() {}
 
   setProfileImage(imageUrl: string): void {
@@ -22,5 +25,13 @@ export class UserService {
   clearProfileImage(): void {
     this.profileImageSubject.next('');
     localStorage.removeItem('am-profile-image');
+  }
+
+  setUnreadCount(count: number): void {
+    this.unreadCountSubject.next(count);
+  }
+
+  getUnreadCount(): number {
+    return this.unreadCountSubject.value;
   }
 }

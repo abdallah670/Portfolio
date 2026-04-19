@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PortfolioApi.Application.DTOs;
 using PortfolioApi.Application.Features.Settings.Commands;
 using PortfolioApi.Application.Features.Settings.Queries;
 
@@ -20,28 +21,32 @@ public class SettingsController : ControllerBase
 
     // GET /api/settings
     [HttpGet]
-    public async Task<IActionResult> GetAll([FromQuery] string? category)
+    public async Task<ActionResult<ApiResponse<object>>> GetAll([FromQuery] string? category)
     {
         var settings = await _mediator.Send(new GetSystemSettingsQuery(category));
-        return Ok(settings);
+        return Ok(new ApiResponse<object> { Success = true, Data = settings });
     }
 
     // GET /api/settings/{key}
     [HttpGet("{key}")]
-    public async Task<IActionResult> GetByKey(string key)
+    public async Task<ActionResult<ApiResponse<object>>> GetByKey(string key)
     {
         var setting = await _mediator.Send(new GetSystemSettingByKeyQuery(key));
-        return setting != null ? Ok(setting) : NotFound();
+        return setting != null 
+            ? Ok(new ApiResponse<object> { Success = true, Data = setting }) 
+            : NotFound(new ApiResponse { Success = false, Message = "Setting not found" });
     }
 
     // PUT /api/settings
     [HttpPut]
-    public async Task<IActionResult> Update([FromBody] UpdateSettingRequest request)
+    public async Task<ActionResult<ApiResponse>> Update([FromBody] UpdateSettingRequest request)
     {
         var username = User.Identity?.Name ?? "system";
         var result = await _mediator.Send(new UpdateSystemSettingCommand(
             request.Key, request.Value, request.DataType, username));
-        return result ? Ok() : BadRequest();
+        return result 
+            ? Ok(new ApiResponse { Success = true, Message = "Setting updated successfully" }) 
+            : BadRequest(new ApiResponse { Success = false, Message = "Failed to update setting" });
     }
 }
 

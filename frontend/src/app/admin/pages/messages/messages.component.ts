@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from '../../../core/services/api.service';
+import { UserService } from '../../../core/services/user.service';
 import { Message, PaginatedResponse } from '../../../core/models/portfolio.models';
 import { forkJoin } from 'rxjs';
 import { SweetAlertService } from '../../../core/services/sweetalert.service';
@@ -37,7 +38,8 @@ export class MessagesComponent implements OnInit {
     private api: ApiService,
     private sweetAlert: SweetAlertService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private userService: UserService
   ) {}
 
   ngOnInit(): void {
@@ -111,10 +113,7 @@ export class MessagesComponent implements OnInit {
 
   private updateUnreadCount(): void {
     const unread = this.messages.filter(m => !m.isRead).length;
-    const headerComponent = document.querySelector('app-admin-header');
-    if (headerComponent && (headerComponent as any).unreadCount !== undefined) {
-      (headerComponent as any).unreadCount = unread;
-    }
+    this.userService.setUnreadCount(unread);
   }
 
   toggleSelect(id: number): void {

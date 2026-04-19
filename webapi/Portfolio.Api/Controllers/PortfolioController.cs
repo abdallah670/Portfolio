@@ -19,32 +19,34 @@ public class PortfolioController : ControllerBase
     private readonly ISender _mediator;
     private readonly ILogger<PortfolioController> _logger;
     private readonly AppDbContext _context;
+    private readonly IWebHostEnvironment _environment;
     
-    public PortfolioController(ISender mediator, ILogger<PortfolioController> logger, AppDbContext context)
+    public PortfolioController(ISender mediator, ILogger<PortfolioController> logger, AppDbContext context, IWebHostEnvironment environment)
     {
         _mediator = mediator;
         _logger = logger;
         _context = context;
+        _environment = environment;
     }
 
     // Public endpoint - only return published projects
     [HttpGet("projects")]
     [AllowAnonymous]
-    public async Task<IActionResult> GetPublicProjects()
+    public async Task<ActionResult<ApiResponse<object>>> GetPublicProjects()
     {
         _logger.LogInformation("API: Getting public projects");
         var projects = await _mediator.Send(new GetPublicProjectsQuery());
-        return Ok(projects);
+        return Ok(new ApiResponse<object> { Success = true, Data = projects });
     }
 
     // Admin endpoint - return all projects including drafts
     [HttpGet("admin/projects")]
     [Authorize]
-    public async Task<IActionResult> GetAllProjectsAdmin([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+    public async Task<ActionResult<ApiResponse<object>>> GetAllProjectsAdmin([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
         _logger.LogInformation("API: Admin getting projects page {Page} with size {PageSize}", page, pageSize);
         var result = await _mediator.Send(new GetAllProjectsAdminQuery { Page = page, PageSize = pageSize });
-        return Ok(result);
+        return Ok(new ApiResponse<object> { Success = true, Data = result });
     }
 
     // POST /api/portfolio/projects/{id}/views
@@ -57,46 +59,28 @@ public class PortfolioController : ControllerBase
         return result ? Ok() : NotFound();
     }
 
-    // PUT /api/portfolio/projects/{id}/publish
-    [HttpPut("projects/{id}/publish")]
-    [Authorize]
-    public async Task<IActionResult> PublishProject(int id)
-    {
-        _logger.LogInformation("API: Publishing project {ProjectId}", id);
-        var result = await _mediator.Send(new PublishProjectCommand(id));
-        return result ? Ok() : NotFound();
-    }
-
-    // PUT /api/portfolio/projects/{id}/unpublish
-    [HttpPut("projects/{id}/unpublish")]
-    [Authorize]
-    public async Task<IActionResult> UnpublishProject(int id)
-    {
-        _logger.LogInformation("API: Unpublishing project {ProjectId}", id);
-        var result = await _mediator.Send(new UnpublishProjectCommand(id));
-        return result ? Ok() : NotFound();
-    }
+   
     
     [HttpGet("config")]
-    public async Task<IActionResult> GetConfig()
+    public async Task<ActionResult<ApiResponse<object>>> GetConfig()
     {
         _logger.LogInformation("API: Getting portfolio config");
         var config = await _mediator.Send(new GetFullConfigQuery());
-        return Ok(config);
+        return Ok(new ApiResponse<object> { Success = true, Data = config });
     }
     
     [HttpGet("skills")]
-    public async Task<IActionResult> GetSkills()
+    public async Task<ActionResult<ApiResponse<object>>> GetSkills()
     {
         _logger.LogInformation("API: Getting skills");
         var skills = await _mediator.Send(new GetSkillCategoriesQuery());
-        return Ok(skills);
+        return Ok(new ApiResponse<object> { Success = true, Data = skills });
     }
     [HttpGet("ProfileImage")]
-    public async Task<IActionResult> GetProfileImage()
+    public async Task<ActionResult<ApiResponse<string>>> GetProfileImage()
     {
         var imagePath = await _mediator.Send(new GetProfileImageQuery());
-        return Ok(imagePath);
+        return Ok(new ApiResponse<string> { Success = true, Data = imagePath });
     }
     [Authorize]
     [HttpPut("hero")]
@@ -109,11 +93,11 @@ public class PortfolioController : ControllerBase
     
     [HttpGet("dashboard-stats")]
     [Authorize]
-    public async Task<IActionResult> GetDashboardStats()
+    public async Task<ActionResult<ApiResponse<object>>> GetDashboardStats()
     {
         _logger.LogInformation("API: Getting dashboard stats");
         var stats = await _mediator.Send(new GetDashboardStatsQuery());
-        return Ok(stats);
+        return Ok(new ApiResponse<object> { Success = true, Data = stats });
     }
     
     [Authorize]
@@ -140,11 +124,13 @@ public class PortfolioController : ControllerBase
     
     [Authorize]
     [HttpDelete("projects/{id}")]
-    public async Task<IActionResult> DeleteProject(int id)
+    public async Task<ActionResult<ApiResponse>> DeleteProject(int id)
     {
         _logger.LogInformation("API: Deleting project {ProjectId}", id);
         var result = await _mediator.Send(new DeleteProjectCommand { Id = id });
-        return result ? Ok() : NotFound();
+        if (!result)
+            return NotFound(new ApiResponse { Success = false, Message = "Project not found" });
+        return Ok(new ApiResponse { Success = true, Message = "Project deleted" });
     }
     
     [Authorize]
@@ -167,11 +153,13 @@ public class PortfolioController : ControllerBase
     
      [Authorize]
      [HttpDelete("journey/{id}")]
-     public async Task<IActionResult> DeleteJourney(int id)
+     public async Task<ActionResult<ApiResponse>> DeleteJourney(int id)
      {
          _logger.LogInformation("API: Deleting journey item {JourneyId}", id);
          var result = await _mediator.Send(new DeleteJourneyCommand { Id = id });
-         return result ? Ok() : NotFound();
+         if (!result)
+             return NotFound(new ApiResponse { Success = false, Message = "Journey item not found" });
+         return Ok(new ApiResponse { Success = true, Message = "Journey item deleted" });
      }
      
      [HttpGet("journey")]
@@ -212,11 +200,13 @@ public class PortfolioController : ControllerBase
     
     [Authorize]
     [HttpDelete("socials/{id}")]
-    public async Task<IActionResult> DeleteSocial(int id)
+    public async Task<ActionResult<ApiResponse>> DeleteSocial(int id)
     {
         _logger.LogInformation("API: Deleting social link {SocialId}", id);
         var result = await _mediator.Send(new DeleteSocialCommand { Id = id });
-        return result ? Ok() : NotFound();
+        if (!result)
+            return NotFound(new ApiResponse { Success = false, Message = "Social link not found" });
+        return Ok(new ApiResponse { Success = true, Message = "Social link deleted" });
     }
     
     [Authorize]
@@ -255,42 +245,65 @@ public class PortfolioController : ControllerBase
         return Ok(response);
     }
     
-[Authorize]
+    [Authorize]
     [HttpDelete("skills/{id}")]
-    public async Task<IActionResult> DeleteSkill(int id)
+    public async Task<ActionResult<ApiResponse>> DeleteSkill(int id)
     {
         _logger.LogInformation("API: Deleting skill {SkillId}", id);
         var result = await _mediator.Send(new DeleteSkillCommand { Id = id });
-        return result ? Ok() : NotFound();
+        if (!result)
+            return NotFound(new ApiResponse { Success = false, Message = "Skill not found" });
+        return Ok(new ApiResponse { Success = true, Message = "Skill deleted" });
     }
     
     [Authorize]
     [HttpDelete("skills/categories/{id}")]
-    public async Task<IActionResult> DeleteSkillCategory(int id)
+    public async Task<ActionResult<ApiResponse>> DeleteSkillCategory(int id)
     {
         _logger.LogInformation("API: Deleting skill category {CategoryId}", id);
         var result = await _mediator.Send(new DeleteSkillCategoryCommand { Id = id });
-        return result ? Ok() : NotFound();
+        if (!result)
+            return NotFound(new ApiResponse { Success = false, Message = "Skill category not found" });
+        return Ok(new ApiResponse { Success = true, Message = "Skill category deleted" });
     }
    
 
     // GET: api/portfolio/cv
     [HttpGet("cv")]
     [AllowAnonymous]
-    public IActionResult GetCV()
+    public async Task<IActionResult> GetCV()
     {
-        string filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "cv", "Abdullah_Mohammed_CV.pdf");
+        var setting = await _context.SystemSettings.FirstOrDefaultAsync(s => s.Key == "cv_url");
+        if (setting == null || string.IsNullOrEmpty(setting.Value))
+            return NotFound("CV not configured");
+        
+        var fileName = Path.GetFileName(setting.Value);
+        var filePath = Path.Combine(_environment.ContentRootPath, "wwwroot", "uploads", "cv", fileName);
+        
         if (!System.IO.File.Exists(filePath))
             return NotFound("CV file not found");
         
-        return PhysicalFile(filePath, "application/pdf");
+        // Add cache-busting using file timestamp
+        var lastModified = System.IO.File.GetLastWriteTime(filePath);
+        var etag = lastModified.ToString("yyyyMMddHHmmss");
+        
+        Response.Headers["ETag"] = etag;
+        Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
+        Response.Headers["Pragma"] = "no-cache";
+        Response.Headers["Expires"] = "0";
+        
+        return PhysicalFile(filePath, "application/pdf", fileName);
     }
 
     // GET: api/portfolio/cv/preview
     [HttpGet("cv/preview")]
     [AllowAnonymous]
-    public IActionResult PreviewCV()
+    public async Task<IActionResult> PreviewCV()
     {
-        return Redirect("/uploads/cv/Abdullah_Mohammed_CV.pdf");
+        var setting = await _context.SystemSettings.FirstOrDefaultAsync(s => s.Key == "cv_url");
+        if (setting == null || string.IsNullOrEmpty(setting.Value))
+            return NotFound("CV not configured");
+        
+        return Redirect(setting.Value);
     }
 }

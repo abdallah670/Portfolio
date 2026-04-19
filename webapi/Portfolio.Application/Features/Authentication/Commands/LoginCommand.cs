@@ -51,7 +51,14 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
 
     private string GenerateJwtToken(AdminUser user)
     {
-        var jwtSecret = _configuration["Jwt:Secret"] ?? "menomo-portfolio-api-strong-secret-key";
+        var jwtSecret = _configuration["Jwt:Secret"]
+            ?? throw new InvalidOperationException("JWT Secret is not configured");
+        
+        if (jwtSecret.Length < 32)
+        {
+            throw new InvalidOperationException("JWT Secret must be at least 32 characters long");
+        }
+        
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
         

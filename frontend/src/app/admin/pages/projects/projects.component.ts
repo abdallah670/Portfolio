@@ -284,12 +284,7 @@ export class ProjectsComponent implements OnInit {
     };
 
     if (this.editMode && this.currentProject) {
-      //delete old image if changed
-      if (projectData.image !== this.currentProject.image && this.currentProject.image) {
-        this.api.deleteFile(this.currentProject.image).subscribe({
-          next: () => { },
-          error: () => { }
-        });
+     
       // Old image deleted, now update project
       // Update existing
       this.api.updateProject({ ...this.currentProject, ...projectData }).subscribe({
@@ -319,16 +314,8 @@ export class ProjectsComponent implements OnInit {
     }
   }
 
-  }
+  
 
-  togglePublish(p: Project): void {
-    const action = p.status === 'Production'
-      ? this.api.unpublishProject(p.id)
-      : this.api.publishProject(p.id);
-    action.subscribe(() => {
-      p.status = p.status === 'Production' ? 'In development' : 'Production';
-    });
-  }
 
   deleteProject(id: number): void {
     const project = this.projects.find(p => p.id === id);

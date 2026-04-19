@@ -1,4 +1,7 @@
 using System.Text;
+using AspNetCoreRateLimit;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.StaticFiles;
@@ -63,11 +66,15 @@ builder.Services.AddScoped<PortfolioApi.Application.Interfaces.IApplicationDbCon
 
 // Identity
 builder.Services.AddIdentity<AdminUser, IdentityRole<int>>(options => {
-    options.Password.RequireDigit = false;
-    options.Password.RequiredLength = 6;
-    options.Password.RequireNonAlphanumeric = false;
-    options.Password.RequireUppercase = false;
-    options.Password.RequireLowercase = false;
+    options.Password.RequireDigit = true;
+    options.Password.RequiredLength = 8;
+    options.Password.RequireNonAlphanumeric = true;
+    options.Password.RequireUppercase = true;
+    options.Password.RequireLowercase = true;
+    options.Password.RequiredUniqueChars = 6;
+    
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
+    options.Lockout.MaxFailedAccessAttempts = 5;
 })
 .AddEntityFrameworkStores<AppDbContext>()
 .AddDefaultTokenProviders();
@@ -76,6 +83,9 @@ builder.Services.AddIdentity<AdminUser, IdentityRole<int>>(options => {
 builder.Services.AddMediatR(cfg => {
     cfg.RegisterServicesFromAssembly(typeof(PortfolioApi.Application.DTOs.LoginRequest).Assembly);
 });
+
+// FluentValidation - manual validation only (no auto-validation to control error responses)
+builder.Services.AddValidatorsFromAssemblyContaining<PortfolioApi.Api.Validators.LoginRequestValidator>();
 
 // HttpContextAccessor for password change
 builder.Services.AddHttpContextAccessor();
@@ -87,8 +97,15 @@ builder.Services.AddSingleton<IEmailService>(sp => {
     return new EmailService(settings);
 });
 
-// Authentication
-var jwtSecret = builder.Configuration["Jwt:Secret"] ?? "menomo-portfolio-api-strong-secret-key";
+// Authentication - JWT Secret must be configured via environment variables
+var jwtSecret = builder.Configuration["Jwt:Secret"]
+    ?? throw new InvalidOperationException("JWT Secret must be configured via environment variable 'Jwt__Secret'");
+
+if (jwtSecret.Length < 32)
+{
+    throw new InvalidOperationException("JWT Secret must be at least 32 characters long");
+}
+
 var key = Encoding.UTF8.GetBytes(jwtSecret);
 
 builder.Services.AddAuthentication(options =>
@@ -115,15 +132,40 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins(
-            "http://localhost:4200",
-            "https://your-portfolio.vercel.app",
-            "https://*.vercel.app"
-        )
-            .AllowAnyHeader()
-            .AllowAnyMethod();
+        var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
+            ?? new[] { "http://localhost:4200" };
+        
+        policy.WithOrigins(allowedOrigins)
+            .WithHeaders("Content-Type", "Authorization")
+            .WithMethods("GET", "POST", "PUT", "DELETE", "PATCH")
+            .AllowCredentials();
     });
 });
+
+// Rate Limiting
+builder.Services.AddMemoryCache();
+builder.Services.Configure<IpRateLimitOptions>(options =>
+{
+    options.GeneralRules = new List<RateLimitRule>
+    {
+        new RateLimitRule
+        {
+            Endpoint = "*",
+            Limit = 100,
+            Period = "1m"
+        },
+        new RateLimitRule
+        {
+            Endpoint = "POST:/api/auth/login",
+            Limit = 5,
+            Period = "1m"
+        }
+    };
+});
+builder.Services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
+builder.Services.AddSingleton<IRateLimitCounterStore, MemoryCacheRateLimitCounterStore>();
+builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
+builder.Services.AddSingleton<IProcessingStrategy, AsyncKeyLockProcessingStrategy>();
 
 var app = builder.Build();
 
@@ -133,15 +175,53 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+else
+{
+    app.UseHsts();
+}
+
+app.UseIpRateLimiting();
+app.UseHttpsRedirection();
+
+// Global Exception Handler Middleware
+app.Use(async (context, next) =>
+{
+    try
+    {
+        await next();
+    }
+    catch (Exception ex)
+    {
+        Log.Error(ex, "Unhandled exception occurred");
+        
+        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+        context.Response.ContentType = "application/json";
+        
+        var errorResponse = new
+        {
+            Success = false,
+            Message = app.Environment.IsDevelopment() 
+                ? $"Internal server error: {ex.Message}" 
+                : "An internal server error occurred"
+        };
+        
+        await context.Response.WriteAsJsonAsync(errorResponse);
+    }
+});
 
 app.UseCors("AllowFrontend");
 
 app.UseStaticFiles();
 
-app.UseDirectoryBrowser(new DirectoryBrowserOptions
+// Security Headers Middleware
+app.Use(async (context, next) =>
 {
-    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads")),
-    RequestPath = "/uploads"
+    context.Response.Headers.Append("X-Content-Type-Options", "nosniff");
+    context.Response.Headers.Append("X-Frame-Options", "DENY");
+    context.Response.Headers.Append("X-XSS-Protection", "1; mode=block");
+    context.Response.Headers.Append("Referrer-Policy", "strict-origin-when-cross-origin");
+    context.Response.Headers.Append("Content-Security-Policy", "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; media-src 'self'; object-src 'none'; frame-ancestors 'none';");
+    await next();
 });
 
 // Add request logging
@@ -152,35 +232,40 @@ app.UseSerilogRequestLogging(options =>
 
 // Analytics middleware (before auth to capture all traffic)
 
-
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
 
 // Seed default admin user and initial data
-    using (var scope = app.Services.CreateScope())
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AdminUser>>();
+    
+    // Apply migrations
+    dbContext.Database.Migrate();
+    
+    var adminUsername = builder.Configuration["Admin:Username"]
+        ?? throw new InvalidOperationException("Admin Username must be configured via environment variable 'Admin__Username'");
+    var adminPassword = builder.Configuration["Admin:Password"]
+        ?? throw new InvalidOperationException("Admin Password must be configured via environment variable 'Admin__Password'");
+    
+    if (await userManager.FindByNameAsync(adminUsername) == null)
     {
-        var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AdminUser>>();
-        
-        // Apply migrations
-        dbContext.Database.Migrate();
-        
-        var adminUsername = builder.Configuration["Admin:Username"] ?? "Menomo";
-        var adminPassword = builder.Configuration["Admin:Password"] ?? "Menomo@123";
-        
-        if (await userManager.FindByNameAsync(adminUsername) == null)
+        var admin = new AdminUser { UserName = adminUsername, Email = "meno.mo.dev@gmail.com" };
+        var result = await userManager.CreateAsync(admin, adminPassword);
+        if (!result.Succeeded)
         {
-            var admin = new AdminUser { UserName = adminUsername, Email = "admin@portfolio.com" };
-            await userManager.CreateAsync(admin, adminPassword);
+            throw new InvalidOperationException($"Failed to create admin user: {string.Join(", ", result.Errors.Select(e => e.Description))}");
         }
-
-        var seedService = new SeedService(dbContext);
-        await seedService.SeedInitialDataAsync();
     }
 
-    app.Run();
+    var seedService = new SeedService(dbContext);
+    await seedService.SeedInitialDataAsync();
+}
+
+app.Run();
 }
 catch (Exception ex)
 {

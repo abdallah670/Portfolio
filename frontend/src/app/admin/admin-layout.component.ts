@@ -53,23 +53,29 @@ export class AdminLayoutComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.isBrowser) {
+      // Initialize from localStorage first
+      const cachedImage = localStorage.getItem('am-profile-image');
+      if (cachedImage) {
+        this.profileImage = cachedImage;
+        this.userService.setProfileImage(cachedImage);
+      }
+      
       // Subscribe to profile image changes
       this.userService.profileImage$.subscribe(image => {
-        this.profileImage = image;
+        if (image) {
+          this.profileImage = image;
+        }
       });
       
-      // Initial load from API if not in localStorage
-      const cachedImage = localStorage.getItem('am-profile-image');
-      if (!cachedImage) {
-        this.apiService.getProfileImage().subscribe({
-          next: (image) => {
-            if (image) {
-              this.userService.setProfileImage(image);
-            }
-          },
-          error: () => {}
-        });
-      }
+      // Always fetch from API to ensure we have latest data
+      this.apiService.getProfileImage().subscribe({
+        next: (image) => {
+          if (image) {
+            this.userService.setProfileImage(image);
+          }
+        },
+        error: () => {}
+      });
     }
   }
 }

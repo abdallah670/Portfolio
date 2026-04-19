@@ -3,6 +3,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { ApiService } from '../../../core/services/api.service';
+import { UserService } from '../../../core/services/user.service';
 import { interval, switchMap } from 'rxjs';
 
 @Component({
@@ -89,7 +90,7 @@ export class HeaderComponent implements OnInit {
   private isBrowser: boolean;
   unreadCount = 0;
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object, private authService: AuthService, private router: Router, private apiService: ApiService) {
+  constructor(@Inject(PLATFORM_ID) private platformId: Object, private authService: AuthService, private router: Router, private apiService: ApiService, private userService: UserService) {
     this.isBrowser = isPlatformBrowser(this.platformId);
   }
 
@@ -98,14 +99,21 @@ export class HeaderComponent implements OnInit {
       this.isDarkTheme = localStorage.getItem('am-theme') !== 'light';
       this.applyTheme();
       this.loadUnreadCount();
-      // Poll every 30 seconds
+      
+      this.userService.unreadCount$.subscribe(count => {
+        this.unreadCount = count;
+      });
+      
       interval(30000).subscribe(() => this.loadUnreadCount());
     }
   }
 
   private loadUnreadCount(): void {
     this.apiService.getUnreadCount().subscribe({
-      next: (count) => this.unreadCount = count,
+      next: (count) => {
+        this.unreadCount = count;
+        this.userService.setUnreadCount(count);
+      },
       error: () => {}
     });
   }

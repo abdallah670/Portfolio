@@ -26,20 +26,20 @@ public class MessagesController : ControllerBase
     // GET: api/messages
     [HttpGet]
     [Authorize]
-    public async Task<ActionResult<object>> GetMessages(
+    public async Task<ActionResult<ApiResponse<object>>> GetMessages(
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 20,
         [FromQuery] bool? isRead = null)
     {
         _logger.LogInformation("API: Getting messages page {Page}", page);
         var result = await _mediator.Send(new GetMessagesQuery { Page = page, PageSize = pageSize, IsRead = isRead });
-        return Ok(result);
+        return Ok(new ApiResponse<object> { Success = true, Data = result });
     }
 
     // GET: api/messages/5
     [HttpGet("{id}")]
     [Authorize]
-    public async Task<ActionResult<Message>> GetMessage(int id)
+    public async Task<ActionResult<ApiResponse<Message>>> GetMessage(int id)
     {
         _logger.LogInformation("API: Getting message {MessageId}", id);
         var message = await _mediator.Send(new GetMessageByIdQuery { Id = id });
@@ -47,10 +47,10 @@ public class MessagesController : ControllerBase
         if (message == null)
         {
             _logger.LogWarning("API: Message {MessageId} not found", id);
-            return NotFound();
+            return NotFound(new ApiResponse { Success = false, Message = "Message not found" });
         }
 
-        return message;
+        return Ok(new ApiResponse<Message> { Success = true, Data = message });
     }
 
     // POST: api/messages (Public - Contact Form)
@@ -98,11 +98,11 @@ public class MessagesController : ControllerBase
     // PUT: api/messages/read-all
     [HttpPut("read-all")]
     [Authorize]
-    public async Task<IActionResult> MarkAllAsRead()
+    public async Task<ActionResult<ApiResponse<int>>> MarkAllAsRead()
     {
         _logger.LogInformation("API: Marking all messages as read");
         var count = await _mediator.Send(new MarkAllMessagesAsReadCommand());
-        return Ok(new { markedAsReadCount = count });
+        return Ok(new ApiResponse<int> { Success = true, Message = $"{count} messages marked as read", Data = count });
     }
 
     // DELETE: api/messages/5
@@ -118,17 +118,17 @@ public class MessagesController : ControllerBase
     // GET: api/messages/unread-count
     [HttpGet("unread-count")]
     [Authorize]
-    public async Task<ActionResult<int>> GetUnreadCount()
+    public async Task<ActionResult<ApiResponse<int>>> GetUnreadCount()
     {
         _logger.LogDebug("API: Getting unread message count");
         var count = await _mediator.Send(new GetUnreadMessageCountQuery());
-        return Ok(count);
+        return Ok(new ApiResponse<int> { Success = true, Data = count });
     }
 
     // POST api/messages/{id}/respond
     [HttpPost("{id}/respond")]
     [Authorize]
-    public async Task<IActionResult> RespondToMessage(int id, [FromBody] RespondToMessageRequest request)
+    public async Task<ActionResult<ApiResponse>> RespondToMessage(int id, [FromBody] RespondToMessageRequest request)
     {
         _logger.LogInformation("API: Responding to message {MessageId}", id);
         
@@ -141,11 +141,11 @@ public class MessagesController : ControllerBase
         if (!result.Success)
         {
             _logger.LogError("API: Failed to respond to message {MessageId}: {Error}", id, result.Error);
-            return StatusCode(500, new { message = result.Error });
+            return StatusCode(500, new ApiResponse { Success = false, Message = result.Error });
         }
 
         _logger.LogInformation("API: Response to message {MessageId} sent successfully", id);
-        return Ok(new { message = "Response sent successfully" });
+        return Ok(new ApiResponse { Success = true, Message = "Response sent successfully" });
     }
 }
 

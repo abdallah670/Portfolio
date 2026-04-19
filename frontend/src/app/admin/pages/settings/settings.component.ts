@@ -416,7 +416,8 @@ export class SettingsComponent implements OnInit {
       },
       error: (err) => {
         this.updatingUsername = false;
-        this.sweetAlert.error('Error', err.error?.errors?.[0] || 'Failed to update username.');
+        const message = err.error?.message || err.error?.errors?.[0] || 'Failed to update username.';
+        this.sweetAlert.error('Error', message);
       }
     });
   }

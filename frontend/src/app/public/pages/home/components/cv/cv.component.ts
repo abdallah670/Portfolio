@@ -11,7 +11,7 @@ import { ApiService } from '../../../../../core/services/api.service';
 })
 export class CvComponent implements OnInit {
   private isBrowser: boolean;
-  private readonly API_URL = 'http://localhost:5000';
+  private readonly API_URL = 'http://menoportfolio.runasp.net';
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,

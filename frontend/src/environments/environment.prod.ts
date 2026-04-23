@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  apiUrl: 'http://menoportfolio.runasp.net/api',
-  baseUrl: 'http://menoportfolio.runasp.net'
+  apiUrl: 'https://menoportfolio.runasp.net/api',
+  baseUrl: 'https://menoportfolio.runasp.net'
 };

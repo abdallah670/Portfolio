@@ -326,12 +326,13 @@ public class PortfolioController : ControllerBase
             // Read file and serve inline
             var content = await System.IO.File.ReadAllBytesAsync(filePath);
             
-            // Set headers for inline PDF viewing
+            // Set headers for inline PDF viewing (no download)
             Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
             Response.Headers["Pragma"] = "no-cache";
             Response.Headers["Expires"] = "0";
+            Response.Headers["Content-Disposition"] = "inline; filename=\"" + fileName + "\"";
             
-            return File(content, "application/pdf", fileName);
+            return File(content, "application/pdf");
         }
         catch (Exception ex)
         {

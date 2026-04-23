@@ -107,8 +107,8 @@ public class UploadController : ControllerBase
 
         try
         {
-            // Ensure CV directory exists (handle MonsterASP wwwroot/wwwroot structure)
-            var cvFolder = Path.Combine(_environment.ContentRootPath, "wwwroot", "uploads", "cv");
+            // Ensure CV directory exists (MonsterASP uses WebRootPath = wwwroot/wwwroot)
+            var cvFolder = Path.Combine(_environment.WebRootPath, "uploads", "cv");
             if (!Directory.Exists(cvFolder))
             {
                 Directory.CreateDirectory(cvFolder);
@@ -161,30 +161,9 @@ public class UploadController : ControllerBase
         if (string.IsNullOrEmpty(filePath))
             return BadRequest(new ApiResponse { Success = false, Message = "File path is required" });
         
-        // If it's a Cloudinary URL, extract public ID and delete from Cloudinary
-        if (filePath.Contains("cloudinary.com"))
-        {
-            try
-            {
-                // Extract public ID from Cloudinary URL
-                var publicId = ExtractCloudinaryPublicId(filePath);
-                if (!string.IsNullOrEmpty(publicId))
-                {
-                    await _cloudinaryService.DeleteFileAsync(publicId);
-                    return Ok(new ApiResponse { Success = true, Message = "File deleted from Cloudinary" });
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Failed to delete file from Cloudinary");
-                return BadRequest(new ApiResponse { Success = false, Message = $"Delete failed: {ex.Message}" });
-            }
-        }
-        
-        // Fallback to local file deletion (handle MonsterASP wwwroot/wwwroot structure)
         // filePath comes as "/uploads/cv/filename.pdf"
-        var relativePath = filePath.TrimStart('/').Replace('/', Path.DirectorySeparatorChar);
-        var fullPath = Path.Combine(_environment.ContentRootPath, "wwwroot", relativePath);
+        var fileName = Path.GetFileName(filePath);
+        var fullPath = Path.Combine(_environment.WebRootPath, "uploads", "cv", fileName);
         
         _logger.LogInformation("Attempting to delete file at: {FullPath}", fullPath);
         
@@ -195,29 +174,6 @@ public class UploadController : ControllerBase
         _logger.LogInformation("File deleted successfully: {FullPath}", fullPath);
         
         return Ok(new ApiResponse { Success = true, Message = "File deleted" });
-    }
-    
-    private string ExtractCloudinaryPublicId(string cloudinaryUrl)
-    {
-        try
-        {
-            // Cloudinary URL format: https://res.cloudinary.com/{cloud}/image/upload/v{version}/{folder}/{publicId}.{ext}
-            var uri = new Uri(cloudinaryUrl);
-            var segments = uri.Segments;
-            if (segments.Length >= 2)
-            {
-                // Get the last segment (filename without extension)
-                var lastSegment = segments[^1];
-                var folder = segments.Length > 2 ? segments[^2].Trim('/') : "";
-                var publicId = Path.GetFileNameWithoutExtension(lastSegment);
-                return string.IsNullOrEmpty(folder) ? publicId : $"{folder}/{publicId}";
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to extract Cloudinary public ID from URL: {Url}", cloudinaryUrl);
-        }
-        return null;
     }
 }
 

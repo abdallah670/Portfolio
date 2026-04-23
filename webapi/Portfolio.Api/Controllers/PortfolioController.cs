@@ -278,71 +278,16 @@ public class PortfolioController : ControllerBase
         if (setting == null || string.IsNullOrEmpty(setting.Value))
             return NotFound("CV not configured");
         
-        // If it's a Cloudinary/external URL, redirect or fetch it
-        if (setting.Value.StartsWith("http"))
-        {
-            _logger.LogInformation("CV is stored at external URL: {Url}", setting.Value);
-            // Option 1: Redirect to the external URL
-            // return Redirect(setting.Value);
-            
-            // Option 2: Fetch and serve (better for hiding the actual URL)
-            try
-            {
-                using var httpClient = new HttpClient();
-                var response = await httpClient.GetAsync(setting.Value);
-                if (response.IsSuccessStatusCode)
-                {
-                    var content = await response.Content.ReadAsByteArrayAsync();
-                    var fileName = Path.GetFileName(setting.Value);
-                    return File(content, "application/pdf", fileName);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Failed to fetch CV from external URL");
-            }
-            return NotFound("CV not accessible");
-        }
-        
         var fileName = Path.GetFileName(setting.Value);
         
-        // Debug: Log all path info
-        _logger.LogInformation("=== CV DEBUG ===");
-        _logger.LogInformation("ContentRootPath: {Path}", _environment.ContentRootPath);
-        _logger.LogInformation("WebRootPath: {Path}", _environment.WebRootPath);
-        _logger.LogInformation("Setting.Value: {Value}", setting.Value);
-        _logger.LogInformation("FileName extracted: {FileName}", fileName);
+        // Build the full path for MonsterASP (D:\Sites\site64972\wwwroot\wwwroot\uploads\cv\)
+        var filePath = Path.Combine(_environment.WebRootPath, "uploads", "cv", fileName);
         
-        // Handle MonsterASP wwwroot/wwwroot structure
-        // Try different path combinations
-        var possiblePaths = new[]
+        if (!System.IO.File.Exists(filePath))
         {
-            Path.Combine(_environment.ContentRootPath, "wwwroot", "uploads", "cv", fileName),
-            Path.Combine(_environment.WebRootPath, "uploads", "cv", fileName),
-            Path.Combine(_environment.ContentRootPath, "uploads", "cv", fileName),
-            Path.Combine(_environment.WebRootPath, "..", "uploads", "cv", fileName),  // Try parent directory
-            $"D:\\Sites\\site64972\\wwwroot\\wwwroot\\uploads\\cv\\{fileName}"  // Hardcoded MonsterASP path
-        };
-        
-        string foundPath = null;
-        foreach (var path in possiblePaths)
-        {
-            _logger.LogInformation("Checking path: {Path}, Exists: {Exists}", path, System.IO.File.Exists(path));
-            if (System.IO.File.Exists(path))
-            {
-                foundPath = path;
-                _logger.LogInformation("FOUND CV at: {Path}", path);
-                break;
-            }
-        }
-        
-        if (foundPath == null)
-        {
-            _logger.LogWarning("CV file not found in any location");
+            _logger.LogWarning("CV file not found at: {Path}", filePath);
             return NotFound("CV file not found. Please upload CV via admin panel.");
         }
-        
-        var filePath = foundPath;
         
         // Add cache-busting using file timestamp
         var lastModified = System.IO.File.GetLastWriteTime(filePath);
@@ -369,48 +314,14 @@ public class PortfolioController : ControllerBase
         {
             var fileName = Path.GetFileName(setting.Value);
             
-            // If it's a Cloudinary URL (legacy), redirect to download endpoint
-            if (setting.Value.StartsWith("http"))
-            {
-                return Redirect("/api/portfolio/cv");
-            }
+            // Build the full path for MonsterASP
+            var filePath = Path.Combine(_environment.WebRootPath, "uploads", "cv", fileName);
             
-            // Debug: Log all path info
-            _logger.LogInformation("=== CV PREVIEW DEBUG ===");
-            _logger.LogInformation("ContentRootPath: {Path}", _environment.ContentRootPath);
-            _logger.LogInformation("WebRootPath: {Path}", _environment.WebRootPath);
-            _logger.LogInformation("FileName: {FileName}", fileName);
-            
-            // Try different path combinations
-            var possiblePaths = new[]
+            if (!System.IO.File.Exists(filePath))
             {
-                Path.Combine(_environment.ContentRootPath, "wwwroot", "uploads", "cv", fileName),
-                Path.Combine(_environment.WebRootPath, "uploads", "cv", fileName),
-                Path.Combine(_environment.ContentRootPath, "uploads", "cv", fileName),
-                $"/wwwroot/wwwroot/uploads/cv/{fileName}",
-                $"/home/site/wwwroot/wwwroot/uploads/cv/{fileName}",
-                $"C:/home/site/wwwroot/wwwroot/uploads/cv/{fileName}".Replace('/', Path.DirectorySeparatorChar)
-            };
-            
-            string foundPath = null;
-            foreach (var path in possiblePaths)
-            {
-                _logger.LogInformation("Checking path: {Path}, Exists: {Exists}", path, System.IO.File.Exists(path));
-                if (System.IO.File.Exists(path))
-                {
-                    foundPath = path;
-                    _logger.LogInformation("FOUND CV at: {Path}", path);
-                    break;
-                }
-            }
-            
-            if (foundPath == null)
-            {
-                _logger.LogWarning("CV file not found in any location");
+                _logger.LogWarning("CV file not found at: {Path}", filePath);
                 return NotFound("CV file not found. Please upload CV via admin panel.");
             }
-            
-            var filePath = foundPath;
             
             // Read file and serve inline
             var content = await System.IO.File.ReadAllBytesAsync(filePath);

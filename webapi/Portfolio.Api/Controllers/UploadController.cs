@@ -7,6 +7,7 @@ using PortfolioApi.Application.DTOs;
 using PortfolioApi.Application.Features.Portfolio.Commands;
 using PortfolioApi.Domain.Entities;
 using PortfolioApi.Infrastructure.Data;
+using PortfolioApi.Infrastructure.Services;
 
 namespace PortfolioApi.Api.Controllers;
 
@@ -19,13 +20,15 @@ public class UploadController : ControllerBase
     private readonly IWebHostEnvironment _environment;
     private readonly ILogger<UploadController> _logger;
     private readonly IMediator _mediator;
+    private readonly ICloudinaryService _cloudinaryService;
     
-    public UploadController(AppDbContext context, IWebHostEnvironment environment, ILogger<UploadController> logger, IMediator mediator)
+    public UploadController(AppDbContext context, IWebHostEnvironment environment, ILogger<UploadController> logger, IMediator mediator, ICloudinaryService cloudinaryService)
     {
         _context = context;
         _environment = environment;
         _logger = logger;
         _mediator = mediator;
+        _cloudinaryService = cloudinaryService;
     }
     
     [HttpPost("project-image")]
@@ -34,39 +37,20 @@ public class UploadController : ControllerBase
         if (file == null || file.Length == 0)
             return BadRequest(new ApiResponse { Success = false, Message = "No file provided" });
         
-        _logger.LogInformation("Uploaded file: {FileName}, ContentType: {ContentType}, Size: {Size}", 
+        _logger.LogInformation("Uploading project image to Cloudinary: {FileName}, ContentType: {ContentType}, Size: {Size}", 
             file.FileName, file.ContentType, file.Length);
-            
-        var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg" };
-        var extension = Path.GetExtension(file.FileName)?.ToLowerInvariant();
         
-        if (string.IsNullOrEmpty(extension))
-            return BadRequest(new ApiResponse { Success = false, Message = "No file extension found" });
-        
-        if (!allowedExtensions.Contains(extension))
-            return BadRequest(new ApiResponse { Success = false, Message = $"Invalid file type: {extension}. Allowed: jpg, jpeg, png, gif, webp, svg" });
-            
-        if (file.Length > 5 * 1024 * 1024)
-            return BadRequest(new ApiResponse { Success = false, Message = "File too large. Max 5MB" });
-            
-        var fileName = $"{Guid.NewGuid()}{extension}";
-        var uploadsFolder = Path.Combine(_environment.ContentRootPath, "wwwroot", "uploads", "projects");
-        
-        if (!Directory.Exists(uploadsFolder))
-            Directory.CreateDirectory(uploadsFolder);
-            
-        var filePath = Path.Combine(uploadsFolder, fileName);
-        
-        using (var stream = new FileStream(filePath, FileMode.Create))
+        try
         {
-            await file.CopyToAsync(stream);
+            var imageUrl = await _cloudinaryService.UploadImageAsync(file, "projects");
+            _logger.LogInformation("Project image uploaded to Cloudinary: {Url}", imageUrl);
+            return Ok(new ApiResponse<string> { Success = true, Message = "Image uploaded", Data = imageUrl });
         }
-        //upadte path in hero
-     
-        var baseUrl = $"{Request.Scheme}://{Request.Host}";
-        var imageUrl = $"{baseUrl}/uploads/projects/{fileName}";
-        
-        return Ok(new ApiResponse<string> { Success = true, Message = "Image uploaded", Data = imageUrl });
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to upload project image to Cloudinary");
+            return BadRequest(new ApiResponse { Success = false, Message = $"Upload failed: {ex.Message}" });
+        }
     }
     
     [HttpPost("profile-image")]
@@ -74,39 +58,29 @@ public class UploadController : ControllerBase
     {
         if (file == null || file.Length == 0)
             return BadRequest(new ApiResponse { Success = false, Message = "No file provided" });
-            
-        var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
-        var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
         
-        if (!allowedExtensions.Contains(extension))
-            return BadRequest(new ApiResponse { Success = false, Message = "Invalid file type" });
-            
-        var fileName = $"{Guid.NewGuid()}{extension}";
-        var uploadsFolder = Path.Combine(_environment.ContentRootPath, "wwwroot", "uploads/profile-image");
+        _logger.LogInformation("Uploading profile image to Cloudinary: {FileName}", file.FileName);
         
-        if (!Directory.Exists(uploadsFolder))
-            Directory.CreateDirectory(uploadsFolder);
-        // Delete old profile image if exists
-        var existingFiles = Directory.GetFiles(uploadsFolder);
-        foreach (var f in existingFiles) System.IO.File.Delete(f);
-        var filePath = Path.Combine(uploadsFolder, fileName);
-        if (System.IO.File.Exists(filePath))
-            System.IO.File.Delete(filePath);
-            
-        using (var stream = new FileStream(filePath, FileMode.Create))
+        try
         {
-            await file.CopyToAsync(stream);
+            var imageUrl = await _cloudinaryService.UploadImageAsync(file, "profile");
+            _logger.LogInformation("Profile image uploaded to Cloudinary: {Url}", imageUrl);
+            
+            // Update database with Cloudinary URL
+            var response = await _mediator.Send(new UpdateHeroImageCommand { ImagePath = imageUrl });
+            if (!response.Success || response.Data == null)
+            {
+                _logger.LogError("Failed to update hero image in database");
+                return StatusCode(500, new ApiResponse { Success = false, Message = "Image uploaded but failed to update profile" });
+            }
+            
+            return Ok(new ApiResponse<string> { Success = true, Message = "Image uploaded", Data = imageUrl });
         }
-        var response = await _mediator.Send(new UpdateHeroImageCommand { ImagePath = $"/uploads/profile-image/{fileName}" });
-        if (!response.Success || response.Data == null)
+        catch (Exception ex)
         {
-            _logger.LogError("Failed to update hero image in database");
-            return StatusCode(500, new ApiResponse { Success = false, Message = "Image uploaded but failed to update profile" });
+            _logger.LogError(ex, "Failed to upload profile image to Cloudinary");
+            return BadRequest(new ApiResponse { Success = false, Message = $"Upload failed: {ex.Message}" });
         }
-        var baseUrl = $"{Request.Scheme}://{Request.Host}";
-        var imageUrl = $"{baseUrl}/uploads/profile-image/{fileName}";
-        
-        return Ok(new ApiResponse<string> { Success = true, Message = "Image uploaded", Data = imageUrl });
     }
 
     [HttpPost("cv")]
@@ -116,38 +90,30 @@ public class UploadController : ControllerBase
         if (file == null || file.Length == 0)
             return BadRequest(new ApiResponse { Success = false, Message = "No file provided" });
         
-        if (!file.ContentType.Equals("application/pdf", StringComparison.OrdinalIgnoreCase))
-            return BadRequest(new ApiResponse { Success = false, Message = "Only PDF files are allowed" });
+        _logger.LogInformation("Uploading CV to Cloudinary: {FileName}", file.FileName);
         
-        if (file.Length > 10 * 1024 * 1024) // 10MB max
-            return BadRequest(new ApiResponse { Success = false, Message = "File too large. Max 10MB" });
-        
-        var uploadsFolder = Path.Combine(_environment.ContentRootPath, "wwwroot", "uploads", "cv");
-        Directory.CreateDirectory(uploadsFolder);
-        
-        // Delete old CV if exists
-        var existingFiles = Directory.GetFiles(uploadsFolder, "*.pdf");
-        foreach (var f in existingFiles) System.IO.File.Delete(f);
-        
-        var fileName = $"Abdullah_Mohammed_CV.pdf";
-        var filePath = Path.Combine(uploadsFolder, fileName);
-        
-        using (var stream = new FileStream(filePath, FileMode.Create))
+        try
         {
-            await file.CopyToAsync(stream);
+            var cvUrl = await _cloudinaryService.UploadCVAsync(file);
+            _logger.LogInformation("CV uploaded to Cloudinary: {Url}", cvUrl);
+            
+            // Save Cloudinary URL to SystemSettings
+            var setting = await _context.SystemSettings.FirstOrDefaultAsync(s => s.Key == "cv_url");
+            if (setting == null)
+            {
+                setting = new SystemSetting { Key = "cv_url", Category = "files", DataType = "string" };
+                _context.SystemSettings.Add(setting);
+            }
+            setting.Value = cvUrl;
+            await _context.SaveChangesAsync();
+            
+            return Ok(new ApiResponse<string> { Success = true, Message = "CV uploaded", Data = cvUrl });
         }
-        
-        // Save path to SystemSettings
-        var setting = await _context.SystemSettings.FirstOrDefaultAsync(s => s.Key == "cv_url");
-        if (setting == null)
+        catch (Exception ex)
         {
-            setting = new SystemSetting { Key = "cv_url", Category = "files", DataType = "string" };
-            _context.SystemSettings.Add(setting);
+            _logger.LogError(ex, "Failed to upload CV to Cloudinary");
+            return BadRequest(new ApiResponse { Success = false, Message = $"Upload failed: {ex.Message}" });
         }
-        setting.Value = $"/uploads/cv/{fileName}";
-        await _context.SaveChangesAsync();
-        
-        return Ok(new ApiResponse<string> { Success = true, Message = "CV uploaded", Data = setting.Value });
     }
     [HttpDelete("file/{*filePath}")]
     [Authorize]
@@ -156,6 +122,27 @@ public class UploadController : ControllerBase
         if (string.IsNullOrEmpty(filePath))
             return BadRequest(new ApiResponse { Success = false, Message = "File path is required" });
         
+        // If it's a Cloudinary URL, extract public ID and delete from Cloudinary
+        if (filePath.Contains("cloudinary.com"))
+        {
+            try
+            {
+                // Extract public ID from Cloudinary URL
+                var publicId = ExtractCloudinaryPublicId(filePath);
+                if (!string.IsNullOrEmpty(publicId))
+                {
+                    await _cloudinaryService.DeleteFileAsync(publicId);
+                    return Ok(new ApiResponse { Success = true, Message = "File deleted from Cloudinary" });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to delete file from Cloudinary");
+                return BadRequest(new ApiResponse { Success = false, Message = $"Delete failed: {ex.Message}" });
+            }
+        }
+        
+        // Fallback to local file deletion
         var fullPath = Path.Combine(_environment.ContentRootPath, "wwwroot", filePath.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
         
         if (!System.IO.File.Exists(fullPath))
@@ -164,6 +151,29 @@ public class UploadController : ControllerBase
         System.IO.File.Delete(fullPath);
         
         return Ok(new ApiResponse { Success = true, Message = "File deleted" });
+    }
+    
+    private string ExtractCloudinaryPublicId(string cloudinaryUrl)
+    {
+        try
+        {
+            // Cloudinary URL format: https://res.cloudinary.com/{cloud}/image/upload/v{version}/{folder}/{publicId}.{ext}
+            var uri = new Uri(cloudinaryUrl);
+            var segments = uri.Segments;
+            if (segments.Length >= 2)
+            {
+                // Get the last segment (filename without extension)
+                var lastSegment = segments[^1];
+                var folder = segments.Length > 2 ? segments[^2].Trim('/') : "";
+                var publicId = Path.GetFileNameWithoutExtension(lastSegment);
+                return string.IsNullOrEmpty(folder) ? publicId : $"{folder}/{publicId}";
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to extract Cloudinary public ID from URL: {Url}", cloudinaryUrl);
+        }
+        return null;
     }
 }
 

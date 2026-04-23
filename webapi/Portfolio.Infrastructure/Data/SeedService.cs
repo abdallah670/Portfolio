@@ -26,7 +26,7 @@ public class SeedService
                 HeadlineMain = "Abdullah Mohammed",
                 AvailabilityLabel = "Available for Opportunities",
                 Subtitle = "Full-Stack .NET Developer",
-                ProfileImage = "uploads/profile-image/Meno.png"
+                ProfileImage = "https://res.cloudinary.com/dmyrxpvnj/image/upload/v1776913623/Meno_arycos.png"
             };
             _context.Heroes.Add(hero);
             
@@ -98,9 +98,9 @@ public class SeedService
         {
             var projects = new List<Project>
             {
-                new() { Title = "MenoPro - Gym Management System", Year = "2025", Category = "Web Application", Description = "Premium gym management with member/trainer portals, workout plans, diet tracking, and Chart.js analytics. Features Glassmorphism UI, Stripe payments, and Gemini AI integration.", Stack = "[\"ASP.NET Core MVC\",\"SQL Server\",\"Entity Framework\",\"Chart.js\",\"Stripe\",\"Gemini AI\"]", Image = "uploads/projects/gymmvc.png", linkedinUrl = "https://www.linkedin.com/posts/abdullah-mohammed-334475294_aspnetcore-csharp-webdevelopment-activity-7424228685093994496-wSwl?utm_source=share&utm_medium=member_desktop&rcm=ACoAAEdCipgBcPb4fee5CeW-8yGc1BXjUpbeHs0", GithubUrl = "https://github.com/abdallah670/GymMVC",LiveUrl="", Status = "Production", Color = "emerald", IsFeatured = true, DisplayOrder = 1,IsPublished=true },
-                new() { Title = "Labor Marketplace System", Year = "2026", Category = "Full-Stack Platform", Description = "Platform connecting workers with job posters. Features multi-role auth, real-time chat with SignalR, Stripe payments, Hangfire jobs, and geographic search with SQL Server spatial queries.", Stack = "[\"ASP.NET Core MVC\",\".NET 9\",\"SignalR\",\"Stripe Connect\",\"Hangfire\",\"NetTopologySuite\"]", Image = "uploads/projects/labormvc.png", linkedinUrl = "https://www.linkedin.com/posts/abdullah-mohammed-334475294_dotnet-architecture-systemdesign-activity-7444313186763358208-gBDD?utm_source=share&utm_medium=member_desktop&rcm=ACoAAEdCipgBcPb4fee5CeW-8yGc1BXjUpbeHs0", GithubUrl = "https://github.com/abdallah670/LaborMVC",LiveUrl="", Status = "Production", Color = "cyan", IsFeatured = true, DisplayOrder = 2 ,IsPublished=true},
-                new() { Title = "Outfit Planner", Year = "2026", Category = "Web Application", Description = "Intelligent wardrobe management system that generates outfit suggestions by analyzing clothes against real-time weather, occasions, and personal style preferences. Built with Clean Architecture and CQRS.", Stack = "[\"ASP.NET Core 9\",\"Angular 17+\",\"NgRx\",\"SQL Server\",\"Clean Architecture\",\"CQRS\"]", Image = "uploads/projects/outfitplanner.jpg", GithubUrl = "https://github.com/abdallah670/Outfit-Planner",linkedinUrl="",LiveUrl="",Status="In development", Color = "pink", IsFeatured = false, DisplayOrder = 1,IsPublished=true }
+                new() { Title = "MenoPro - Gym Management System", Year = "2025", Category = "Web Application", Description = "Premium gym management with member/trainer portals, workout plans, diet tracking, and Chart.js analytics. Features Glassmorphism UI, Stripe payments, and Gemini AI integration.", Stack = "[\"ASP.NET Core MVC\",\"SQL Server\",\"Entity Framework\",\"Chart.js\",\"Stripe\",\"Gemini AI\"]", Image = "https://res.cloudinary.com/dmyrxpvnj/image/upload/v1776913594/gymmvc_oqc6tu.png", linkedinUrl = "https://www.linkedin.com/posts/abdullah-mohammed-334475294_aspnetcore-csharp-webdevelopment-activity-7424228685093994496-wSwl?utm_source=share&utm_medium=member_desktop&rcm=ACoAAEdCipgBcPb4fee5CeW-8yGc1BXjUpbeHs0", GithubUrl = "https://github.com/abdallah670/GymMVC",LiveUrl="", Status = "Production", Color = "emerald", IsFeatured = true, DisplayOrder = 1,IsPublished=true },
+                new() { Title = "Labor Marketplace System", Year = "2026", Category = "Full-Stack Platform", Description = "Platform connecting workers with job posters. Features multi-role auth, real-time chat with SignalR, Stripe payments, Hangfire jobs, and geographic search with SQL Server spatial queries.", Stack = "[\"ASP.NET Core MVC\",\".NET 9\",\"SignalR\",\"Stripe Connect\",\"Hangfire\",\"NetTopologySuite\"]", Image = "https://res.cloudinary.com/dmyrxpvnj/image/upload/v1776913593/labormvc_olkw8r.png", linkedinUrl = "https://www.linkedin.com/posts/abdullah-mohammed-334475294_dotnet-architecture-systemdesign-activity-7444313186763358208-gBDD?utm_source=share&utm_medium=member_desktop&rcm=ACoAAEdCipgBcPb4fee5CeW-8yGc1BXjUpbeHs0", GithubUrl = "https://github.com/abdallah670/LaborMVC",LiveUrl="", Status = "Production", Color = "cyan", IsFeatured = true, DisplayOrder = 2 ,IsPublished=true},
+                new() { Title = "Outfit Planner", Year = "2026", Category = "Web Application", Description = "Intelligent wardrobe management system that generates outfit suggestions by analyzing clothes against real-time weather, occasions, and personal style preferences. Built with Clean Architecture and CQRS.", Stack = "[\"ASP.NET Core 9\",\"Angular 17+\",\"NgRx\",\"SQL Server\",\"Clean Architecture\",\"CQRS\"]", Image = "https://res.cloudinary.com/dmyrxpvnj/image/upload/v1776913592/outfitplanner_zyzjur.jpg", GithubUrl = "https://github.com/abdallah670/Outfit-Planner",linkedinUrl="",LiveUrl="",Status="In development", Color = "pink", IsFeatured = false, DisplayOrder = 1,IsPublished=true }
             };
             _context.Projects.AddRange(projects);
             await _context.SaveChangesAsync();
@@ -415,18 +415,11 @@ public class SeedService
             var cvSetting = new SystemSetting
             {
                 Key = "cv_url",
-                Value = "/uploads/cv/Abdullah_Mohammed_CV.pdf",
+                Value = "https://res.cloudinary.com/dmyrxpvnj/raw/upload/cv/Abdullah_Mohammed_CV.pdf",
                 Category = "files",
                 DataType = "string"
             };
             _context.SystemSettings.Add(cvSetting);
-            
-            // Ensure CV directory exists
-            var cvFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "cv");
-            if (!Directory.Exists(cvFolder))
-            {
-                Directory.CreateDirectory(cvFolder);
-            }
             
             await _context.SaveChangesAsync();
         }

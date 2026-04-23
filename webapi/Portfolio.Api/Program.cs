@@ -49,14 +49,29 @@ var isDevelopment = builder.Environment.IsDevelopment();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
-    // Use SQLite for development or when connection string is SQLite format
-    if (isDevelopment || connectionString?.Contains(".db") == true || string.IsNullOrEmpty(connectionString))
+    // Use SQLite for development when no connection string provided
+    if (isDevelopment && (string.IsNullOrEmpty(connectionString) || connectionString?.Contains(".db") == true))
     {
         options.UseSqlite(connectionString ?? "Data Source=portfolio.db");
     }
-    else
+    // Use PostgreSQL for production (Render) or when connection string indicates PostgreSQL
+    else if (!string.IsNullOrEmpty(connectionString) && 
+             (connectionString.Contains("Host=") || connectionString.Contains("Database=") || connectionString.Contains("Username=")))
+    {
+        options.UseNpgsql(connectionString, npgsqlOptions =>
+        {
+            npgsqlOptions.EnableRetryOnFailure(3);
+        });
+    }
+    // Fallback to SQL Server for other cases
+    else if (!string.IsNullOrEmpty(connectionString))
     {
         options.UseSqlServer(connectionString);
+    }
+    // Default to SQLite if nothing else works
+    else
+    {
+        options.UseSqlite("Data Source=portfolio.db");
     }
 });
 
@@ -96,6 +111,9 @@ builder.Services.AddSingleton<IEmailService>(sp => {
     var settings = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<EmailSettings>>().Value;
     return new EmailService(settings);
 });
+
+// Cloudinary Service for file uploads
+builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
 
 // Authentication - JWT Secret must be configured via environment variables
 var jwtSecret = builder.Configuration["Jwt:Secret"]

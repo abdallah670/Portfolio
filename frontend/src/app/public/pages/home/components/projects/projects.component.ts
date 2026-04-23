@@ -2,6 +2,7 @@ import { Component, Input, OnInit, Inject, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ProjectConfig } from '../../../../../core/models/portfolio.models';
 import { ApiService } from '../../../../../core/services/api.service';
+import { environment } from '../../../../../../environments/environment';
 
 interface Project {
   id: number;
@@ -165,7 +166,7 @@ export class ProjectsComponent implements OnInit {
   getImageUrl(path: string | null | undefined): string {
     if (!path) return '';
     if (path.startsWith('http')) return path;
-    return `http://localhost:5000/${path}`;
+    return `${environment.baseUrl}/${path}`;
   }
 
   onProjectLinkClick(projectId: number, event: Event): void {

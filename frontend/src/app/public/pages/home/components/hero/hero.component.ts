@@ -2,6 +2,7 @@ import { Component, Input, OnInit, OnDestroy, Inject, PLATFORM_ID, ElementRef, V
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Subject } from 'rxjs';
 import { HeroConfig } from '../../../../../core/models/portfolio.models';
+import { environment } from '../../../../../../environments/environment';
 
 @Component({
   selector: 'app-home-hero',
@@ -262,7 +263,7 @@ export class HeroComponent implements OnInit, OnDestroy, AfterViewInit {
   get imageUrl(): string {
     if (!this.hero?.profileImage) return '';
     if (this.hero.profileImage.startsWith('http')) return this.hero.profileImage;
-    return `http://localhost:5000/${this.hero.profileImage}`;
+    return `${environment.baseUrl}/${this.hero.profileImage}`;
   }
 
   onMouseMove(event: MouseEvent): void {

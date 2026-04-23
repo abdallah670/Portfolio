@@ -1,0 +1,28 @@
+[build]
+  publish = "dist/frontend/browser"
+  command = "npm run build"
+
+[[redirects]]
+  from = "/admin/*"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/api/*"
+  to = "https://portfolio-api.onrender.com/api/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[context.production.environment]
+  NODE_VERSION = "20"
+  NPM_VERSION = "10"
+
+[context.deploy-preview.environment]
+  NODE_VERSION = "20"
+
+[context.branch-deploy.environment]
+  NODE_VERSION = "20"

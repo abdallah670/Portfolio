@@ -294,7 +294,8 @@ public class PortfolioController : ControllerBase
             Path.Combine(_environment.ContentRootPath, "wwwroot", "uploads", "cv", fileName),
             Path.Combine(_environment.WebRootPath, "uploads", "cv", fileName),
             Path.Combine(_environment.ContentRootPath, "uploads", "cv", fileName),
-            $"/wwwroot/wwwroot/uploads/cv/{fileName}",  // Absolute path for MonsterASP
+            $"/wwwroot/wwwroot/uploads/cv/{fileName}",  // Linux absolute path
+            $"/home/site/wwwroot/wwwroot/uploads/cv/{fileName}",  // MonsterASP Linux path
             $"C:/home/site/wwwroot/wwwroot/uploads/cv/{fileName}".Replace('/', Path.DirectorySeparatorChar)
         };
         
@@ -362,6 +363,7 @@ public class PortfolioController : ControllerBase
                 Path.Combine(_environment.WebRootPath, "uploads", "cv", fileName),
                 Path.Combine(_environment.ContentRootPath, "uploads", "cv", fileName),
                 $"/wwwroot/wwwroot/uploads/cv/{fileName}",
+                $"/home/site/wwwroot/wwwroot/uploads/cv/{fileName}",
                 $"C:/home/site/wwwroot/wwwroot/uploads/cv/{fileName}".Replace('/', Path.DirectorySeparatorChar)
             };
             

@@ -282,8 +282,13 @@ public class PortfolioController : ControllerBase
         // Handle MonsterASP wwwroot/wwwroot structure
         var filePath = Path.Combine(_environment.ContentRootPath, "wwwroot", "uploads", "cv", fileName);
         
+        _logger.LogInformation("Looking for CV at: {FilePath}, ContentRoot: {ContentRoot}", filePath, _environment.ContentRootPath);
+        
         if (!System.IO.File.Exists(filePath))
+        {
+            _logger.LogWarning("CV file not found at: {FilePath}", filePath);
             return NotFound("CV file not found");
+        }
         
         // Add cache-busting using file timestamp
         var lastModified = System.IO.File.GetLastWriteTime(filePath);
@@ -308,32 +313,36 @@ public class PortfolioController : ControllerBase
 
         try
         {
-            // For Cloudinary URLs, we need to fetch the file and serve it directly
-            // to avoid CORS and mixed content issues
-            using var httpClient = new HttpClient();
-            var response = await httpClient.GetAsync(setting.Value);
+            var fileName = Path.GetFileName(setting.Value);
             
-            if (!response.IsSuccessStatusCode)
+            // If it's a Cloudinary URL (legacy), redirect to download endpoint
+            if (setting.Value.StartsWith("http"))
             {
-                _logger.LogWarning("Failed to fetch CV from Cloudinary: {StatusCode}", response.StatusCode);
-                return NotFound("CV not available");
+                return Redirect("/api/portfolio/cv");
             }
-
-            var content = await response.Content.ReadAsByteArrayAsync();
-            var contentType = response.Content.Headers.ContentType?.MediaType ?? "application/pdf";
+            
+            // Handle MonsterASP wwwroot/wwwroot structure
+            var filePath = Path.Combine(_environment.ContentRootPath, "wwwroot", "uploads", "cv", fileName);
+            
+            if (!System.IO.File.Exists(filePath))
+            {
+                _logger.LogWarning("CV file not found at: {Path}", filePath);
+                return NotFound("CV file not found");
+            }
+            
+            // Read file and serve inline
+            var content = await System.IO.File.ReadAllBytesAsync(filePath);
             
             // Set headers for inline PDF viewing
-            Response.Headers["Content-Type"] = contentType;
             Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
             Response.Headers["Pragma"] = "no-cache";
             Response.Headers["Expires"] = "0";
-            Response.Headers["Content-Disposition"] = "inline; filename=\"Abdullah_Mohammed_CV.pdf\"";
             
-            return File(content, contentType);
+            return File(content, "application/pdf", fileName);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error previewing CV from Cloudinary");
+            _logger.LogError(ex, "Error previewing CV from local storage");
             return StatusCode(500, "Error loading CV preview");
         }
     }

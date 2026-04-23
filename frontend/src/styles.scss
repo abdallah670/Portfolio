@@ -252,9 +252,14 @@ body::before {
   --mag-x: 0px;
   --mag-y: 0px;
   transform: translate3d(var(--mag-x), var(--mag-y), 0);
+  transition: transform 0.3s ease-out;
 }
 .mag-btn:hover {
   transform: translate3d(var(--mag-x), calc(var(--mag-y) - 1px), 0);
+}
+.mag-btn:active {
+  transform: translate3d(0, 0, 0) scale(0.98);
+  transition: transform 0.1s ease-out;
 }
 .btn svg { 
   width: 14px; height: 14px; transition: transform 0.25s ease; flex-shrink: 0; 
@@ -1205,8 +1210,14 @@ footer {
 // RESPONSIVE
 // =============================================
 @media (max-width: 960px) {
-  .hero-inner { grid-template-columns: 1fr; }
-  .hero-visual { display: none; }
+  .hero-inner { grid-template-columns: 1fr; text-align: center; }
+  .hero-visual { 
+    display: flex; 
+    justify-content: center; 
+    order: -1; 
+    margin-bottom: 2rem;
+  }
+  .hero-visual img { max-width: 280px; }
   .about-grid { grid-template-columns: 1fr; gap: 3rem; }
   .skills-layout { grid-template-columns: 1fr; gap: 2rem; }
   .journey-layout { grid-template-columns: 1fr; gap: 2.5rem; }

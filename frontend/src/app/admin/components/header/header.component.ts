@@ -13,7 +13,7 @@ import { interval, switchMap } from 'rxjs';
   template: `
     <header class="admin-header">
       <div class="header-left">
-        <a routerLink="/admin/dashboard" class="logo">Admin</a>
+        <a routerLink="/admin/dashboard" class="logo">Meno</a>
       </div>
       <nav class="header-nav">
         <a routerLink="/admin/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-link"><span class="material-symbols-outlined">dashboard</span><span>Dashboard</span></a>
@@ -27,6 +27,9 @@ import { interval, switchMap } from 'rxjs';
         </a>
         <a routerLink="/admin/settings" routerLinkActive="active" class="nav-link"><span class="material-symbols-outlined">settings</span><span>Settings</span></a>
       </nav>
+      <button class="mobile-menu-btn" (click)="mobileMenuOpen = !mobileMenuOpen">
+        <span class="material-symbols-outlined">{{ mobileMenuOpen ? 'close' : 'menu' }}</span>
+      </button>
       <div class="header-right">
         <button class="theme-toggle" (click)="toggleTheme()">{{ isDarkTheme ? '☀' : '☾' }}</button>
         <div class="user-menu" (click)="userMenuOpen = !userMenuOpen">
@@ -53,6 +56,14 @@ import { interval, switchMap } from 'rxjs';
           </div>
         }
       </div>
+      @if (mobileMenuOpen) {
+        <div class="mobile-menu">
+          <a routerLink="/admin/dashboard" routerLinkActive="active" class="mobile-nav-link"><span class="material-symbols-outlined">dashboard</span>Dashboard</a>
+          <a routerLink="/admin/projects" routerLinkActive="active" class="mobile-nav-link"><span class="material-symbols-outlined">folder_special</span>Projects</a>
+          <a routerLink="/admin/messages" routerLinkActive="active" class="mobile-nav-link"><span class="material-symbols-outlined">mail</span>Messages @if (unreadCount > 0) {<span class="mobile-unread-badge">{{ unreadCount }}</span>}</a>
+          <a routerLink="/admin/settings" routerLinkActive="active" class="mobile-nav-link"><span class="material-symbols-outlined">settings</span>Settings</a>
+        </div>
+      }
     </header>
   `,
    styles: [`
@@ -80,13 +91,25 @@ import { interval, switchMap } from 'rxjs';
      .dropdown-divider { height: 1px; background: var(--outline-variant); margin: 8px 0; }
      .dropdown-item { display: flex; align-items: center; gap: 12px; width: 100%; padding: 10px 12px; border: none; background: none; border-radius: var(--radius-md); color: var(--on-surface); font-size: 14px; cursor: pointer; }
      .dropdown-item:hover { background: var(--surface-container-high); color: var(--error); }
-     @media (max-width: 768px) { .header-nav { display: none; } .user-name { display: none; } }
+     .mobile-menu-btn { display: none; background: none; border: none; color: var(--on-surface); font-size: 24px; cursor: pointer; padding: 8px; order: 2; margin-left: auto; }
+     .header-right { display: flex; align-items: center; gap: 16px; position: relative; margin-left: auto; order: 1; }
+     .mobile-menu { position: absolute; top: 64px; left: 0; right: 0; background: var(--surface-container); border-bottom: 1px solid var(--outline-variant); padding: 16px; display: flex; flex-direction: column; gap: 8px; z-index: 99; }
+     .mobile-nav-link { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: var(--radius-md); color: var(--on-surface); text-decoration: none; font-size: 16px; }
+     .mobile-nav-link:hover, .mobile-nav-link.active { background: var(--surface-container-high); color: var(--primary); }
+     .mobile-unread-badge { margin-left: auto; min-width: 20px; height: 20px; padding: 0 6px; background: var(--error); color: var(--on-error); font-size: 12px; font-weight: 700; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+     @media (max-width: 768px) {
+       .header-nav { display: none; }
+       .user-name { display: none; }
+       .mobile-menu-btn { display: flex; align-items: center; justify-content: center; }
+       .admin-header { flex-wrap: wrap; }
+     }
    `]
 })
 export class HeaderComponent implements OnInit {
   @Input() profileImage: string = '';
   isDarkTheme = true;
   userMenuOpen = false;
+  mobileMenuOpen = false;
   private isBrowser: boolean;
   unreadCount = 0;
 

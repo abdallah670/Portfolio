@@ -97,10 +97,14 @@
     </aside>
 
      <!-- Message Detail Panel -->
-     <main class="message-detail-panel">
+     <main class="message-detail-panel" [class.mobile-open]="selectedMessage">
        @if (selectedMessage) {
          <!-- Detail Header -->
          <div class="detail-header">
+           <button class="mobile-back-btn" (click)="clearSelection()">
+             <span class="material-symbols-outlined">arrow_back</span>
+             <span>Back</span>
+           </button>
            <div class="sender-info">
              <div class="avatar">
                <span class="initials">{{ selectedMessage.name[0] || 'A' }}</span>

@@ -8,9 +8,7 @@ services:
       - key: ASPNETCORE_ENVIRONMENT
         value: Production
       - key: ConnectionStrings__DefaultConnection
-        fromDatabase:
-          name: portfolio-postgres
-          property: connectionString
+        value: postgresql://postgres:kpeGcBdiNHkf7Q85@db.wrvzajxuobaayyvfglmf.supabase.co:5432/postgres
       - key: Jwt__Secret
         generateValue: true
       - key: Admin__Username
@@ -60,9 +58,3 @@ services:
     envVars:
       - key: API_URL
         value: https://portfolio-api.onrender.com/api
-
-databases:
-  - name: portfolio-postgres
-    plan: free
-    databaseName: portfolio
-    user: portfolio

@@ -9,6 +9,7 @@ using PortfolioApi.Application.Features.Portfolio.Commands;
 using PortfolioApi.Application.Features.Projects.Commands;
 using PortfolioApi.Infrastructure.Data;
 using SQLitePCL;
+using System.Net.Http;
 
 namespace PortfolioApi.Api.Controllers;
 
@@ -303,7 +304,36 @@ public class PortfolioController : ControllerBase
         var setting = await _context.SystemSettings.FirstOrDefaultAsync(s => s.Key == "cv_url");
         if (setting == null || string.IsNullOrEmpty(setting.Value))
             return NotFound("CV not configured");
-        
-        return Redirect(setting.Value);
+
+        try
+        {
+            // For Cloudinary URLs, we need to fetch the file and serve it directly
+            // to avoid CORS and mixed content issues
+            using var httpClient = new HttpClient();
+            var response = await httpClient.GetAsync(setting.Value);
+            
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogWarning("Failed to fetch CV from Cloudinary: {StatusCode}", response.StatusCode);
+                return NotFound("CV not available");
+            }
+
+            var content = await response.Content.ReadAsByteArrayAsync();
+            var contentType = response.Content.Headers.ContentType?.MediaType ?? "application/pdf";
+            
+            // Set headers for inline PDF viewing
+            Response.Headers["Content-Type"] = contentType;
+            Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
+            Response.Headers["Pragma"] = "no-cache";
+            Response.Headers["Expires"] = "0";
+            Response.Headers["Content-Disposition"] = "inline; filename=\"Abdullah_Mohammed_CV.pdf\"";
+            
+            return File(content, contentType);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error previewing CV from Cloudinary");
+            return StatusCode(500, "Error loading CV preview");
+        }
     }
 }

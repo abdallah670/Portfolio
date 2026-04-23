@@ -415,7 +415,7 @@ public class SeedService
             var cvSetting = new SystemSetting
             {
                 Key = "cv_url",
-                Value = "https://res.cloudinary.com/dmyrxpvnj/raw/upload/cv/Abdullah_Mohammed_CV.pdf",
+                Value = "/uploads/cv/Abdullah_Mohammed_CV.pdf",
                 Category = "files",
                 DataType = "string"
             };

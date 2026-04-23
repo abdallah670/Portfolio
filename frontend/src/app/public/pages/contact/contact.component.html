@@ -32,14 +32,14 @@
               </div>
             </div>
 
-            <div class="detail-item reveal reveal-delay-1" *ngIf="contact?.phone">
+            <div class="detail-item reveal reveal-delay-1">
               <div class="detail-icon">
                 <span class="material-symbols-outlined">phone</span>
               </div>
               <div class="detail-text">
                 <p class="detail-label">Phone</p>
                 <a [href]="'tel:' + contact?.phone" class="detail-value link-hover">
-                  {{ contact?.phone }}
+                  {{ contact?.phone ||'+201205450824'}}
                 </a>
               </div>
             </div>
@@ -54,14 +54,14 @@
               </div>
             </div>
 
-            <div class="detail-item reveal reveal-delay-2" *ngIf="contact?.whatsApp">
+            <div class="detail-item reveal reveal-delay-2" >
               <div class="detail-icon">
                 <span class="material-symbols-outlined">chat</span>
               </div>
               <div class="detail-text">
                 <p class="detail-label">WhatsApp</p>
                 <a [href]="whatsappLink" target="_blank" class="detail-value link-hover">
-                  {{ contact?.whatsApp }}
+                  {{ contact?.whatsApp||'+201205450824' }}
                 </a>
               </div>
             </div>

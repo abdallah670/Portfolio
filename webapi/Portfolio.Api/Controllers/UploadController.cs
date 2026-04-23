@@ -89,15 +89,54 @@ public class UploadController : ControllerBase
     {
         if (file == null || file.Length == 0)
             return BadRequest(new ApiResponse { Success = false, Message = "No file provided" });
-        
-        _logger.LogInformation("Uploading CV to Cloudinary: {FileName}", file.FileName);
-        
+
+        // Validate file type
+        if (file.ContentType.ToLower() != "application/pdf" &&
+            !file.FileName.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase))
+        {
+            return BadRequest(new ApiResponse { Success = false, Message = "Only PDF files are allowed for CV upload" });
+        }
+
+        // Validate file size (10MB max)
+        if (file.Length > 10 * 1024 * 1024)
+        {
+            return BadRequest(new ApiResponse { Success = false, Message = "File size exceeds 10MB limit" });
+        }
+
+        _logger.LogInformation("Uploading CV to local storage: {FileName}", file.FileName);
+
         try
         {
-            var cvUrl = await _cloudinaryService.UploadCVAsync(file);
-            _logger.LogInformation("CV uploaded to Cloudinary: {Url}", cvUrl);
-            
-            // Save Cloudinary URL to SystemSettings
+            // Ensure CV directory exists
+            var cvFolder = Path.Combine(_environment.WebRootPath, "uploads", "cv");
+            if (!Directory.Exists(cvFolder))
+            {
+                Directory.CreateDirectory(cvFolder);
+            }
+
+            // Delete old CV if exists
+            var existingFiles = Directory.GetFiles(cvFolder, "*.pdf");
+            foreach (var f in existingFiles)
+            {
+                System.IO.File.Delete(f);
+                _logger.LogInformation("Deleted old CV: {File}", f);
+            }
+
+            // Save new CV
+            var fileName = "Abdullah_Mohammed_CV.pdf";
+            var filePath = Path.Combine(cvFolder, fileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            _logger.LogInformation("CV saved to local storage: {Path}", filePath);
+
+            // Build URL - use relative path that works with both local and production
+            var cvUrl = $"/uploads/cv/{fileName}";
+
+            // Save to SystemSettings
             var setting = await _context.SystemSettings.FirstOrDefaultAsync(s => s.Key == "cv_url");
             if (setting == null)
             {
@@ -106,12 +145,12 @@ public class UploadController : ControllerBase
             }
             setting.Value = cvUrl;
             await _context.SaveChangesAsync();
-            
+
             return Ok(new ApiResponse<string> { Success = true, Message = "CV uploaded", Data = cvUrl });
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to upload CV to Cloudinary");
+            _logger.LogError(ex, "Failed to upload CV to local storage");
             return BadRequest(new ApiResponse { Success = false, Message = $"Upload failed: {ex.Message}" });
         }
     }

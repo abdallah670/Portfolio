@@ -32,14 +32,6 @@ jobs:
             --output ./publish
 
       - name: Deploy to MonsterASP via WebDeploy
-        shell: pwsh
+        shell: cmd
         run: |
-          $computerName = "https://${{ secrets.SERVER_COMPUTER_NAME }}/msdeploy.axd?site=${{ secrets.WEBSITE_NAME }}"
-          
-          & "C:\Program Files\IIS\Microsoft Web Deploy V3\msdeploy.exe" `
-            -verb:sync `
-            -source:contentPath='${{ github.workspace }}\publish' `
-            -dest:contentPath='${{ secrets.WEBSITE_NAME }}',computerName="$computerName",userName='${{ secrets.SERVER_USERNAME }}',password='${{ secrets.SERVER_PASSWORD }}',authType='Basic' `
-            -allowUntrusted `
-            -enableRule:DoNotDeleteRule `
-            -retryAttempts:3
+          "C:\Program Files\IIS\Microsoft Web Deploy V3\msdeploy.exe" -verb:sync -source:contentPath="${{ github.workspace }}\publish" -dest:contentPath="${{ secrets.WEBSITE_NAME }}",computerName="https://${{ secrets.SERVER_COMPUTER_NAME }}/msdeploy.axd?site=${{ secrets.WEBSITE_NAME }}",userName="${{ secrets.SERVER_USERNAME }}",password="${{ secrets.SERVER_PASSWORD }}",authType="Basic" -allowUntrusted -enableRule:DoNotDeleteRule -retryAttempts:3

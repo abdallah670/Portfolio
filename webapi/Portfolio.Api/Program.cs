@@ -261,8 +261,16 @@ using (var scope = app.Services.CreateScope())
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AdminUser>>();
     
-    // Apply migrations
-    dbContext.Database.Migrate();
+    // Create database schema without migrations (works for any provider)
+    try 
+    {
+        dbContext.Database.EnsureCreated();
+    }
+    catch (Exception ex)
+    {
+        Log.Warning(ex, "Database creation failed. The database may already exist or there may be a connection issue.");
+        // Continue anyway - the app can still work with existing database
+    }
     
     var adminUsername = builder.Configuration["Admin:Username"]
         ?? throw new InvalidOperationException("Admin Username must be configured via environment variable 'Admin__Username'");

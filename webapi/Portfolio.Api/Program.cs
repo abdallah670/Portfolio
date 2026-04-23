@@ -56,17 +56,31 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     }
     // Use PostgreSQL for production (Render) or when connection string indicates PostgreSQL
     else if (!string.IsNullOrEmpty(connectionString) && 
-             (connectionString.Contains("Host=") || connectionString.Contains("Database=") || connectionString.Contains("Username=")))
+             (connectionString.StartsWith("postgresql://") ||
+              (connectionString.Contains("Host=") && connectionString.Contains("Port="))))
     {
         options.UseNpgsql(connectionString, npgsqlOptions =>
         {
             npgsqlOptions.EnableRetryOnFailure(3);
         });
     }
-    // Fallback to SQL Server for other cases
+    // Use SQL Server when connection string indicates SQL Server
+    else if (!string.IsNullOrEmpty(connectionString) &&
+             (connectionString.Contains("Server=") || connectionString.Contains("Data Source=") ||
+              connectionString.Contains("MultipleActiveResultSets=") || connectionString.Contains("Encrypt=")))
+    {
+        options.UseSqlServer(connectionString, sqlOptions =>
+        {
+            sqlOptions.EnableRetryOnFailure(3);
+        });
+    }
+    // Fallback to SQL Server for any other non-empty connection string
     else if (!string.IsNullOrEmpty(connectionString))
     {
-        options.UseSqlServer(connectionString);
+        options.UseSqlServer(connectionString, sqlOptions =>
+        {
+            sqlOptions.EnableRetryOnFailure(3);
+        });
     }
     // Default to SQLite if nothing else works
     else

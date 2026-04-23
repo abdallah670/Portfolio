@@ -25,7 +25,6 @@ wwwroot/uploads/
 logs/
 
 # Environment
-.env
 *.local
 
 # OS

@@ -67,8 +67,9 @@ export class HomeComponent implements OnInit {
         if (this.isBrowser) {
           setTimeout(() => this.initScrollReveal(), 100);
           setTimeout(() => this.initSkillBars(), 100);
-          setTimeout(() => this.initMagneticButtons(), 100);
-          setTimeout(() => this.initRippleEffect(), 100);
+          // Effects disabled to prevent button stretching
+          // setTimeout(() => this.initMagneticButtons(), 100);
+          // setTimeout(() => this.initRippleEffect(), 100);
         }
       },
       error: (err) => {
@@ -114,35 +115,11 @@ export class HomeComponent implements OnInit {
   }
 
   private initMagneticButtons() {
-    document.querySelectorAll('.mag-btn').forEach(btn => {
-      btn.addEventListener('mousemove', (e: Event) => {
-        const target = btn as HTMLElement;
-        const rect = target.getBoundingClientRect();
-        const x = (e as MouseEvent).clientX - rect.left - rect.width / 2;
-        const y = (e as MouseEvent).clientY - rect.top - rect.height / 2;
-        target.style.setProperty('--mag-x', `${x * 0.15}px`);
-        target.style.setProperty('--mag-y', `${y * 0.15}px`);
-      });
-      btn.addEventListener('mouseleave', () => {
-        const target = btn as HTMLElement;
-        target.style.setProperty('--mag-x', '0px');
-        target.style.setProperty('--mag-y', '0px');
-      });
-    });
+    // Magnetic button effect disabled to prevent stretching issues
+    // Keeping method for future reference but functionality removed
   }
 
   private initRippleEffect() {
-    document.querySelectorAll('.btn').forEach(btn => {
-      btn.addEventListener('click', (e: Event) => {
-        const target = btn as HTMLElement;
-        const rect = target.getBoundingClientRect();
-        const r = document.createElement('span');
-        r.className = 'ripple';
-        const size = Math.max(rect.width, rect.height);
-        r.style.cssText = `width:${size}px;height:${size}px;left:${(e as MouseEvent).clientX - rect.left - size/2}px;top:${(e as MouseEvent).clientY - rect.top - size/2}px`;
-        target.appendChild(r);
-        setTimeout(() => r.remove(), 700);
-      });
-    });
+    // Ripple effect disabled to prevent button stretching
   }
 }

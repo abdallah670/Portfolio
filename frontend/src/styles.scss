@@ -247,19 +247,9 @@ body::before {
   opacity: 1 !important;
 }
 
-// Magnetic button support - uses CSS custom properties for smooth animation
+// Magnetic button support - completely disabled
 .mag-btn {
-  --mag-x: 0px;
-  --mag-y: 0px;
-  transform: translate3d(var(--mag-x), var(--mag-y), 0);
-  transition: transform 0.3s ease-out;
-}
-.mag-btn:hover {
-  transform: translate3d(var(--mag-x), calc(var(--mag-y) - 1px), 0);
-}
-.mag-btn:active {
-  transform: translate3d(0, 0, 0) scale(0.98);
-  transition: transform 0.1s ease-out;
+  /* No transforms applied to prevent stretching */
 }
 .btn svg { 
   width: 14px; height: 14px; transition: transform 0.25s ease; flex-shrink: 0; 

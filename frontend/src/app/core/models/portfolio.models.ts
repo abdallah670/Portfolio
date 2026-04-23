@@ -49,7 +49,7 @@ export interface ProjectConfig {
   stack: string;       // raw JSON string e.g. "[\"C#\",\"Angular\"]"
   image: string;
   linkedinUrl: string;
-  LiveUrl :string;
+  liveUrl :string;
   githubUrl: string;
   status: string;
   color: string;

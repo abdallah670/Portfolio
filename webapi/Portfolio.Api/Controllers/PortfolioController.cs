@@ -280,14 +280,22 @@ public class PortfolioController : ControllerBase
         
         var fileName = Path.GetFileName(setting.Value);
         // Handle MonsterASP wwwroot/wwwroot structure
-        var filePath = Path.Combine(_environment.ContentRootPath, "wwwroot", "uploads", "cv", fileName);
+        var cvFolder = Path.Combine(_environment.ContentRootPath, "wwwroot", "uploads", "cv");
+        var filePath = Path.Combine(cvFolder, fileName);
         
         _logger.LogInformation("Looking for CV at: {FilePath}, ContentRoot: {ContentRoot}", filePath, _environment.ContentRootPath);
+        
+        // Ensure directory exists
+        if (!Directory.Exists(cvFolder))
+        {
+            _logger.LogWarning("CV directory does not exist: {Folder}", cvFolder);
+            return NotFound("CV not uploaded yet. Please upload CV via admin panel.");
+        }
         
         if (!System.IO.File.Exists(filePath))
         {
             _logger.LogWarning("CV file not found at: {FilePath}", filePath);
-            return NotFound("CV file not found");
+            return NotFound("CV file not found. Please upload CV via admin panel.");
         }
         
         // Add cache-busting using file timestamp
@@ -322,12 +330,20 @@ public class PortfolioController : ControllerBase
             }
             
             // Handle MonsterASP wwwroot/wwwroot structure
-            var filePath = Path.Combine(_environment.ContentRootPath, "wwwroot", "uploads", "cv", fileName);
+            var cvFolder = Path.Combine(_environment.ContentRootPath, "wwwroot", "uploads", "cv");
+            var filePath = Path.Combine(cvFolder, fileName);
+            
+            // Ensure directory exists
+            if (!Directory.Exists(cvFolder))
+            {
+                _logger.LogWarning("CV directory does not exist: {Folder}", cvFolder);
+                return NotFound("CV not uploaded yet. Please upload CV via admin panel.");
+            }
             
             if (!System.IO.File.Exists(filePath))
             {
                 _logger.LogWarning("CV file not found at: {Path}", filePath);
-                return NotFound("CV file not found");
+                return NotFound("CV file not found. Please upload CV via admin panel.");
             }
             
             // Read file and serve inline

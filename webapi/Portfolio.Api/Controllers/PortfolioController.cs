@@ -279,6 +279,7 @@ public class PortfolioController : ControllerBase
             return NotFound("CV not configured");
         
         var fileName = Path.GetFileName(setting.Value);
+        // Handle MonsterASP wwwroot/wwwroot structure
         var filePath = Path.Combine(_environment.ContentRootPath, "wwwroot", "uploads", "cv", fileName);
         
         if (!System.IO.File.Exists(filePath))

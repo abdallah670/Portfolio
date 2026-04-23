@@ -107,8 +107,8 @@ public class UploadController : ControllerBase
 
         try
         {
-            // Ensure CV directory exists
-            var cvFolder = Path.Combine(_environment.WebRootPath, "uploads", "cv");
+            // Ensure CV directory exists (handle MonsterASP wwwroot/wwwroot structure)
+            var cvFolder = Path.Combine(_environment.ContentRootPath, "wwwroot", "uploads", "cv");
             if (!Directory.Exists(cvFolder))
             {
                 Directory.CreateDirectory(cvFolder);
@@ -181,13 +181,18 @@ public class UploadController : ControllerBase
             }
         }
         
-        // Fallback to local file deletion
-        var fullPath = Path.Combine(_environment.ContentRootPath, "wwwroot", filePath.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
+        // Fallback to local file deletion (handle MonsterASP wwwroot/wwwroot structure)
+        // filePath comes as "/uploads/cv/filename.pdf"
+        var relativePath = filePath.TrimStart('/').Replace('/', Path.DirectorySeparatorChar);
+        var fullPath = Path.Combine(_environment.ContentRootPath, "wwwroot", relativePath);
+        
+        _logger.LogInformation("Attempting to delete file at: {FullPath}", fullPath);
         
         if (!System.IO.File.Exists(fullPath))
             return NotFound(new ApiResponse { Success = false, Message = "File not found" });
         
         System.IO.File.Delete(fullPath);
+        _logger.LogInformation("File deleted successfully: {FullPath}", fullPath);
         
         return Ok(new ApiResponse { Success = true, Message = "File deleted" });
     }

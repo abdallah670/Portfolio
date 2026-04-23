@@ -279,24 +279,44 @@ public class PortfolioController : ControllerBase
             return NotFound("CV not configured");
         
         var fileName = Path.GetFileName(setting.Value);
+        
+        // Debug: Log all path info
+        _logger.LogInformation("=== CV DEBUG ===");
+        _logger.LogInformation("ContentRootPath: {Path}", _environment.ContentRootPath);
+        _logger.LogInformation("WebRootPath: {Path}", _environment.WebRootPath);
+        _logger.LogInformation("Setting.Value: {Value}", setting.Value);
+        _logger.LogInformation("FileName extracted: {FileName}", fileName);
+        
         // Handle MonsterASP wwwroot/wwwroot structure
-        var cvFolder = Path.Combine(_environment.ContentRootPath, "wwwroot", "uploads", "cv");
-        var filePath = Path.Combine(cvFolder, fileName);
-        
-        _logger.LogInformation("Looking for CV at: {FilePath}, ContentRoot: {ContentRoot}", filePath, _environment.ContentRootPath);
-        
-        // Ensure directory exists
-        if (!Directory.Exists(cvFolder))
+        // Try different path combinations
+        var possiblePaths = new[]
         {
-            _logger.LogWarning("CV directory does not exist: {Folder}", cvFolder);
-            return NotFound("CV not uploaded yet. Please upload CV via admin panel.");
+            Path.Combine(_environment.ContentRootPath, "wwwroot", "uploads", "cv", fileName),
+            Path.Combine(_environment.WebRootPath, "uploads", "cv", fileName),
+            Path.Combine(_environment.ContentRootPath, "uploads", "cv", fileName),
+            $"/wwwroot/wwwroot/uploads/cv/{fileName}",  // Absolute path for MonsterASP
+            $"C:/home/site/wwwroot/wwwroot/uploads/cv/{fileName}".Replace('/', Path.DirectorySeparatorChar)
+        };
+        
+        string foundPath = null;
+        foreach (var path in possiblePaths)
+        {
+            _logger.LogInformation("Checking path: {Path}, Exists: {Exists}", path, System.IO.File.Exists(path));
+            if (System.IO.File.Exists(path))
+            {
+                foundPath = path;
+                _logger.LogInformation("FOUND CV at: {Path}", path);
+                break;
+            }
         }
         
-        if (!System.IO.File.Exists(filePath))
+        if (foundPath == null)
         {
-            _logger.LogWarning("CV file not found at: {FilePath}", filePath);
+            _logger.LogWarning("CV file not found in any location");
             return NotFound("CV file not found. Please upload CV via admin panel.");
         }
+        
+        var filePath = foundPath;
         
         // Add cache-busting using file timestamp
         var lastModified = System.IO.File.GetLastWriteTime(filePath);
@@ -329,22 +349,41 @@ public class PortfolioController : ControllerBase
                 return Redirect("/api/portfolio/cv");
             }
             
-            // Handle MonsterASP wwwroot/wwwroot structure
-            var cvFolder = Path.Combine(_environment.ContentRootPath, "wwwroot", "uploads", "cv");
-            var filePath = Path.Combine(cvFolder, fileName);
+            // Debug: Log all path info
+            _logger.LogInformation("=== CV PREVIEW DEBUG ===");
+            _logger.LogInformation("ContentRootPath: {Path}", _environment.ContentRootPath);
+            _logger.LogInformation("WebRootPath: {Path}", _environment.WebRootPath);
+            _logger.LogInformation("FileName: {FileName}", fileName);
             
-            // Ensure directory exists
-            if (!Directory.Exists(cvFolder))
+            // Try different path combinations
+            var possiblePaths = new[]
             {
-                _logger.LogWarning("CV directory does not exist: {Folder}", cvFolder);
-                return NotFound("CV not uploaded yet. Please upload CV via admin panel.");
+                Path.Combine(_environment.ContentRootPath, "wwwroot", "uploads", "cv", fileName),
+                Path.Combine(_environment.WebRootPath, "uploads", "cv", fileName),
+                Path.Combine(_environment.ContentRootPath, "uploads", "cv", fileName),
+                $"/wwwroot/wwwroot/uploads/cv/{fileName}",
+                $"C:/home/site/wwwroot/wwwroot/uploads/cv/{fileName}".Replace('/', Path.DirectorySeparatorChar)
+            };
+            
+            string foundPath = null;
+            foreach (var path in possiblePaths)
+            {
+                _logger.LogInformation("Checking path: {Path}, Exists: {Exists}", path, System.IO.File.Exists(path));
+                if (System.IO.File.Exists(path))
+                {
+                    foundPath = path;
+                    _logger.LogInformation("FOUND CV at: {Path}", path);
+                    break;
+                }
             }
             
-            if (!System.IO.File.Exists(filePath))
+            if (foundPath == null)
             {
-                _logger.LogWarning("CV file not found at: {Path}", filePath);
+                _logger.LogWarning("CV file not found in any location");
                 return NotFound("CV file not found. Please upload CV via admin panel.");
             }
+            
+            var filePath = foundPath;
             
             // Read file and serve inline
             var content = await System.IO.File.ReadAllBytesAsync(filePath);

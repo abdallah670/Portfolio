@@ -409,7 +409,7 @@ public class SeedService
             await _context.SaveChangesAsync();
         }
         
-        // Seed CV placeholder setting (only if missing)
+        // Seed CV setting with local path for MonsterASP storage
         if (!await _context.SystemSettings.AnyAsync(s => s.Key == "cv_url"))
         {
             var cvSetting = new SystemSetting
@@ -422,6 +422,16 @@ public class SeedService
             _context.SystemSettings.Add(cvSetting);
             
             await _context.SaveChangesAsync();
+        }
+        // If existing CV is Cloudinary URL, update it to local path
+        else
+        {
+            var existingCv = await _context.SystemSettings.FirstOrDefaultAsync(s => s.Key == "cv_url");
+            if (existingCv != null && existingCv.Value.StartsWith("http"))
+            {
+                existingCv.Value = "/uploads/cv/Abdullah_Mohammed_CV.pdf";
+                await _context.SaveChangesAsync();
+            }
         }
     }
 }

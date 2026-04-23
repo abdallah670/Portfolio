@@ -278,6 +278,32 @@ public class PortfolioController : ControllerBase
         if (setting == null || string.IsNullOrEmpty(setting.Value))
             return NotFound("CV not configured");
         
+        // If it's a Cloudinary/external URL, redirect or fetch it
+        if (setting.Value.StartsWith("http"))
+        {
+            _logger.LogInformation("CV is stored at external URL: {Url}", setting.Value);
+            // Option 1: Redirect to the external URL
+            // return Redirect(setting.Value);
+            
+            // Option 2: Fetch and serve (better for hiding the actual URL)
+            try
+            {
+                using var httpClient = new HttpClient();
+                var response = await httpClient.GetAsync(setting.Value);
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsByteArrayAsync();
+                    var fileName = Path.GetFileName(setting.Value);
+                    return File(content, "application/pdf", fileName);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to fetch CV from external URL");
+            }
+            return NotFound("CV not accessible");
+        }
+        
         var fileName = Path.GetFileName(setting.Value);
         
         // Debug: Log all path info
@@ -294,9 +320,8 @@ public class PortfolioController : ControllerBase
             Path.Combine(_environment.ContentRootPath, "wwwroot", "uploads", "cv", fileName),
             Path.Combine(_environment.WebRootPath, "uploads", "cv", fileName),
             Path.Combine(_environment.ContentRootPath, "uploads", "cv", fileName),
-            $"/wwwroot/wwwroot/uploads/cv/{fileName}",  // Linux absolute path
-            $"/home/site/wwwroot/wwwroot/uploads/cv/{fileName}",  // MonsterASP Linux path
-            $"C:/home/site/wwwroot/wwwroot/uploads/cv/{fileName}".Replace('/', Path.DirectorySeparatorChar)
+            Path.Combine(_environment.WebRootPath, "..", "uploads", "cv", fileName),  // Try parent directory
+            $"D:\\Sites\\site64972\\wwwroot\\wwwroot\\uploads\\cv\\{fileName}"  // Hardcoded MonsterASP path
         };
         
         string foundPath = null;
